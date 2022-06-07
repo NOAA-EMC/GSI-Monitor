@@ -15,10 +15,6 @@ program gatime
 !                  one entry for a given channel per line.
 !************************************************************************
 
-!   use IFPORT
-! Intel® Fortran includes functions and subroutines that ease porting of code to or from a PC, or allow you to write code on a PC that is compatible with other platforms.  The portability library is called LIBIFPORT.LIB (Windows*) or libifport.a (Linux* and macOS*). Frequently used functions are included in a portability module called IFPORT.
-! What functionality from IFPORT library is being used here and why?
- 
    implicit none
 
    character(5)  str_chan
