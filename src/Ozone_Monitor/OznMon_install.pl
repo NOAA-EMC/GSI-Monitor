@@ -388,11 +388,5 @@
 
    move $outfile, $infile;
 
-   print "\n";
-   print "Making all executables\n";
-
-   `./build_OznMon_cmake.sh`;
-
- 
    exit 0;
 

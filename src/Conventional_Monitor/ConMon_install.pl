@@ -321,10 +321,6 @@
    move "$config.new", $config;
 
 
-   print "building executables\n"; 
-   `./build_ConMon_cmake.sh`;
-
-
    print "<-- ConMon_install.sh\n";
 
 exit 0;
