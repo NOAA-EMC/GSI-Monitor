@@ -8,4 +8,5 @@ spack:
   - netcdf-fortran@4.5.3
   - w3emc@2.9.2
   view: true
-  concretization: when_possible
+  concretizer:
+    unify: when_possible
