@@ -110,7 +110,7 @@ jobs:
         run: |
           source spack/share/spack/setup-env.sh
           spack env activate gsi-monitor-intel
-          cd GSI-monitor
+          cd GSI-Monitor
           export FC=ifort
           mkdir -p build && cd build
           cmake -Dncdiag_ROOT=${GITHUB_WORKSPACE}/install-deps ..

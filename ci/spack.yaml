@@ -7,4 +7,4 @@ spack:
   - netcdf-c@4.7.4
   - netcdf-fortran@4.5.3
   view: true
-  concretization: together
+  concretization: when_possible
