@@ -16,6 +16,7 @@ prepend_path("MODULEPATH", "/usrx/local/nceplibs/dev/hpc-stack/libs/hpc-stack/mo
 
 load(pathJoin("hpc", hpc_ver))
 load(pathJoin("hpc-ips", hpc_ips_ver))
+load(pathJoin("hpc-impi", hpc_impi_ver))
 
 load(pathJoin("cmake", cmake_ver))
 
