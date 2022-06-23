@@ -24,7 +24,6 @@ source $DIR_ROOT/ush/module-setup.sh
 module use $DIR_ROOT/modulefiles
 module load $MACHINE_ID
 module list
-echo MODULEPATH=$MODULEPATH
 
 # Collect BUILD Options
 CMAKE_OPTS+=" -DBUILD_UTIL_ALLMON=ON"
