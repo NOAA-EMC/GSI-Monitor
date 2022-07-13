@@ -12,5 +12,12 @@ load(pathJoin("craype", craype_ver))
 load(pathJoin("cmake", cmake_ver))
 
 load("common")
+unload("ncdiag")
+
+pushenv("HPC_OPT", "/apps/ops/para/libs")
+prepend_path("MODULEPATH", "/apps/ops/para/libs/modulefiles/compiler/intel/19.1.3.304")
+prepend_path("MODULEPATH", "/apps/ops/para/libs/modulefiles/mpi/intel/19.1.3.304/cray-mpich/8.1.7")
+
+load("ncdiag/1.0.0")
 
 whatis("Description: GSI Monitoring environment on WCOSS2")
