@@ -23,6 +23,7 @@ NCEP Libraries (NCEPLibs) compiled with the same compiler (where applicable).
 | Library         | Supported (tested) versions                                |
 |-----------------|------------------------------------------------------------|
 | W3EMC           | 2.9.1 and above                                            |
+| NCDIAG          | 1.0.0 and above
 
 ### Building the GSI Monitoring package
 
