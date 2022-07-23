@@ -46,13 +46,6 @@ elif [[ $MACHINE_ID = wcoss_cray ]] ; then
     module use /gpfs/hps/nco/ops/nwprod/lib/modulefiles
     module use /usrx/local/prod/modulefiles
 
-elif [[ $MACHINE_ID = wcoss_dell_p3 ]] ; then
-    # We are on NOAA Mars or Venus
-    if ( ! eval module help > /dev/null 2>&1 ) ; then
-        source /usrx/local/prod/lmod/lmod/init/bash
-    fi
-    module purge
-
 elif [[ $MACHINE_ID = wcoss2 ]]; then
     # We are on WCOSS2
     module reset
