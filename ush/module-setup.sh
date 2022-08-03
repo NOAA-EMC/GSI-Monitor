@@ -29,23 +29,6 @@ elif [[ $MACHINE_ID = s4* ]] ; then
     fi
     module purge
 
-elif [[ $MACHINE_ID = wcoss_cray ]] ; then
-    # We are on NOAA Luna or Surge
-    if ( ! eval module help > /dev/null 2>&1 ) ; then
-        source /opt/modules/default/init/bash
-    fi
-    module purge
-    # Workaround until module issues are fixed:
-    unset _LMFILES_
-    unset LOADEDMODULES
-    module use /opt/modulefiles
-    module use /opt/cray/ari/modulefiles
-    module use /opt/cray/craype/default/alt-modulefiles
-    module use /opt/cray/alt-modulefiles
-    module use /gpfs/hps/nco/ops/nwprod/modulefiles
-    module use /gpfs/hps/nco/ops/nwprod/lib/modulefiles
-    module use /usrx/local/prod/modulefiles
-
 elif [[ $MACHINE_ID = wcoss2 ]]; then
     # We are on WCOSS2
     module reset
