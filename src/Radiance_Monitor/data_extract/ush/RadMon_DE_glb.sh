@@ -120,6 +120,7 @@ if [[ $? -ne 0 ]]; then
    exit $?
 fi 
 
+module list
 
 #-------------------------------------------------------
 #  Create log and TANK directories if they don't exist
@@ -127,8 +128,8 @@ fi
 if [[ ! -d ${TANKverf} ]]; then
    mkdir -p $TANKverf
 fi
-if [[ ! -d ${LOGdir} ]]; then
-   mkdir -p $LOGdir
+if [[ ! -d ${R_LOGDIR} ]]; then
+   mkdir -p $R_LOGDIR
 fi
 
 
@@ -194,7 +195,7 @@ fi
 if [[ -e ${radstat} && -e ${biascr} ]]; then
    echo "FOUND radstat and biascr -- we are good to go"
 
-   export jlogfile=${WORKverf_rad}/jlogfile_${RADMON_SUFFIX}
+   export jlogfile=${R_LOGDIR}/jlogfile_${RADMON_SUFFIX}
 
    export VERBOSE=${VERBOSE:-YES}
    prev_day=`${NDATE} -06 $PDATE | cut -c1-8`
@@ -229,26 +230,18 @@ if [[ -e ${radstat} && -e ${biascr} ]]; then
 
    job=${HOMEgdas}/jobs/JGDAS_ATMOS_VERFRAD  
    jobname=RadMon_DE_${RADMON_SUFFIX}
-   logfile=${LOGdir}/DE.${pdy}.${cyc}.log
+   logfile=${R_LOGDIR}/DE.${pdy}.${cyc}.log
    if [[ -e ${logfile} ]]; then
      rm -f ${logfile}
    fi
 
 
-   if [[ $MY_MACHINE = "wcoss_d" ]]; then
-      $SUB -q $JOB_QUEUE -P $PROJECT -o ${logfile} \
-           -M 5000 -R affinity[core] -W 0:20 -J ${jobname} -cwd ${PWD} ${job}
-
-   elif [[ $MY_MACHINE = "wcoss_c" ]]; then
-      $SUB -q $JOB_QUEUE -P $PROJECT -o ${logfile} \
-           -M 5000 -W 0:20 -J ${jobname} -cwd ${PWD} ${job}
-
-   elif [[ $MY_MACHINE = "hera" ]]; then
+   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "orion" ]]; then
       $SUB --account=${ACCOUNT} --time=10 -J ${jobname} -D . \
         -o ${logfile} --ntasks=1 --mem=5g ${job} 
 
    elif [[ $MY_MACHINE = "wcoss2" ]]; then
-      $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${LOGdir}/DE.${pdy}.${cyc}.err \
+      $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/DE.${pdy}.${cyc}.err \
         -V -l select=1:mem=5000M -l walltime=20:00 -N ${jobname} ${job}
    fi
 

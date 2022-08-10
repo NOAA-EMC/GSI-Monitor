@@ -135,8 +135,8 @@ fi
 if [[ ! -d ${TANKverf} ]]; then
    mkdir -p $TANKverf
 fi
-if [[ ! -d ${LOGdir} ]]; then
-   mkdir -p $LOGdir
+if [[ ! -d ${R_LOGDIR} ]]; then
+   mkdir -p $R_LOGDIR
 fi
 
 #---------------------------------------------------------------
@@ -173,26 +173,18 @@ fi
 if [[  -d ${DATA_LOCATION} ]]; then
    job=${DE_SCRIPTS}/radmon_copy.sh
    jobname=RadMon_CP_${RADMON_SUFFIX}
-   logfile=${LOGdir}/CP.${PDY}.${CYC}.log
+   logfile=${R_LOGDIR}/CP.${PDY}.${CYC}.log
    if [[ -e ${logfile} ]]; then
      rm -f ${logfile}
    fi
 
 
-   if [[ $MY_MACHINE = "wcoss_d" ]]; then
-      $SUB -q $JOB_QUEUE -P $PROJECT -o ${logfile} \
-           -M 80 -R affinity[core] -W 0:10 -J ${jobname} -cwd ${PWD} ${job}
-
-   elif [[ $MY_MACHINE = "wcoss_c" ]]; then
-      $SUB -q $JOB_QUEUE -P $PROJECT -o ${logfile} \
-           -M 100 -W 0:20 -J ${jobname} -cwd ${PWD} ${job}
-
-   elif [[ $MY_MACHINE = "hera" ]]; then
+   if [[ $MY_MACHINE = "hera" ]]; then
       $SUB --account=${ACCOUNT} --time=10 -J ${jobname} -D . \
         -o ${logfile} --ntasks=1 --mem=5g ${job}
 
    elif [[ $MY_MACHINE = "wcoss2" ]]; then
-      $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${LOGdir}/CP.${PDY}.${CYC}.err \
+      $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/CP.${PDY}.${CYC}.err \
 	   -V -l select=1:mem=5000M -l walltime=20:00 -N ${jobname} ${job}
    fi
 else

@@ -35,13 +35,6 @@ fi
 module load prod_util/2.0.10
 module load util_shared/1.4.0
 
-#module load lsf/10.1
-#module load ips/18.0.1.163
-#module load impi/18.0.1
-#module load prod_util/1.1.0
-#module load grib_util/1.1.0
-#module load util_shared/1.1.0
-
 module list
 
 
@@ -57,7 +50,7 @@ fi
 export RAD_DATA_IN=${DATA}
 export jlogfile=${COMROOT}/logs/jlogfiles/${RADMON_SUFFIX}_jlog
 
-export NWTEST=/lfs/h2/emc/da/noscrub/Edward.Safford/git/gsi/GSI/util/Radiance_Monitor/nwprod
+export NWTEST=/lfs/h2/emc/da/noscrub/Edward.Safford/git/GSI-monitor/src/Radiance_Monitor/nwprod
 
 export HOMEgdas=${NWTEST}/gdas_radmon
 export HOMEgfs=${HOMEgdas}
@@ -67,7 +60,7 @@ export JOBGLOBAL=${HOMEgdas}/jobs
 export HOMEradmon=${NWTEST}/radmon_shared
 export COM_IN=${DATAROOT}
 export TANKverf=${COMROOT}/${RADMON_SUFFIX}
-
+export EXECradmon=/lfs/h2/emc/da/noscrub/Edward.Safford/git/GSI-monitor/install/bin
 export parm_file=${HOMEgdas}/parm/gdas_radmon.parm
 
 #############################################################

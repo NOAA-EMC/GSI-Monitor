@@ -129,6 +129,11 @@ for type in ${SATYPE2}; do
    #
    prefix="angle."
    dfiles=`ls *.ieee_d`
+   if [[ $dfiles = "" ]]; then
+      echo "NO DATA available for $type, aborting bcoef plot"
+      continue
+   fi
+
    for file in $dfiles; do
       newfile=`basename $file | sed -e "s/^$prefix//"`
       mv ./${file} ./${newfile}

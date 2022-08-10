@@ -8,8 +8,6 @@
 #
 #------------------------------------------------------------------
 
-set -ax
-date
 echo "begin mk_bcoef_plots.sh"
 
 imgndir="${IMGNDIR}/bcoef"
@@ -83,6 +81,7 @@ for type in ${SATYPE}; do
          elif [[ -e ${ieee_src}/radmon_bcoef.tar || -e ${ieee_src}/radmon_bcoef.tar.${Z} ]]; then
             using_tar=1
             ctl_list=`tar -tf ${ieee_src}/radmon_bcoef.tar* | grep ${type} | grep ctl`
+            echo "ctl_list = $ctl_list"
             if [[ ${ctl_list} != "" ]]; then
                cwd=`pwd`
                cd ${ieee_src}
@@ -150,27 +149,23 @@ done
 #
 
 jobname="plot_${RADMON_SUFFIX}_bcoef"
-logfile="$LOGdir/plot_bcoef.log"
+logfile="$R_LOGDIR/plot_bcoef.log"
 rm ${logfile}
 
-if [[ $MY_MACHINE = "wcoss_d" ]]; then
-   $SUB -q $JOB_QUEUE -P $PROJECT -o ${logfile} -M 80 -W 1:15 \
-        -R "affinity[core]" -J ${jobname} -cwd ${PWD} $IG_SCRIPTS/plot_bcoef.sh
-
-elif [[ $MY_MACHINE = "wcoss_c" ]]; then
-   $SUB -q $JOB_QUEUE -P $PROJECT -o ${logfile} -M 80 -W 1:15 \
-        -J ${jobname} -cwd ${PWD} $IG_SCRIPTS/plot_bcoef.sh
-
-elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
+if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
    $SUB --account $ACCOUNT --ntasks=1 --mem=5g --time=1:00:00 -J ${jobname} \
         -o ${logfile} -D . $IG_SCRIPTS/plot_bcoef.sh 
 
+elif [[ $MY_MACHINE = "orion" ]]; then
+   $SUB --account $ACCOUNT --ntasks=1 --mem=5g --time=20 -J ${jobname} \
+        -p ${SERVICE_PARTITION} -o ${logfile} -D . $IG_SCRIPTS/plot_bcoef.sh 
+
 elif [[ $MY_MACHINE = "jet" ]]; then
    $SUB --account $ACCOUNT --ntasks=1 --mem=5g --time=1:00:00 -J ${jobname} \
-        -p ${RADMON_PARTITION} -o ${logfile} -D . $IG_SCRIPTS/plot_bcoef.sh
+        -p ${SERVICE_PARTITION} -o ${logfile} -D . $IG_SCRIPTS/plot_bcoef.sh
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
-   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e $LOGdir/plot_bcoef.err -V \
+   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e $R_LOGDIR/plot_bcoef.err -V \
         -l select=1:mem=1g -l walltime=1:00:00 -N ${jobname} $IG_SCRIPTS/plot_bcoef.sh
 fi
 
