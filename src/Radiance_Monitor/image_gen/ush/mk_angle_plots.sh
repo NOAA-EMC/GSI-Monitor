@@ -225,8 +225,6 @@ for type in ${satlist}; do
 done
 
 chmod 755 ${cmdfile}
-echo "CMDFILE:  ${cmdfile}"
-echo "ctr = $ctr"
 
 if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" || ${MY_MACHINE} = "orion" ]]; then
    $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} --time=30:00 \
