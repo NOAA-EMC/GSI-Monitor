@@ -81,8 +81,8 @@ case $MY_MACHINE in
       export SUB="qsub"
    
       tankdir="/lfs/h2/emc/da/noscrub/$USER/nbns"
-      ptmp="/lfs/h2/emc/ptmp/$USER}"
-      stmp="/lfs/h2/emc/stmp/$USER}"
+      ptmp="/lfs/h2/emc/ptmp/$USER"
+      stmp="/lfs/h2/emc/stmp/$USER"
       queue="dev"
       project="GDAS-DEV"
       account="GFS-DEV"

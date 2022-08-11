@@ -9,6 +9,8 @@ load(pathJoin("intel", intel_ver))
 prepend_path("MODULEPATH", "/apps/test/lmodules/core/")
 load ("GrADS/2.2.2")
 
+prepend_path("MODULEPATH", "/apps/ops/para/nco/modulefiles/core/")
+load ("prod_util/2.0.13")
 
 load("common-run")
 
