@@ -5,7 +5,7 @@ prepend_path("MODULEPATH", "/scratch2/NCEPDEV/nwprod/hpc-stack/libs/hpc-stack/mo
 
 local hpc_ver=os.getenv("hpc_ver") or "1.1.0"
 local hpc_gnu_ver=os.getenv("hpc_gnu_ver") or "9.2.0"
-local grads=os.getenv("grads") or "2.2.1"
+local grads_ver=os.getenv("grads_ver") or "2.2.1"
 
 load(pathJoin("hpc", hpc_ver))
 load(pathJoin("hpc-gnu", hpc_gnu_ver))

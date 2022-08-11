@@ -10,7 +10,7 @@
 
 set -x
 
-export MY_MACHINE=hera
+export MY_MACHINE=orion
 
 #export PDATE=${PDATE:-2021022518}	#binary
 export PDATE=${PDATE:-2022050318}	#NetCDF
