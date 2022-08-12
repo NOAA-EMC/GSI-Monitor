@@ -17,6 +17,7 @@ echo ""
 do_cmp=0
 cmp_src=""
 
+
 #--------------------------------------------------------------
 #  Allow user to enable comparison plots 
 #
@@ -57,7 +58,7 @@ new_webdir=${WEBDIR}/${SUFFIX}
 #--------------------------------------------------------------
 #  Create a temporary working directory.
 #
-workdir=$STMP_USER/${SUFFIX}_html
+workdir=$MON_STMP/${SUFFIX}_html
 if [[ -e $workdir ]]; then
    rm -rf $workdir
 fi
@@ -394,48 +395,6 @@ arrow_files="arrowleft.png arrowright.png"
 for file in $arrow_files; do
    $NCP ${RADMON_IMAGE_GEN}/html/${file} ${imgndir}/pngs/.
 done
-
-#-----------------------
-#  summary thumb images
-#    If any are missing dummy one in using ssmis_f18.
-#
-thumbs="sum_thumbs.tar"
-$NCP ${RADMON_IMAGE_GEN}/html/${thumbs} ${imgndir}/pngs/summary/. 
-cd ${imgndir}/pngs/summary
-tar -xvf ${thumbs}
-rm -f ${thumbs}
-
-for satype in $SATYPE; do
-   if [[ ! -e ${satype}.summary.png ]]; then
-      $NCP ssmis_f18.summary.png ${satype}.summary.png
-   fi
-done
-
-img_list=`ls *.png`			# rm any images for sources not in $SATYPE
-for img in ${img_list}; do
-   tmp=`echo "$img" | cut -d. -f1`
-   echo $tmp
-   img_match=`echo $SATYPE | grep $tmp`
-   if [[ ${#img_match} -le 0 ]]; then
-      rm -f ${img}
-   fi
-done
-
-
-#---------------------------------------------------
-# if on wcoss then cd $imgndir and do the rsync here
-#
-if [[ $MY_MACHINE = "wcoss_d" || $MY_MACHINE = "wcoss2" ]]; then
-
-   if [[ ${imgndir} != "/" ]]; then	      # sanity check to avoid serious embarrassment
-      /usr/bin/rsync -ave ssh  --exclude *.ctl.${Z} ${imgndir}/ \
-         ${WEB_USER}@${WEB_SVR}.ncep.noaa.gov:${WEBDIR}/${SUFFIX}/
-   fi
-
-   ssh ${WEB_USER}@${WEB_SVR} mkdir ${WEBDIR}/${SUFFIX}/gdas
-   ssh ${WEB_USER}@${WEB_SVR} ln -s ${WEBDIR}/${SUFFIX}/pngs ${WEBDIR}/${SUFFIX}/gdas/pngs
-   
-fi
 
 #------------------------
 # clean up $workdir

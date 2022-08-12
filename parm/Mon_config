@@ -1,0 +1,126 @@
+#-------------------------------------------------------
+#  Monitor configuration file
+#
+#  This is used by the developer scripts located in 
+#  src/*Monitor/<data_extract|image_gen>
+#
+#-------------------------------------------------------
+
+
+#---------------------------------------------------
+# Get the root of the cloned GSI-monitor directory
+#
+readonly DIR_ROOT=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.." && pwd -P)
+export MY_GSI_MONITOR=$DIR_ROOT
+
+
+#---------------------------------------------------
+# Determine machine name
+#
+COMPILER=${COMPILER:-intel}
+source $DIR_ROOT/ush/detect_machine.sh
+machine_id=`echo "${MACHINE_ID%%.*}"`
+export MY_MACHINE=$machine_id
+
+#---------------------------------------------------
+#  Load modules from stack
+#
+#  Note:  I'm intentionally not including s4 and jet for the moment.
+#         I don't have access to those machines so I can't test the
+#         run-time modules.  If the run-time mod idea passes muster
+#         then I'll open an issue for the change to those machines.
+#
+if [[ $MY_MACHINE = "wcoss2" || $MY_MACHINE = "hera" || $MY_MACHINE = "orion" ]]; then
+   source $DIR_ROOT/ush/module-setup.sh
+   module use $DIR_ROOT/modulefiles
+   module load ${MACHINE_ID}-run
+   module list
+fi
+
+case $MY_MACHINE in
+   s4)
+      module load license_intel
+      module use /data/prod/hpc-stack/modulefiles/stack
+      module load hpc/1.1.0 hpc-intel/18.0.4 hpc-impi/18.0.4
+      module load wgrib2/2.0.8
+      module load grads/2.2.1
+      module load prod_util/1.2.2
+      module load netcdf/4.7.4
+
+      export SUB=/usr/bin/sbatch
+      export SERVICE_PARTITION="serial"
+
+      #rstprod data is not allowed on S4
+      CHGRP_CMD=echo
+      ;;
+           
+   jet)
+      module use /lfs4/HFIP/hfv3gfs/nwprod/hpc-stack/libs/modulefiles/stack
+      module load hpc/1.1.0 hpc-intel/18.0.5.274 hpc-impi/2018.4.274
+      module load wgrib2/2.0.8
+      module load grads/2.2.1
+      module load prod_util/1.2.2
+
+      export SUB=/apps/slurm/default/bin/sbatch
+      export SERVICE_PARTITION="service"
+      ;;
+
+   hera)
+      export SUB=/apps/slurm/default/bin/sbatch
+      export SERVICE_PARTITION="service"
+
+      tankdir="/scratch1/NCEPDEV/da/$USER/save/nbns"
+      ptmp="/scratch2/NCEPDEV/stmp3/$USER"
+      stmp="/scratch2/NCEPDEV/stmp1/$USER"
+      queue=""
+      project=""
+      account="da-cpu"
+      ;;
+
+   wcoss2)
+      export SUB="qsub"
+   
+      tankdir="/lfs/h2/emc/da/noscrub/$USER/nbns"
+      ptmp="/lfs/h2/emc/ptmp/$USER"
+      stmp="/lfs/h2/emc/stmp/$USER"
+      queue="dev"
+      project="GDAS-DEV"
+      account="GFS-DEV"
+      ;;
+
+   orion) 
+      export SUB="sbatch" #/opt/slurm/bin/sbatch
+      export SERVICE_PARTITION="orion"
+
+      tankdir="/work/noaa/da/$USER/nbns"
+      ptmp="/work2/noaa/stmp/$USER"
+      stmp="/work/noaa/stmp/$USER"
+      queue=""
+      project=""
+      account="da-cpu"
+esac
+
+
+export ACCOUNT=${ACCOUNT:-$account}
+export PROJECT=${PROJECT:-$project}
+export JOB_QUEUE=${JOB_QUEUE:-$queue}
+
+export MON_PTMP=${MON_PTMP:-$ptmp}
+export MON_STMP=${MON_STMP:-$stmp}
+export MON_LOGDIR=${MON_LOGDIR:-$ptmp/logs}
+export TANKDIR=${TANKDIR:-$tankdir}
+
+export WEBUSER=${WEBUSER:-$USER}
+export WEBSVR=${WEBSVR:-emcrzdm}
+
+
+export Z=${Z:-"gz"}
+export NCP="cp -f"
+export COMPRESS=${COMPRESS:-gzip}
+export UNCOMPRESS=${UNCOMPRESS:-"gunzip -f"}
+export GRADS=`which grads`
+export STNMAP=`which stnmap`
+export WGRIB2=`which wgrib2`
+
+export GSI_MON_BIN=$MY_GSI_MONITOR/install/bin
+   

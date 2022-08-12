@@ -33,7 +33,7 @@ export DATES="$D1 $D2 $D3 $D4"
 #  Set up the DATADIR, copy the radstat files to a temporary directory,
 #  untar and extract needed ges files. 
 
-DATADIR="${STMP_USER}/horiz_${RADMON_SUFFIX}.${PDATE}"
+DATADIR="${MON_STMP}/horiz_${RADMON_SUFFIX}.${PDATE}"
 rm -rf $DATADIR
 mkdir -p $DATADIR
 cd $DATADIR

@@ -97,11 +97,11 @@ export PLOT_ALL_REGIONS=""
 
 
 #--------------------------------------------------------------------
-#  Make sure $LOGdir exists
+#  Make sure $R_LOGDIR exists
 #--------------------------------------------------------------------
-echo "LOGdir = ${LOGdir}"
-if [[ -e ${LOGdir} ]]; then
-   mkdir -p $LOGdir
+echo "R_LOGDIR = ${R_LOGDIR}"
+if [[ -e ${R_LOGDIR} ]]; then
+   mkdir -p $R_LOGDIR
 fi
 
 #--------------------------------------------------------------------
@@ -218,7 +218,7 @@ echo $SATYPE
 # Set environment variables.
 #
 pid=${pid:-$$}
-export PLOT_WORK_DIR=${STMP_USER}/${RADMON_SUFFIX}/radmon/plotjobs.${pid}
+export PLOT_WORK_DIR=${MON_STMP}/${RADMON_SUFFIX}/radmon/plotjobs.${pid}
 mkdir -p $PLOT_WORK_DIR
 if [[ ! -d ${PLOT_WORK_DIR} ]]; then
    echo "Unable to create PLOT_WORK_DIR:  ${PLOT_WORK_DIR}"
@@ -266,7 +266,7 @@ if [[ $RUN_TRANSFER -eq 1 ]]; then
          rhr=`echo $rtime|cut -c9-10`
          run_time="$rhr:$cmin"     # HH:MM format for lsf (bsub command)
 
-         transfer_log=${LOGdir}/Transfer_${RADMON_SUFFIX}.log
+         transfer_log=${R_LOGDIR}/Transfer_${RADMON_SUFFIX}.log
          if [[ -e ${transfer_log} ]]; then
             rm ${transfer_log}
          fi
@@ -286,7 +286,7 @@ if [[ $RUN_TRANSFER -eq 1 ]]; then
 	    cmdfile=transfer_cmd
 	    echo "${IG_SCRIPTS}/Transfer.sh --nosrc ${RADMON_SUFFIX}" >$cmdfile
 
-	    $SUB -q $transfer_queue -A $ACCOUNT -o ${transfer_log} -e ${LOGdir}/Transfer_${RADMON_SUFFIX}.err 
+	    $SUB -q $transfer_queue -A $ACCOUNT -o ${transfer_log} -e ${R_LOGDIR}/Transfer_${RADMON_SUFFIX}.err 
 	         -V -l select=1:mem=500M -l walltime=45:00 -N ${jobname} ${cmdfile}
 
 	 else

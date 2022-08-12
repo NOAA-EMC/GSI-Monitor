@@ -183,7 +183,7 @@ cd ${PLOT_WORK_DIR}
 suffix=a
 cmdfile=cmdfile_pbcor_${suffix}
 jobname=plot_${RADMON_SUFFIX}_bcor_${suffix}
-logfile=${LOGdir}/plot_bcor_${suffix}.log
+logfile=${R_LOGDIR}/plot_bcor_${suffix}.log
 
 rm -f ${cmdfile}
 rm -f ${logfile}
@@ -191,7 +191,8 @@ rm -f ${logfile}
 
 ctr=0
 for sat in ${SATLIST}; do
-   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "jet" || $MY_MACHINE = "s4" ]]; then
+   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "jet" || 
+         $MY_MACHINE = "s4"   || $MY_MACHINE = "orion" ]]; then
       echo "${ctr} $IG_SCRIPTS/plot_bcor.sh $sat $suffix '$plot_list'" >> $cmdfile
    else   
       echo "$IG_SCRIPTS/plot_bcor.sh $sat $suffix '$plot_list'" >> $cmdfile
@@ -208,24 +209,20 @@ else
    wall_tm="0:45"
 fi
 
-if [[ $MY_MACHINE = "wcoss_d" ]]; then
-   $SUB -q $JOB_QUEUE -P $PROJECT -M 80 -R affinity[core] -o ${logfile} \
-        -W ${wall_tm} -J ${jobname} -cwd ${PWD} ./$cmdfile
-
-elif [[ $MY_MACHINE = "wcoss_c" ]]; then
-   $SUB -q $JOB_QUEUE -P $PROJECT -M 80 -o ${logfile} -W ${wall_tm} \
-        -J ${jobname} -cwd ${PWD} ./$cmdfile
-
-elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
+if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
    $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} \
         --time=2:00:00 --wrap "srun -l --multi-prog ${cmdfile}"
 
+elif [[ $MY_MACHINE = "orion" ]]; then
+   $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} --time=2:00:00 \
+        -p ${SERVICE_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
+
 elif [[ $MY_MACHINE = "jet" ]]; then
    $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} \
-        -p ${RADMON_PARTITION} --time=2:00:00 --wrap "srun -l --multi-prog ${cmdfile}"
+        -p ${SERVICE_PARTITION} --time=2:00:00 --wrap "srun -l --multi-prog ${cmdfile}"
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
-   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${LOGdir}/plot_bcor_${suffix}.err \
+   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_bcor_${suffix}.err \
         -V -l select=1:mem=1g -l walltime=1:00:00 -N ${jobname} ${cmdfile}
 
 fi
@@ -244,7 +241,7 @@ for sat in ${bigSATLIST}; do
 
    cmdfile=cmdfile_pbcor_${suffix}
    jobname=plot_${RADMON_SUFFIX}_bcor_${suffix}
-   logfile=${LOGdir}/plot_bcor_${suffix}.log
+   logfile=${R_LOGDIR}/plot_bcor_${suffix}.log
 
    rm -f $cmdfile
    rm ${logfile}
@@ -252,7 +249,8 @@ for sat in ${bigSATLIST}; do
 
    ctr=0
    for var in $plot_list; do
-      if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "jet" || $MY_MACHINE = "s4" ]]; then
+      if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "jet" || 
+            $MY_MACHINE = "s4"   || $MY_MACHINE = "orion" ]]; then
          echo "$ctr $IG_SCRIPTS/plot_bcor.sh $sat $var $var" >> $cmdfile
       else
          echo "$IG_SCRIPTS/plot_bcor.sh $sat $var $var" >> $cmdfile
@@ -268,24 +266,20 @@ for sat in ${bigSATLIST}; do
       wall_tm="1:00"
    fi
 
-   if [[ $MY_MACHINE = "wcoss_d" ]]; then
-      $SUB -q $JOB_QUEUE -P $PROJECT -M 80 -R affinity[core] -o ${logfile} \
-           -W ${wall_tm} -J ${jobname} -cwd ${PWD} ./$cmdfile
-
-   elif [[ $MY_MACHINE = "wcoss_c" ]]; then      
-      $SUB -q $JOB_QUEUE -P $PROJECT -M 80 -o ${logfile} -W ${wall_tm} \
-           -J ${jobname} -cwd ${PWD} ./$cmdfile
-
-   elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
+   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
       $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} \
            --time=1:00:00 --wrap "srun -l --multi-prog ${cmdfile}"
+
+   elif [[ $MY_MACHINE = "orion" ]]; then
+      $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} --time=1:00:00 \
+           -p ${SERVICE_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
 
    elif [[ $MY_MACHINE = "jet" ]]; then
       $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} \
            -p ${RADMON_PARTITION} --time=1:00:00 --wrap "srun -l --multi-prog ${cmdfile}"
 
    elif [[ $MY_MACHINE = "wcoss2" ]]; then
-      $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${LOGdir}/plot_bcor_${suffix}.err \
+      $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_bcor_${suffix}.err \
 	   -V -l select=1:mem=1g -l walltime=1:00:00 -N ${jobname} ${cmdfile}
    fi
 

@@ -123,7 +123,7 @@ BDATE=`$NDATE -336 $EDATE`
 echo EDATE = $EDATE
 echo BDATE = $BDATE
 
-tmpdir=${STMP_USER}/base_${RADMON_SUFFIX}
+tmpdir=${MON_STMP}/base_${RADMON_SUFFIX}
 rm -rf $tmpdir
 mkdir -p $tmpdir
 cd $tmpdir

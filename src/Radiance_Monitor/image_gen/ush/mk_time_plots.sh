@@ -178,19 +178,15 @@ ${COMPRESS} ${imgndir}/*.ctl
 #-------------------------------------------------------------------
 
 jobname=plot_${RADMON_SUFFIX}_sum
-logfile=${LOGdir}/plot_summary.log
+logfile=${R_LOGDIR}/plot_summary.log
 rm ${logfile}
 
-if [[ ${MY_MACHINE} = "wcoss_d" ]]; then
-   ${SUB} -q ${JOB_QUEUE} -P ${PROJECT} -M 100 -R affinity[core] -o ${logfile} \
-          -W 1:00 -J ${jobname} -cwd ${PWD} ${IG_SCRIPTS}/plot_summary.sh
-
-elif [[ ${MY_MACHINE} = "wcoss_c" ]]; then
-   ${SUB} -q ${JOB_QUEUE} -P ${PROJECT} -M 100 -o ${logfile} -W 1:00 \
-          -J ${jobname} -cwd ${PWD} ${IG_SCRIPTS}/plot_summary.sh
-
-elif [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" ]]; then
+if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" ]]; then
    ${SUB} --account ${ACCOUNT}  --ntasks=1 --mem=5g --time=1:00:00 -J ${jobname} \
+          -o ${logfile} ${IG_SCRIPTS}/plot_summary.sh
+
+elif [[ ${MY_MACHINE} = "orion" ]]; then
+   ${SUB} --account ${ACCOUNT}  --ntasks=1 --mem=5g --time=20:00 -J ${jobname} \
           -o ${logfile} ${IG_SCRIPTS}/plot_summary.sh
 
 elif [[ ${MY_MACHINE} = "jet" ]]; then
@@ -198,7 +194,7 @@ elif [[ ${MY_MACHINE} = "jet" ]]; then
           --partition ${RADMON_PARTITION} -o ${logfile} ${IG_SCRIPTS}/plot_summary.sh
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
-   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${LOGdir}/plot_summary.err -V \
+   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_summary.err -V \
           -l select=1:mem=1g -l walltime=10:00 -N ${jobname} ${IG_SCRIPTS}/plot_summary.sh
 fi
 
@@ -236,7 +232,7 @@ if [[ -e ${cmdfile} ]]; then
    rm -f $cmdfile
 fi
 
-logfile=${LOGdir}/plot_time_${suffix}.log
+logfile=${R_LOGDIR}/plot_time_${suffix}.log
 if [[ -e ${logfile} ]]; then
    rm ${logfile}
 fi
@@ -246,7 +242,8 @@ fi
 ctr=0
 
 for sat in ${SATLIST}; do
-   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "jet" || ${MY_MACHINE} = "s4" ]]; then
+   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "jet" || 
+         ${MY_MACHINE} = "s4"   || ${MY_MACHINE} = "orion" ]]; then
       echo "${ctr} $IG_SCRIPTS/plot_time.sh $sat $suffix '$list'" >> $cmdfile
    else
       echo "$IG_SCRIPTS/plot_time.sh $sat $suffix '$list'" >> $cmdfile
@@ -255,29 +252,21 @@ for sat in ${SATLIST}; do
 done
 chmod 755 $cmdfile
 
-wall_tm="0:45"
-if [[ $PLOT_ALL_REGIONS -eq 1 || $ndays -gt 30 ]]; then
-   wall_tm="2:30"
-fi
 
-if [[ $MY_MACHINE = "wcoss_d" ]]; then
-   $SUB -q $JOB_QUEUE -P $PROJECT -M 500 -R affinity[core] -o ${logfile} \
-        -W ${wall_tm} -J ${jobname} -cwd ${PWD} ${cmdfile}
-
-elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
+if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
    $SUB --account ${ACCOUNT} -n ${ctr}  -o ${logfile} -D . -J ${jobname} --time=1:00:00 \
         --wrap "srun -l --multi-prog ${cmdfile}"
 
+elif [[ $MY_MACHINE = "orion" ]]; then
+   $SUB --account ${ACCOUNT} -n ${ctr}  -o ${logfile} -D . -J ${jobname} --time=1:00:00 \
+        -p $SERVICE_PARTITION --wrap "srun -l --multi-prog ${cmdfile}"
+
 elif [[ $MY_MACHINE = "jet" ]]; then
    $SUB --account ${ACCOUNT} -n ${ctr}  -o ${logfile} -D . -J ${jobname} --time=1:00:00 \
-        -p ${RADMON_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
-
-elif [[ ${MY_MACHINE} = "wcoss_c" ]]; then
-   $SUB -q $JOB_QUEUE -P $PROJECT -M 500 -o ${logfile} -W ${wall_tm} \
-        -J ${jobname} -cwd ${PWD} ${cmdfile}
+        -p ${SERVICE_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
-   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${LOGdir}/plot_time_${suffix}.err -V \
+   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_time_${suffix}.err -V \
         -l select=1:mem=1g -l walltime=1:00:00 -N ${jobname} ${cmdfile}
 fi
       
@@ -298,14 +287,15 @@ for sat in ${bigSATLIST}; do
       rm -f ${cmdfile}
    fi
 
-   logfile=${LOGdir}/plot_time_${sat}.log
+   logfile=${R_LOGDIR}/plot_time_${sat}.log
    if [[ -e ${logfile} ]]; then
       rm -f ${logfile}
    fi
 
    ctr=0 
    for var in $list; do
-      if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "jet" || ${MY_MACHINE} = "s4" ]]; then
+      if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "jet" || 
+            ${MY_MACHINE} = "s4"   || ${MY_MACHINE} = "orion" ]]; then
          echo "${ctr} $IG_SCRIPTS/plot_time.sh $sat $var $var" >> $cmdfile
       else
          echo "$IG_SCRIPTS/plot_time.sh $sat $var $var" >> $cmdfile
@@ -319,29 +309,25 @@ for sat in ${bigSATLIST}; do
       wall_tm="2:30"
    fi
 
-   if [[ $MY_MACHINE = "wcoss_d" ]]; then
-      $SUB -q $JOB_QUEUE -P $PROJECT -M 500  -R affinity[core] -o ${logfile} \
-           -W ${wall_tm} -J ${jobname} -cwd ${PWD} ${cmdfile}
-
-   elif [[ ${MY_MACHINE} = "wcoss_c" ]]; then
-      $SUB -q $JOB_QUEUE -P $PROJECT -M 500  -o ${logfile} -W ${wall_tm} \
-           -J ${jobname} -cwd ${PWD} ${cmdfile}
-
-   elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
+   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
       $SUB --account ${ACCOUNT} -n ${ctr}  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
            --wrap "srun -l --multi-prog ${cmdfile}"
 
+   elif [[ $MY_MACHINE = "orion" ]]; then
+      $SUB --account ${ACCOUNT} -n ${ctr}  -o ${logfile} -D . -J ${jobname} --time=1:30:00 \
+           -p $SERVICE_PARTITION --wrap "srun -l --multi-prog ${cmdfile}"
+
    elif [[ $MY_MACHINE = "jet" ]]; then
       $SUB --account ${ACCOUNT} -n ${ctr}  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
-           -p ${RADMON_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
+           -p ${SERVICE_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
 
    elif [[ $MY_MACHINE = "wcoss2" ]]; then
-      logfile=${LOGdir}/plot_time_${sat}.log
+      logfile=${R_LOGDIR}/plot_time_${sat}.log
       if [[ -e ${logfile} ]]; then
          rm ${logfile}
       fi
 
-      $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${LOGdir}/plot_time_${sat}.err -V \
+      $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_time_${sat}.err -V \
            -l select=1:mem=1g -l walltime=1:30:00 -N ${jobname} ${cmdfile}
    fi
 

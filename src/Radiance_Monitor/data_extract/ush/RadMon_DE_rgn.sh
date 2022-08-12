@@ -188,14 +188,14 @@ if [[ $? -ne 0 ]]; then
 fi
 
 #---------------------------------------------
-#  Create $TANKverf and/or $LOGdir if needed.
+#  Create $TANKverf and/or $R_LOGDIR if needed.
 #
 if [[ ! -d ${TANKverf} ]]; then
    mkdir -p $TANKverf
 fi
 
-if [[ ! -d ${LOGdir} ]]; then
-   mkdir -p $LOGdir
+if [[ ! -d ${R_LOGDIR} ]]; then
+   mkdir -p $R_LOGDIR
 fi
 
 
@@ -284,29 +284,21 @@ export PDY=`echo $PDATE|cut -c1-8`
 export cyc=`echo $PDATE|cut -c9-10`
 export job=${RADMON_SUFFIX}_vrfyrad_${PDY}${cyc}
 
-export DATA=${DATA:-${STMP_USER}/${RADMON_SUFFIX}/${run}/radmon/DE_${PDATE}}  # this should be WORKDIR
-cd ${STMP_USER}
+export DATA=${DATA:-${MON_STMP}/${RADMON_SUFFIX}/${run}/radmon/DE_${PDATE}}  # this should be WORKDIR
+cd ${MON_STMP}
 rm -rf ${DATA}
 mkdir -p ${DATA}
 
-logfile=$LOGdir/DE.${PDY}.${cyc}.log
+logfile=$R_LOGDIR/DE.${PDY}.${cyc}.log
 
 job=$HOMEnam/jobs/JNAM_VERFRAD
 
-if [[ $MY_MACHINE = "wcoss_d" ]]; then
-   $SUB -q $JOB_QUEUE -P $PROJECT -M 40 -R affinity[core] -o ${logfile} \
-        -W 0:05 -J ${jobname} -cwd ${PWD} ${job}
-
-elif [[ $MY_MACHINE = "wcoss_c" ]]; then
-   $SUB -q $JOB_QUEUE -P $PROJECT -M 40 -o ${logfile} -W 0:10 \
-        -J ${jobname} -cwd ${PWD} ${job}
-
-elif [[ $MY_MACHINE = "hera" ]]; then
+if [[ $MY_MACHINE = "hera" ]]; then
    $SUB -A $ACCOUNT -l procs=1,walltime=0:05:00 -N ${jobname} -V \
         -j oe -o ${logfile} ${job}
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
-   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${LOGdir}/DE.${PDY}.${cyc}.err \
+   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/DE.${PDY}.${cyc}.err \
         -V -l select=1:mem=5000M -l walltime=20:00 -N ${jobname} ${job}
 fi
 

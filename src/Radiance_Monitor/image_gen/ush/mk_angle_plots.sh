@@ -202,12 +202,12 @@ list="count penalty omgnbc total omgbc fixang lapse lapse2 const scangl clw cos 
 suffix=a
 cmdfile=${PLOT_WORK_DIR}/cmdfile_pangle_${suffix}
 jobname=plot_${RADMON_SUFFIX}_ang_${suffix}
-logfile=${LOGdir}/plot_angle_${suffix}.log
+logfile=${R_LOGDIR}/plot_angle_${suffix}.log
 
 rm -f ${cmdfile}
 rm -f ${logfile}
 
-rm ${LOGdir}/plot_angle_${suffix}.log
+rm ${R_LOGDIR}/plot_angle_${suffix}.log
 
 #--------------------------------------------------
 # sbatch (slurm) requires a line number added
@@ -215,7 +215,8 @@ rm ${LOGdir}/plot_angle_${suffix}.log
 ctr=0
 for type in ${satlist}; do
 
-   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "jet" || ${MY_MACHINE} = "s4" ]]; then
+   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "jet" || 
+         ${MY_MACHINE} = "s4"   || ${MY_MACHINE} = "orion" ]]; then
       echo "${ctr} ${IG_SCRIPTS}/plot_angle.sh ${type} ${suffix} '${list}'" >> ${cmdfile}
    else
       echo "${IG_SCRIPTS}/plot_angle.sh ${type} ${suffix} '${list}'" >> ${cmdfile}
@@ -224,27 +225,17 @@ for type in ${satlist}; do
 done
 
 chmod 755 ${cmdfile}
-echo "CMDFILE:  ${cmdfile}"
 
-wall_tm="0:20"
-if [[ ${MY_MACHINE} = "wcoss_d" ]]; then
-   $SUB -q $JOB_QUEUE -P $PROJECT -o ${logfile} -M 500 -W ${wall_tm} \
-        -R "affinity[core]" -J ${jobname} -cwd ${PWD} $cmdfile
-
-elif [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" ]]; then
+if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" || ${MY_MACHINE} = "orion" ]]; then
    $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} --time=30:00 \
         --wrap "srun -l --multi-prog ${cmdfile}"
 
 elif [[ ${MY_MACHINE} = "jet" ]]; then
    $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} --time=30:00 \
-        -p ${RADMON_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
-
-elif [[ ${MY_MACHINE} = "wcoss_c" ]]; then
-   $SUB -q $JOB_QUEUE -P $PROJECT -o ${logfile} -M 600 -W ${wall_tm} \
-        -J ${jobname} -cwd ${PWD} $cmdfile
+        -p ${SERVICE_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
-   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${LOGdir}/plot_angle_${suffix}.err \
+   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_angle_${suffix}.err \
 	-V -l select=1:mem=1g -l walltime=30:00 -N ${jobname} ${cmdfile}
 fi
 
@@ -262,7 +253,7 @@ echo "starting big_satlist"
 for sat in ${big_satlist}; do
    echo processing $sat in $big_satlist
 
-   if [[ ${MY_MACHINE} = "wcoss_d" || $MY_MACHINE = "wcoss_c" || $MY_MACHINE = "wcoss2" ]]; then 	
+   if [[ ${MY_MACHINE} = "wcoss2" ]]; then 	
 
       cmdfile=${PLOT_WORK_DIR}/cmdfile_pangle_${sat}
       if [[ -e ${cmdfile} ]]; then
@@ -272,40 +263,29 @@ for sat in ${big_satlist}; do
       chmod 755 $cmdfile
 
       jobname=plot_${RADMON_SUFFIX}_ang_${sat}
-      logfile=${LOGdir}/plot_angle_${sat}.log
+      logfile=${R_LOGDIR}/plot_angle_${sat}.log
       if [[ -e ${logfile} ]]; then 
          rm ${logfile}
       fi
 
-      wall_tm="0:30"
-
-      if [[ $MY_MACHINE = "wcoss_d" ]]; then
-         $SUB -q $JOB_QUEUE -P $PROJECT -o ${logfile} -W ${wall_tm} \
-              -R "affinity[core]" -R "rusage[mem=10000]" -J ${jobname} -cwd ${PWD} $cmdfile
-
-      elif [[ $MY_MACHINE = "wcoss_c" ]]; then
-         $SUB -q $JOB_QUEUE -P $PROJECT -o ${logfile} -M 600 -W ${wall_tm} \
-              -J ${jobname} -cwd ${PWD} $cmdfile
-
-      elif [[ $MY_MACHINE = "wcoss2" ]]; then
-         errfile=${LOGdir}/plot_angle_${sat}.err
-         if [[ -e ${errfile} ]]; then
-            rm ${errfile}
-         fi
-         $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${LOGdir}/plot_angle_${sat}.err \
-              -V -l select=1:mem=1g -l walltime=30:00 -N ${jobname} ${cmdfile}
+      errfile=${R_LOGDIR}/plot_angle_${sat}.err
+      if [[ -e ${errfile} ]]; then
+         rm ${errfile}
       fi
+      $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_angle_${sat}.err \
+           -V -l select=1:mem=1g -l walltime=30:00 -N ${jobname} ${cmdfile}
 
    #---------------------------------------------------
-   #  hera|jet|s4, submit 1 job for each sat/list item
-   elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "jet" || $MY_MACHINE = "s4" ]]; then		
+   #  hera|jet|s4|orion, submit 1 job for each sat/list item
+   elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "jet" || \
+           $MY_MACHINE = "s4"   || $MY_MACHINE = "orion" ]]; then		
 
       ii=0
-      logfile=${LOGdir}/plot_angle_${sat}.log
+      logfile=${R_LOGDIR}/plot_angle_${sat}.log
       cmdfile=${PLOT_WORK_DIR}/cmdfile_pangle_${sat}
       rm -f $cmdfile
 
-      logfile=${LOGdir}/plot_angle_${sat}.log
+      logfile=${R_LOGDIR}/plot_angle_${sat}.log
       jobname=plot_${RADMON_SUFFIX}_ang_${sat}
 
       while [[ $ii -le ${#list[@]}-1 ]]; do
@@ -316,12 +296,18 @@ for sat in ${big_satlist}; do
       if [[ $MY_MACHINE = "hera" ]]; then
          $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
               --mem=0 --wrap "srun -l --multi-prog ${cmdfile}"
+
+      elif [[ $MY_MACHINE = "orion" ]]; then
+         $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
+              -p ${SERVICE_PARTITION} --mem=0 --wrap "srun -l --multi-prog ${cmdfile}"
+
       elif [[ $MY_MACHINE = "s4" ]]; then
          $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
               --wrap "srun -l --multi-prog ${cmdfile}"
+
       else
          $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
-              -p ${RADMON_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
+              -p ${SERVICE_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
       fi
 
    fi

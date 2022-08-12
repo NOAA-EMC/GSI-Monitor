@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #--------------------------------------------------------------------
 #
 #  RadMon_IG_glb.sh
@@ -43,6 +43,7 @@ fi
 #  Set default values and process command line arguments.
 #
 run=gdas
+pdate=""
 
 while [[ $# -ge 1 ]]
 do
@@ -72,7 +73,6 @@ echo "RADMON_SUFFIX = ${RADMON_SUFFIX}"
 echo "RUN           = ${RUN}"
 echo "pdate         = ${pdate}"
 
-set -ax
 
 #--------------------------------------------------------------------
 # Run config files to load environment variables, 
@@ -128,10 +128,7 @@ fi
 # If option 2 has been used the last_plot_time file will be
 # updated with ${PDATE} if the plot is able to run.
 #--------------------------------------------------------------------
-
-echo "TANKimg = ${TANKimg}"
 last_plot_time=${TANKimg}/last_plot_time
-echo "last_plot_time file = ${last_plot_time}"
 
 latest_data=`${IG_SCRIPTS}/nu_find_cycle.pl --cyc 1 \
                            --dir ${TANKverf} --run ${RUN}`
@@ -163,11 +160,10 @@ export PDATE=${pdate}
 echo "PDATE = ${PDATE}"
 
 #--------------------------------------------------------------------
-#  Make sure $LOGdir exists
+#  Make sure $R_LOGDIR exists
 #--------------------------------------------------------------------
-echo "LOGdir = ${LOGdir}"
-if [[ ! -e ${LOGdir} ]]; then
-   mkdir -p $LOGdir
+if [[ ! -e ${R_LOGDIR} ]]; then
+   mkdir -p $R_LOGDIR
 fi
 
 #--------------------------------------------------------------------
@@ -175,7 +171,6 @@ fi
 #  PDATE is the latest/last cycle in the plots. 
 #--------------------------------------------------------------------
 hrs=`expr ${NUM_CYCLES} \\* -6`
-echo "hrs = $hrs"
 
 export START_DATE=`${NDATE} ${hrs} ${PDATE}`
 echo "span is start_date to pdate = ${START_DATE}, ${PDATE}"
@@ -207,22 +202,24 @@ fi
 # check contents of the radmon_angle.tar file.  If both
 # a compressed and an uncompressed version of radmon_angle.tar
 # exist, flag that condition as an error.
-#
-nfile_src=`ls -l ${ieee_src}/*${PDATE}*ieee_d* | egrep -c '^-'`
-if [[ $nfile_src -le 0 ]]; then
+
+test_list=`find ${ieee_src} -name "angle.*${PDATE}.ieee_d*" -exec basename {} \;`
+
+if [[ $test_list = "" ]]; then
    if [[ -e ${ieee_src}/radmon_angle.tar && -e ${ieee_src}/radmon_angle.tar.${Z} ]]; then
       echo "Located both radmon_angle.tar and radmon_angle.tar.${Z} in ${ieee_src}.  Unable to plot."
       exit 7
 
    elif [[ -e ${ieee_src}/radmon_angle.tar || -e ${ieee_src}/radmon_angle.tar.${Z} ]]; then
-      nfile_src=`tar -tf ${ieee_src}/radmon_angle.tar* | grep ieee_d | wc -l`
+      test_list=`tar -tf ${ieee_src}/radmon_angle.tar* | grep ieee_d`
    fi
 fi
 
-if [[ $nfile_src -le 0 ]]; then
+if [[ $test_list = "" ]]; then
    echo " Missing ieee_src files, nfile_src = ${nfile_src}, aborting plot"
    exit 8
 fi
+
 
 export PLOT_WORK_DIR=${PLOT_WORK_DIR}.${PDATE}
 
@@ -255,29 +252,25 @@ fi
 #  data.  This will get us a list of satypes to plot even if
 #  the $satype_file can't be found.
 #
-test_list=`ls ${ieee_src}/angle.*${PDATE}.ieee_d*`
-if [[ $test_list = "" ]]; then
-   test_list=`tar -tf ${ieee_src}/radmon_angle.tar* | grep ieee_d` 
-fi
 
-for test in ${test_list}; do
-   this_file=`basename $test`
-   test_anl=`echo $this_file | grep "_anl"`
+list_array=($test_list)
 
-   if [[ $test_anl = "" ]]; then
-      tmp=`echo "$this_file" | cut -d. -f2`
-      test_satype=`echo ${satype} | grep ${tmp}`
+for test in "${list_array[@]}"; do
 
-      if [[ ${test_satype} = "" ]]; then
-         satype="${satype} ${tmp}" 
-         echo "added ${tmp} to satype"
+   if [[ $test != *"_anl"* ]]; then
+      tmp=`echo "$test" | cut -d. -f2`
+
+      if [[ $satype != *${tmp}* ]]; then
+         echo "$tmp IS NOT in satype"
+         satype="$satype $tmp"
       fi
+
    fi
+
 done
 
 export SATYPE=${satype}
 echo $SATYPE
-
 
 #------------------------------------------------------------------
 #   Start plot scripts.
@@ -291,6 +284,7 @@ ${IG_SCRIPTS}/mk_angle_plots.sh
 if [[ ${PLOT_STATIC_IMGS} -eq 1 ]]; then
    ${IG_SCRIPTS}/mk_bcor_plots.sh
 fi
+
 
 #--------------------------------------------------------------------
 #  Check for log file and extract data for error report there
@@ -329,7 +323,7 @@ ${IG_SCRIPTS}/rm_img_files.pl --dir ${TANKimg}/pngs --nfl 30
 #----------------------------------------------------------------------
 if [[ $RUN_TRANSFER -eq 1 ]]; then
 
-   if [[ $MY_MACHINE = "wcoss_c" || $MY_MACHINE = "wcoss_d" || $MY_MACHINE = "wcoss2" ]]; then
+   if [[ $MY_MACHINE = "wcoss2" ]]; then
       cmin=`date +%M`		# minute (MM)
       ctime=`date +%G%m%d%H`	# YYYYMMDDHH
       rtime=`$NDATE +1 $ctime`	# ctime + 1 hour
@@ -337,33 +331,30 @@ if [[ $RUN_TRANSFER -eq 1 ]]; then
       rhr=`echo $rtime|cut -c9-10`
       run_time="$rhr:$cmin"	# HH:MM format for lsf (bsub command) 		
 
-      transfer_log=${LOGdir}/Transfer_${RADMON_SUFFIX}.log
+      transfer_log=${R_LOGDIR}/Transfer_${RADMON_SUFFIX}.log
       if [[ -e ${transfer_log} ]]; then
          rm ${transfer_log}
       fi
 
-      transfer_queue=transfer
-      if [[ $MY_MACHINE = "wcoss_d" || $MY_MACHINE = "wcoss2" ]]; then
-         transfer_queue=dev_transfer
+      transfer_err=${R_LOGDIR}/Transfer_${RADMON_SUFFIX}.err
+      if [[ -e ${transfer_err} ]]; then
+         rm ${transfer_err}
       fi
+
+      transfer_queue=dev_transfer
 
       jobname=transfer_${RADMON_SUFFIX}
       job="${IG_SCRIPTS}/Transfer.sh --nosrc ${RADMON_SUFFIX}"
 
       export WEBDIR=${WEBDIR}/${RADMON_SUFFIX}/${RUN}/pngs
 
-      if [[ $MY_MACHINE = "wcoss2" ]]; then 
-         cmdfile="${PLOT_WORK_DIR}/transfer_cmd"
-         echo "${IG_SCRIPTS}/Transfer.sh --nosrc ${RADMON_SUFFIX}" >$cmdfile
-         chmod 755 $cmdfile
+      cmdfile="${PLOT_WORK_DIR}/transfer_cmd"
+      echo "${IG_SCRIPTS}/Transfer.sh --nosrc ${RADMON_SUFFIX}" >$cmdfile
+      chmod 755 $cmdfile
 
-         run_time="$rhr$cmin"	# HHMM format for qsub
-         $SUB -q $transfer_queue -A $ACCOUNT -o ${transfer_log} -e ${LOGdir}/Transfer_${RADMON_SUFFIX}.err \
-	      -V -l select=1:mem=500M -l walltime=45:00 -N ${jobname} -a ${run_time} ${cmdfile}
-      else
-         $SUB -P $PROJECT -q $transfer_queue -o ${transfer_log} -M 80 -W 0:45 \
-              -R affinity[core] -J ${jobname} -cwd ${PWD} -b $run_time ${job}
-      fi
+      run_time="$rhr$cmin"	# HHMM format for qsub
+      $SUB -q $transfer_queue -A $ACCOUNT -o ${transfer_log} -e ${transfer_err} \
+           -V -l select=1:mem=500M -l walltime=45:00 -N ${jobname} -a ${run_time} ${cmdfile}
 
    fi
 fi
