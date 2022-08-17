@@ -46,8 +46,6 @@ function large_mv () {
 }
 
 
-set -ax
-
 SATYPE_LIST=$1
 
 echo "Starting mk_digital_ang.sh"
