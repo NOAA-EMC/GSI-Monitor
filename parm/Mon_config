@@ -110,7 +110,7 @@ export MON_STMP=${MON_STMP:-$stmp}
 export MON_LOGDIR=${MON_LOGDIR:-$ptmp/logs}
 export TANKDIR=${TANKDIR:-$tankdir}
 
-export WEBUSER=${WEBUSER:-$USER}
+export WEBUSER=${WEBUSER:-esafford}
 export WEBSVR=${WEBSVR:-emcrzdm}
 
 
@@ -121,6 +121,7 @@ export UNCOMPRESS=${UNCOMPRESS:-"gunzip -f"}
 export GRADS=`which grads`
 export STNMAP=`which stnmap`
 export WGRIB2=`which wgrib2`
+export RSYNC=`which rsync`
 
 export GSI_MON_BIN=$MY_GSI_MONITOR/install/bin
    

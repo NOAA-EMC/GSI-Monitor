@@ -1,5 +1,4 @@
 #!/bin/sh
-set -ax
 
 function usage {
   echo " "
@@ -21,6 +20,8 @@ if [[ $nargs -lt 1 || $nargs -gt 5 ]]; then
    usage
    exit 1
 fi
+
+PDATE=""
 
 while [[ $# -ge 1 ]]
 do
@@ -96,9 +97,9 @@ fi
 #  Specify TANKDIR for this suffix
 #--------------------------------------------------------------------
 if [[ $GLB_AREA -eq 1 ]]; then
-   export TANKDIR=${M_TANKverf}/stats/${MINMON_SUFFIX}
+   TANKDIR=${M_TANKverf}/${MINMON_SUFFIX}
 else
-   export TANKDIR=${M_TANKverf}/stats/regional/${MINMON_SUFFIX}
+   TANKDIR=${M_TANKverf}/regional/${MINMON_SUFFIX}
 fi
 
 #--------------------------------------------------------------------
@@ -117,10 +118,7 @@ fi
 # will be updated with ${PDATE} if the plot is able to run.
 #--------------------------------------------------------------------
 
-echo "MIN_IMGN_TANKDIR = ${MIN_IMGN_TANKDIR}"
 last_plot_time=${MIN_IMGN_TANKDIR}/${RUN}/minmon/last_plot_time
-echo "last_plot_time file = ${last_plot_time}"
-
 latest_data=`${M_IG_SCRIPTS}/find_cycle.pl --cyc 1 --dir ${TANKDIR} --run ${RUN}`
 
 if [[ ${PDATE} = "" ]]; then
@@ -159,7 +157,6 @@ if [[ ! -d $WORKDIR ]]; then
 fi
 cd $WORKDIR
 
-
 #--------------------------------------------------------------------
 #  Copy gnorm_data.txt file to WORKDIR.
 #--------------------------------------------------------------------
@@ -175,10 +172,11 @@ fi
 gnorm_file=${gnorm_dir}/gnorm_data.txt
 
 if [[ -s ${gnorm_file} ]]; then
-   cp ${gnorm_file} ./${local_gnorm}
+   cp ${gnorm_file} .
 else
    echo "WARNING:  Unable to locate ${gnorm_file}!"
 fi
+
 
 #------------------------------------------------------------------
 #  Copy the cost.txt and cost_terms.txt files files locally
@@ -204,6 +202,8 @@ fi
 bdate=`$NDATE -174 $PDATE`
 edate=$PDATE
 cdate=$bdate
+
+echo WORKDIR=$WORKDIR
 
 #------------------------------------------------------------------
 #  Add links for required data files (gnorms and reduction) to 
@@ -241,7 +241,6 @@ while [[ $cdate -le $edate ]]; do
    adate=`$NDATE +6 $cdate`
    cdate=$adate
 done
-
 
 area=glb
 if [[ $GLB_AREA -eq 0 ]]; then
@@ -308,11 +307,9 @@ EOF
 #-----------------------------------------------------------------
 #  Run the plot driver script and move the image into ./tmp
 #-----------------------------------------------------------------
-GRADS=`which grads`
-
-$TIMEX $GRADS -blc "run ${PDATE}_plot_gnorms.gs"
-$TIMEX $GRADS -blc "run ${PDATE}_plot_reduction.gs"
-$TIMEX $GRADS -blc "run ${PDATE}_plot_4_gnorms.gs"
+$GRADS -blc "run ${PDATE}_plot_gnorms.gs"
+$GRADS -blc "run ${PDATE}_plot_reduction.gs"
+$GRADS -blc "run ${PDATE}_plot_4_gnorms.gs"
 
 if [[ ! -d ${WORKDIR}/tmp ]]; then
    mkdir ${WORKDIR}/tmp
@@ -365,10 +362,9 @@ fi
 #  or move files to $MIN_IMGN_TANKDIR
 #--------------------------------------------------------------------
 cd ./tmp
-if [[ ${MY_MACHINE} = "wcoss" || ${MY_MACHINE} = "cray" || \
-   ${MY_MACHINE} = "wcoss_d" || ${MY_MACHINE} = "wcoss2" ]]; then
+if [[ ${MY_MACHINE} = "wcoss2" ]]; then
    $RSYNC -ave ssh --exclude *.ctl*  ./ \
-     ${WEBUSER}@${WEBSERVER}:${WEBDIR}/$run_suffix/
+     ${WEBUSER}@${WEBSVR}:${WEBDIR}/$run_suffix/
 else
    img_dir=${MIN_IMGN_TANKDIR}/${RUN}/minmon
    if [[ ! -d ${img_dir} ]]; then

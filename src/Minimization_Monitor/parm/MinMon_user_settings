@@ -1,4 +1,3 @@
-#!/bin/sh
 #------------------------------------------------------------------------------
 #
 #  MinMon_user_settings
@@ -6,41 +5,11 @@
 #  Modify this file in order to change behavior of the GMon package 
 #------------------------------------------------------------------------------
 
-if [[ $MINMON_USER_SETTINGS -ne 1 ]]; then
    
-   export MINMON_USER_SETTINGS=1
-
-   #
-   #  ACCOUNT is used on zeus only for use with the qsub -a flag.  It is
-   #  empty on other platforms.
-   #
-   export ACCOUNT=${ACCOUNT:-}
-
-   #
-   #  PROJECT is used on wcoss only with the bjob -P flag.  It is 
-   #  empty on other platforms.
-   #
-   export PROJECT=${PROJECT:-GDAS-DEV}
-
-   #
-   #  JOB_QUEUE is used on wcoss and wcoss2 bjob/qsub -q flag.  It is 
-   #  empty on other platforms.
-   #
-   export JOB_QUEUE=${JOB_QUEUE:-dev}
-
-   #
-   #  RUN_ONLY_ON_DEV  1 = dev machine only, 0 = run anywhere
-   #
-   export RUN_ONLY_ON_DEV=${RUN_ONLY_ON_DEV:-1}
-
    #
    #  WORKDIR is working directory (tmp space)
    #
-   if [[ ${#RUN} -le 0 ]]; then
-      export WORKDIR=${MY_STMP}/${LOGNAME}/${MINMON_SUFFIX}/minmon
-   else
-      export WORKDIR=${MY_STMP}/${LOGNAME}/${MINMON_SUFFIX}/${RUN}/minmon
-   fi
+   export WORKDIR=${MY_STMP}/${MINMON_SUFFIX}/${RUN}/minmon
 
    # 
    #  GLB_AREA indicates the valid area of the data source
@@ -56,12 +25,6 @@ if [[ $MINMON_USER_SETTINGS -ne 1 ]]; then
    export DO_ERROR_RPT=${DO_ERROR_RPT:-0}
 
    #
-   #  DO_ARCHIVE   1 = copy data to hpss and to prod machine at completion of each day
-   #               0 = no data archiving (data will remain in TANKDIR on this machine)
-   #
-   export DO_ARCHIVE=${DO_ARCHIVE:-0}
-
-   #
    #  MAIL_TO is the mail recpient list for error reporting
    #
    export MAIL_TO=${MAIL_TO:-"edward.safford@noaa.gov"}
@@ -70,13 +33,15 @@ if [[ $MINMON_USER_SETTINGS -ne 1 ]]; then
    #  MAIL_CC is the mail recpient cc list for error reporting
    #
    export MAIL_CC=${MAIL_CC:-""}
-
+   # use cc_list
+ 
+  
    #
    #  KEEPDATA is the control flag for preserving/deleting the working
    #  directory.  YES = keep the WORKDIR directory and contents
    #              NO  = delete the WORKDIR directory and contents
    #
-   export KEEPDATA=YES
+#   export KEEPDATA=YES
 
    #
    #  If TANK_USE_RUN =1 then the TANKdir will resolve to :
@@ -84,9 +49,6 @@ if [[ $MINMON_USER_SETTINGS -ne 1 ]]; then
    #  instead of:
    #      ${MY_TANKDIR}/${MINMON_SUFFIX}/minmon.$RUN.$PDY/[data_files]
    #
-   export TANK_USE_RUN=1
+#   export TANK_USE_RUN=1
 
-else
-  echo "MinMon_user_config already loaded"
-fi
 
