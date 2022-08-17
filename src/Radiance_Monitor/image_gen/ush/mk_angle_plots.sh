@@ -16,10 +16,7 @@ echo ""
 echo "Begin mk_angle_plots.sh"
 echo ""
 
-set -ax
 export CYCLE_INTERVAL=${CYCLE_INTERVAL:-6}
-
-echo "START_DATE, CYCLE_INTERVAL = ${START_DATE}, ${CYCLE_INTERVAL}"
 
 imgndir=${IMGNDIR}/angle
 tankdir=${TANKverf}/angle
@@ -236,7 +233,7 @@ elif [[ ${MY_MACHINE} = "jet" ]]; then
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
    $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_angle_${suffix}.err \
-	-V -l select=1:mem=1g -l walltime=30:00 -N ${jobname} ${cmdfile}
+	-V -l walltime=30:00 -N ${jobname} ${cmdfile}
 fi
 
 
@@ -273,7 +270,7 @@ for sat in ${big_satlist}; do
          rm ${errfile}
       fi
       $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_angle_${sat}.err \
-           -V -l select=1:mem=1g -l walltime=30:00 -N ${jobname} ${cmdfile}
+           -V -l walltime=30:00 -N ${jobname} ${cmdfile}
 
    #---------------------------------------------------
    #  hera|jet|s4|orion, submit 1 job for each sat/list item

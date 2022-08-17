@@ -261,7 +261,7 @@ for test in "${list_array[@]}"; do
       tmp=`echo "$test" | cut -d. -f2`
 
       if [[ $satype != *${tmp}* ]]; then
-         echo "$tmp IS NOT in satype"
+         echo "adding $tmp to satype"
          satype="$satype $tmp"
       fi
 
@@ -284,7 +284,6 @@ ${IG_SCRIPTS}/mk_angle_plots.sh
 if [[ ${PLOT_STATIC_IMGS} -eq 1 ]]; then
    ${IG_SCRIPTS}/mk_bcor_plots.sh
 fi
-
 
 #--------------------------------------------------------------------
 #  Check for log file and extract data for error report there
