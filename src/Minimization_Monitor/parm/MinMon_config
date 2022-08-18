@@ -20,7 +20,6 @@ source $MON_CONFIG
 
 export MONITOR=minmon
 export RUN=${RUN:-gdas}
-export RAD_AREA=${RAD_AREA:-glb}                #glb = global, rgn = regional
 
 export WEBDIR=${WEBDIR:-/home/people/emc/www/htdocs/gmb/gdas/gsi_stat/pngs}
 

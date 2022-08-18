@@ -203,8 +203,6 @@ bdate=`$NDATE -174 $PDATE`
 edate=$PDATE
 cdate=$bdate
 
-echo WORKDIR=$WORKDIR
-
 #------------------------------------------------------------------
 #  Add links for required data files (gnorms and reduction) to 
 #   enable calculation of 7 day average
