@@ -32,8 +32,6 @@ export WEBDIR=${WEBDIR:-/home/people/emc/www/htdocs/gmb/gdas/gsi_stat/pngs}
 TANKverf=${TANKverf:-${TANKDIR}/stats}
 TANKimg=${TANKimg:-${TANKDIR}/imgn}
 
-#export TANK_USE_RUN=${TANK_USE_RUN:-1}
-
 
 #--------------------------------------
 #  Definitions for internal reference
@@ -61,92 +59,9 @@ export M_IG_PARM=${M_IG_PARM:-${MINMON_IG}/parm}
 export MY_STMP=${MY_STMP:-$MON_STMP}
 export MY_PTMP=${MY_PTMP:-$MON_PTMP}
 
-#
-# working directory
-#
 export DATA_IN=${DATA_IN:-${MY_STMP}/${MINMON_SUFFIX}/${RUN}/minmon}	 #rename to WORK_DIR
 export LOGdir=${LOGdir:-${MON_LOGDIR}/${MINMON_SUFFIX}/${RUN}/minmon}
 
 export M_TANKverf=${M_TANKverf:-${TANKverf}}	
 export MIN_IMGN_TANKDIR=${MIN_IMGN_TANKDIR:-${TANKimg}/${MINMON_SUFFIX}}
-
-
-
-
-
-#   export envir=${RUN_ENVIR:-prod}
-
-
-
-
-
-   #
-   #  Utilities used by the MinMon package
-   #
-#   export NCP=${NCP:-"/bin/cp -f"}
-#   export Z=${Z:-"gz"}
-
-#   if [[ $MY_MACHINE = "wcoss2" ]]; then 
-#      module load prod_util/2.0.10
-#      module load util_shared/1.4.0
-#      module load perl/5.32.0
-
-      #
-      #  Note this GrADS mod is a temporary solution.  NCO is to 
-      #  provide a more permanent fix on wcoss2 at some point.
-      #
-#      module use /apps/test/modules
-#      module load GrADS/2.2.1-cce-11.0.4
-
-#      export SUB=`which qsub`
-#      export COMPRESS=gzip
-#      export UNCOMPRESS="gunzip -f"
-#      export RSYNC=`which rsync`
-
-#   elif [[ $MY_MACHINE = "hera" ]]; then
-#      shell=sh
-#      . $MODULESHOME/init/$shell
-#      module load grads/2.0.2
-#
-#      export GRADS=`which grads`
-#      export STNMAP=`which stnmap`
-#
-#      export SUB=/apps/slurm/default/bin/sbatch
-#      export NWPROD=/home/Edward.Safford/bin
-#      export NDATE=${NWPROD}/ndate
-#      export COMPRESS=gzip
-#      export UNCOMPRESS="gunzip -f"
-#
-#   elif [[ $MY_MACHINE = "s4" ]]; then
-#      shell=sh
-#      . $MODULESHOME/init/$shell
-#      module load grads/2.2.1
-#      module load license_intel/S4
-#      module use /data/prod/hpc-stack/modulefiles/stack
-#      module load hpc/1.1.0 hpc-intel/18.0.4 prod_util/1.2.2
-#
-#      export GRADS=`which grads`
-#      export STNMAP=`which stnmap`
-#
-#      export SUB=/usr/bin/sbatch
-#      export NWPROD=/data/prod/hpc-stack/intel-18.0.4/prod_util/1.2.2/bin
-#      export COMPRESS=gzip
-#      export UNCOMPRESS="gunzip -f"
-#
-#   elif [[ $MY_MACHINE = "jet" ]]; then
-#      shell=sh
-#      . $MODULESHOME/init/$shell
-#      module load grads/2.2.1
-#      module use /lfs4/HFIP/hfv3gfs/nwprod/hpc-stack/libs/modulefiles/stack
-#      module load hpc/1.1.0 hpc-intel/18.0.5.274 prod_util/1.2.2
-#
-#      export GRADS=`which grads`
-#      export STNMAP=`which stnmap`
-#
-#      export SUB=/apps/slurm/default/bin/sbatch
-#      export NWPROD=/lfs4/HFIP/hfv3gfs/nwprod/hpc-stack/libs/intel-18.0.5.274/prod_util/1.2.2/bin
-#      export COMPRESS=gzip
-#      export UNCOMPRESS="gunzip -f"
-#   fi
-
 

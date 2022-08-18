@@ -5,7 +5,6 @@
 #  Modify this file in order to change behavior of the GMon package 
 #------------------------------------------------------------------------------
 
-   
    #
    #  WORKDIR is working directory (tmp space)
    #
@@ -22,7 +21,7 @@
    #  DO_ERROR_RPT 1 = mail any error reports to the MAIL_TO and MAIL_CC lists
    #               0 = take no action on any error reports (they will be in the
    #                   ${TANKverf}/${suffix}/minmon_[yyyymmdd]/ directory)
-   export DO_ERROR_RPT=${DO_ERROR_RPT:-0}
+   export DO_ERROR_RPT=${DO_ERROR_RPT:-1}
 
    #
    #  MAIL_TO is the mail recpient list for error reporting
@@ -32,23 +31,9 @@
    #
    #  MAIL_CC is the mail recpient cc list for error reporting
    #
-   export MAIL_CC=${MAIL_CC:-""}
-   # use cc_list
- 
-  
-   #
-   #  KEEPDATA is the control flag for preserving/deleting the working
-   #  directory.  YES = keep the WORKDIR directory and contents
-   #              NO  = delete the WORKDIR directory and contents
-   #
-#   export KEEPDATA=YES
-
-   #
-   #  If TANK_USE_RUN =1 then the TANKdir will resolve to :
-   #      ${MY_TANKDIR}/${MINMON_SUFFIX}/$RUN.$PDY/minmon/[data_files]
-   #  instead of:
-   #      ${MY_TANKDIR}/${MINMON_SUFFIX}/minmon.$RUN.$PDY/[data_files]
-   #
-#   export TANK_USE_RUN=1
-
-
+   if [[ -e /u/${LOGNAME}/bin/get_cc_list.pl ]]; then
+      cc_list=`/u/${LOGNAME}/bin/get_cc_list.pl --nr ${MINMON_SUFFIX}_${RUN} --mon MinMon`
+   else
+      cc_list=""
+   fi
+   export MAIL_CC=${MAIL_CC:=${cc_list}}
