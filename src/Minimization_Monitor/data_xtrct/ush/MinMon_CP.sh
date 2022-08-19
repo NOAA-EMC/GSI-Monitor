@@ -21,8 +21,6 @@ function usage {
 #  MinMon_DE.sh begins here
 #--------------------------------------------------------------------
 
-set -x
-
 nargs=$#
 if [[ $nargs -lt 1 || $nargs -gt 7 ]]; then
    usage
@@ -32,6 +30,7 @@ fi
 #-----------------------------------------------
 #  Process command line arguments
 #
+pdate=""
 while [[ $# -ge 1 ]]
 do
    key="$1"
@@ -60,7 +59,7 @@ do
 done
 
 if [[ $data = "" ]]; then
-   data=/gpfs/dell1/nco/ops/com/gfs/prod
+   data=/lfs/h1/ops/prod/com/gfs/v16.2
 fi
 
 if [[ $run = "" ]]; then
@@ -99,16 +98,14 @@ if [[ $? -ne 0 ]]; then
 fi
 
 
-tank=${M_TANKverf}/stats/${MINMON_SUFFIX}
-
-echo NDATE = $NDATE
+tank=${M_TANKverf}/${MINMON_SUFFIX}
 if [[ $pdate = "" ]]; then
-   ldate=`${this_dir}/find_cycle.pl --cyc 1 --dir ${tank} --run ${run}`
-   echo ldate = $ldate
+   ldate=`${M_DE_SCRIPTS}/find_cycle.pl --cyc 1 --dir ${tank} --run ${run}`
    pdate=`${NDATE} +06 $ldate`
 fi
 
-echo pdate = $pdate
+echo "pdate = $pdate"
+echo ""
 
 pdy=`echo $pdate|cut -c1-8`
 cyc=`echo $pdate|cut -c9-10`

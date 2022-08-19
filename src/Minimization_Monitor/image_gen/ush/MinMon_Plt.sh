@@ -1,5 +1,4 @@
 #!/bin/sh
-set -ax
 
 function usage {
   echo " "
@@ -21,6 +20,8 @@ if [[ $nargs -lt 1 || $nargs -gt 5 ]]; then
    usage
    exit 1
 fi
+
+PDATE=""
 
 while [[ $# -ge 1 ]]
 do
@@ -93,12 +94,12 @@ fi
 
 
 #--------------------------------------------------------------------
-#  Specify TANKDIR for this suffix
+#  Specify STATSDIR for this suffix
 #--------------------------------------------------------------------
 if [[ $GLB_AREA -eq 1 ]]; then
-   export TANKDIR=${M_TANKverf}/stats/${MINMON_SUFFIX}
+   STATSDIR=${M_TANKverf}/${MINMON_SUFFIX}
 else
-   export TANKDIR=${M_TANKverf}/stats/regional/${MINMON_SUFFIX}
+   STATSDIR=${M_TANKverf}/regional/${MINMON_SUFFIX}
 fi
 
 #--------------------------------------------------------------------
@@ -111,17 +112,14 @@ fi
 #   2.  Read from ${TANKimg}/last_plot_time file and advanced
 #        one cycle.
 #   3.  Using the last available cycle for which there is
-#        data in ${TANKDIR}.
+#        data in ${STATSDIR}.
 #
 # If option 2 has been used the ${IMGNDIR}/last_plot_time file
 # will be updated with ${PDATE} if the plot is able to run.
 #--------------------------------------------------------------------
 
-echo "MIN_IMGN_TANKDIR = ${MIN_IMGN_TANKDIR}"
 last_plot_time=${MIN_IMGN_TANKDIR}/${RUN}/minmon/last_plot_time
-echo "last_plot_time file = ${last_plot_time}"
-
-latest_data=`${M_IG_SCRIPTS}/find_cycle.pl --cyc 1 --dir ${TANKDIR} --run ${RUN}`
+latest_data=`${M_IG_SCRIPTS}/find_cycle.pl --cyc 1 --dir ${STATSDIR} --run ${RUN}`
 
 if [[ ${PDATE} = "" ]]; then
    if [[ -e ${last_plot_time} ]]; then
@@ -159,26 +157,26 @@ if [[ ! -d $WORKDIR ]]; then
 fi
 cd $WORKDIR
 
-
 #--------------------------------------------------------------------
 #  Copy gnorm_data.txt file to WORKDIR.
 #--------------------------------------------------------------------
 pdy=`echo $PDATE|cut -c1-8`
 cyc=`echo $PDATE|cut -c9-10`
-echo TANKDIR = ${TANKDIR}
+echo STATSDIR = ${STATSDIR}
 
-gnorm_dir=${TANKDIR}/${RUN}.${pdy}/${cyc}/minmon
+gnorm_dir=${STATSDIR}/${RUN}.${pdy}/${cyc}/minmon
 if [[ ! -d ${gnorm_dir} ]]; then
-   gnorm_dir=${TANKDIR}/${RUN}.${pdy}
+   gnorm_dir=${STATSDIR}/${RUN}.${pdy}
 fi
 
 gnorm_file=${gnorm_dir}/gnorm_data.txt
 
 if [[ -s ${gnorm_file} ]]; then
-   cp ${gnorm_file} ./${local_gnorm}
+   cp ${gnorm_file} .
 else
    echo "WARNING:  Unable to locate ${gnorm_file}!"
 fi
+
 
 #------------------------------------------------------------------
 #  Copy the cost.txt and cost_terms.txt files files locally
@@ -215,10 +213,10 @@ while [[ $cdate -le $edate ]]; do
    pdy=`echo $cdate | cut -c1-8`
    cyc=`echo $cdate | cut -c9-10`
 
-   gnorm_dir=${TANKDIR}/${RUN}.${pdy}/${cyc}/minmon
+   gnorm_dir=${STATSDIR}/${RUN}.${pdy}/${cyc}/minmon
 
    if [[ ! -d ${gnorm_dir} ]]; then
-      gnorm_dir=${TANKDIR}/${RUN}.${pdy}
+      gnorm_dir=${STATSDIR}/${RUN}.${pdy}
    fi
 
    gnorms_file=${gnorm_dir}/${cdate}.gnorms.ieee_d
@@ -241,7 +239,6 @@ while [[ $cdate -le $edate ]]; do
    adate=`$NDATE +6 $cdate`
    cdate=$adate
 done
-
 
 area=glb
 if [[ $GLB_AREA -eq 0 ]]; then
@@ -308,11 +305,9 @@ EOF
 #-----------------------------------------------------------------
 #  Run the plot driver script and move the image into ./tmp
 #-----------------------------------------------------------------
-GRADS=`which grads`
-
-$TIMEX $GRADS -blc "run ${PDATE}_plot_gnorms.gs"
-$TIMEX $GRADS -blc "run ${PDATE}_plot_reduction.gs"
-$TIMEX $GRADS -blc "run ${PDATE}_plot_4_gnorms.gs"
+$GRADS -blc "run ${PDATE}_plot_gnorms.gs"
+$GRADS -blc "run ${PDATE}_plot_reduction.gs"
+$GRADS -blc "run ${PDATE}_plot_4_gnorms.gs"
 
 if [[ ! -d ${WORKDIR}/tmp ]]; then
    mkdir ${WORKDIR}/tmp
@@ -332,7 +327,7 @@ cp *cost*.txt tmp/.
 #--------------------------------------------------------------------
 if [[ ${DO_ERROR_RPT} -eq 1 ]]; then
 
-   err_msg=${TANKDIR}/${RUN}.${pdy}/${cyc}/minmon/${PDATE}.errmsg.txt
+   err_msg=${STATSDIR}/${RUN}.${pdy}/${cyc}/minmon/${PDATE}.errmsg.txt
 
    if [[ $MAIL_CC == "" ]]; then
       if [[ -e /u/Edward.Safford/bin/get_cc_list.pl ]]; then
@@ -365,10 +360,9 @@ fi
 #  or move files to $MIN_IMGN_TANKDIR
 #--------------------------------------------------------------------
 cd ./tmp
-if [[ ${MY_MACHINE} = "wcoss" || ${MY_MACHINE} = "cray" || \
-   ${MY_MACHINE} = "wcoss_d" || ${MY_MACHINE} = "wcoss2" ]]; then
+if [[ ${MY_MACHINE} = "wcoss2" ]]; then
    $RSYNC -ave ssh --exclude *.ctl*  ./ \
-     ${WEBUSER}@${WEBSERVER}:${WEBDIR}/$run_suffix/
+     ${WEBUSER}@${WEBSVR}:${WEBDIR}/$run_suffix/
 else
    img_dir=${MIN_IMGN_TANKDIR}/${RUN}/minmon
    if [[ ! -d ${img_dir} ]]; then
