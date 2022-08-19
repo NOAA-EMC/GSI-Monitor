@@ -94,12 +94,12 @@ fi
 
 
 #--------------------------------------------------------------------
-#  Specify TANKDIR for this suffix
+#  Specify STATSDIR for this suffix
 #--------------------------------------------------------------------
 if [[ $GLB_AREA -eq 1 ]]; then
-   TANKDIR=${M_TANKverf}/${MINMON_SUFFIX}
+   STATSDIR=${M_TANKverf}/${MINMON_SUFFIX}
 else
-   TANKDIR=${M_TANKverf}/regional/${MINMON_SUFFIX}
+   STATSDIR=${M_TANKverf}/regional/${MINMON_SUFFIX}
 fi
 
 #--------------------------------------------------------------------
@@ -112,14 +112,14 @@ fi
 #   2.  Read from ${TANKimg}/last_plot_time file and advanced
 #        one cycle.
 #   3.  Using the last available cycle for which there is
-#        data in ${TANKDIR}.
+#        data in ${STATSDIR}.
 #
 # If option 2 has been used the ${IMGNDIR}/last_plot_time file
 # will be updated with ${PDATE} if the plot is able to run.
 #--------------------------------------------------------------------
 
 last_plot_time=${MIN_IMGN_TANKDIR}/${RUN}/minmon/last_plot_time
-latest_data=`${M_IG_SCRIPTS}/find_cycle.pl --cyc 1 --dir ${TANKDIR} --run ${RUN}`
+latest_data=`${M_IG_SCRIPTS}/find_cycle.pl --cyc 1 --dir ${STATSDIR} --run ${RUN}`
 
 if [[ ${PDATE} = "" ]]; then
    if [[ -e ${last_plot_time} ]]; then
@@ -162,11 +162,11 @@ cd $WORKDIR
 #--------------------------------------------------------------------
 pdy=`echo $PDATE|cut -c1-8`
 cyc=`echo $PDATE|cut -c9-10`
-echo TANKDIR = ${TANKDIR}
+echo STATSDIR = ${STATSDIR}
 
-gnorm_dir=${TANKDIR}/${RUN}.${pdy}/${cyc}/minmon
+gnorm_dir=${STATSDIR}/${RUN}.${pdy}/${cyc}/minmon
 if [[ ! -d ${gnorm_dir} ]]; then
-   gnorm_dir=${TANKDIR}/${RUN}.${pdy}
+   gnorm_dir=${STATSDIR}/${RUN}.${pdy}
 fi
 
 gnorm_file=${gnorm_dir}/gnorm_data.txt
@@ -215,10 +215,10 @@ while [[ $cdate -le $edate ]]; do
    pdy=`echo $cdate | cut -c1-8`
    cyc=`echo $cdate | cut -c9-10`
 
-   gnorm_dir=${TANKDIR}/${RUN}.${pdy}/${cyc}/minmon
+   gnorm_dir=${STATSDIR}/${RUN}.${pdy}/${cyc}/minmon
 
    if [[ ! -d ${gnorm_dir} ]]; then
-      gnorm_dir=${TANKDIR}/${RUN}.${pdy}
+      gnorm_dir=${STATSDIR}/${RUN}.${pdy}
    fi
 
    gnorms_file=${gnorm_dir}/${cdate}.gnorms.ieee_d
@@ -329,7 +329,7 @@ cp *cost*.txt tmp/.
 #--------------------------------------------------------------------
 if [[ ${DO_ERROR_RPT} -eq 1 ]]; then
 
-   err_msg=${TANKDIR}/${RUN}.${pdy}/${cyc}/minmon/${PDATE}.errmsg.txt
+   err_msg=${STATSDIR}/${RUN}.${pdy}/${cyc}/minmon/${PDATE}.errmsg.txt
 
    if [[ $MAIL_CC == "" ]]; then
       if [[ -e /u/Edward.Safford/bin/get_cc_list.pl ]]; then
