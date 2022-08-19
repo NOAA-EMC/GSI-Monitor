@@ -28,6 +28,8 @@ option(BUILD_UTIL_CONMON "Build Conventional Monitoring Utilities" OFF)
 option(BUILD_UTIL_OZNMON "Build Ozone Monitoring Utilities" OFF)
 option(BUILD_UTIL_RADMON "Build Radiance Monitoring Utilities" OFF)
 
+option(BUILD_UTIL_NCO "Build for NCO -- build only Operational Portions of the Monitor Utilities" ON)
+
 # If building all monitors, then force all options to ON
 if (BUILD_UTIL_ALLMON)
   set(BUILD_UTIL_MINMON ON CACHE BOOL "Build Minimization Monitoring Utilities" FORCE)
