@@ -63,7 +63,7 @@ while [[ $ctr -le 119 ]]; do
       $NCP ${data_file}.gz ./
       $UNCOMPRESS ${data_file}.gz
    else
-      echo "unable to location data file: ${data_file}"
+      echo "unable to locate data file: ${data_file}"
    fi
 
    if [[ $ADD_COMP -eq 1 ]]; then
