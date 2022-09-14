@@ -62,7 +62,6 @@ for dsrc in ${data_source}; do
    chmod a+x $cmdfile
 
    job=${OZNMON_SUFFIX}_ozn_${dsrc}_phoriz
-   o_logfile=${OZN_LOGDIR}/plot_horiz.${dsrc}.${PDATE}
 
    logf=${OZN_LOGDIR}/IG.${PDY}.${cyc}.${dsrc}.horiz.log
    if [[ -e $logf ]]; then

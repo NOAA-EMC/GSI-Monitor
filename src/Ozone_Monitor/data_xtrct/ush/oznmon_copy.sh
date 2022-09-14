@@ -7,7 +7,7 @@
 #    should not be run directly.
 #
 #    This script searches for new radmon output and copies those 
-#    filess to the user's $OZN_TANKDIR_STATS directory.
+#    files to the user's $OZN_TANKDIR_STATS directory.
 #
 #    The bad_penalty, low count, and missing diag reports are 
 #    reevaluated using local copies of the base file and satype

@@ -83,7 +83,6 @@ cat << EOF > ${SATYPE}_${var}.gs
 'run ${OZN_IG_GSCRPTS}/plot_horiz_${dsrc}.gs ${OZNMON_SUFFIX} ${RUN} ${SATYPE} ${var} x800 y700'
 'quit'
 EOF
-      echo "GRADS = $GRADS"
       $GRADS -blc "run ${tmpdir}/${SATYPE}_${var}.gs"   
 
 

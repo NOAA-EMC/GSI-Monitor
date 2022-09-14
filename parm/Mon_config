@@ -118,7 +118,6 @@ export Z=${Z:-"gz"}
 export NCP="cp -f"
 export COMPRESS=${COMPRESS:-gzip}
 export UNCOMPRESS=${UNCOMPRESS:-"gunzip -f"}
-
 export GRADS=`which grads`
 export STNMAP=`which stnmap`
 export WGRIB2=`which wgrib2`

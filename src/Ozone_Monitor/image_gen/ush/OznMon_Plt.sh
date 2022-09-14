@@ -38,7 +38,7 @@ function usage {
 }
 
 echo start OznMon_Plt.sh
-#set -ax
+
 
 nargs=$#
 echo nargs = $nargs
