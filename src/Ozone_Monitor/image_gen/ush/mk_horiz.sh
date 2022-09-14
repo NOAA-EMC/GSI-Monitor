@@ -1,4 +1,4 @@
-#!/bin/ksh -l
+#!/bin/bash
 
 #------------------------------------------------------------------
 #  mk_horiz.sh
@@ -9,11 +9,6 @@
 #------------------------------------------------------------------
 
 echo "begin mk_horiz.sh"
-set -ax
-
-echo "GRADS = $GRADS"
-echo "STNMAP = $STNMAP"
-
 
 #------------------------------------------------------------------
 # Define working directory for horiz plots
@@ -26,11 +21,11 @@ cd $tmpdir
 export WORKDIR=$tmpdir
 
 #------------------------------------------------------------------
-#  Expand $OZN_IMGN_TANKDIR for horiz
+#  Expand $OZN_TANKDIR_IMGS for horiz
 #
-export OZN_IMGN_TANKDIR=${OZN_IMGN_TANKDIR}/horiz
-if [[ ! -d ${OZN_IMGN_TANKDIR} ]]; then
-   mkdir -p ${OZN_IMGN_TANKDIR}
+export OZN_IMGS_HORIZ=${OZN_TANKDIR_IMGS}/horiz
+if [[ ! -d ${OZN_IMGS_HORIZ} ]]; then
+   mkdir -p ${OZN_IMGS_HORIZ}
 fi
 
 #------------------------------------------------------------------
@@ -55,7 +50,8 @@ for dsrc in ${data_source}; do
          list="obs anl obsanl"
       fi
 
-      if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "jet" || ${MY_MACHINE} = "s4" ]]; then
+      if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "jet" || ${MY_MACHINE} = "s4" ||
+            ${MY_MACHINE} = "orion" ]]; then
          echo "$ctr ${OZN_IG_SCRIPTS}/plot_horiz.sh $type $suffix '$list' $dsrc" >> $cmdfile
       else
          echo "${OZN_IG_SCRIPTS}/plot_horiz.sh $type $suffix '$list' $dsrc" >> $cmdfile
@@ -66,20 +62,20 @@ for dsrc in ${data_source}; do
    chmod a+x $cmdfile
 
    job=${OZNMON_SUFFIX}_ozn_${dsrc}_phoriz
-   o_logfile=${OZN_LOGdir}/plot_horiz.${dsrc}.${PDATE}
+   o_logfile=${OZN_LOGDIR}/plot_horiz.${dsrc}.${PDATE}
 
-   logf=${OZN_LOGdir}/IG.${PDY}.${cyc}.${dsrc}.horiz.log
+   logf=${OZN_LOGDIR}/IG.${PDY}.${cyc}.${dsrc}.horiz.log
    if [[ -e $logf ]]; then
      rm -f $logf
    fi
 
-   errf=${OZN_LOGdir}/IG.${PDY}.${cyc}.${dsrc}.horiz.err
+   errf=${OZN_LOGDIR}/IG.${PDY}.${cyc}.${dsrc}.horiz.err
    if [[ -e $errf ]]; then
       rm -f $errf
    fi
 
 
-   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" ]]; then
+   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" || ${MY_MACHINE} = "orion" ]]; then
 
       $SUB --account ${ACCOUNT} -n $ctr  -o ${logf} -D . -J ${job} \
            --time=10 --wrap "srun -l --multi-prog ${cmdfile}"
@@ -89,18 +85,10 @@ for dsrc in ${data_source}; do
       $SUB --account ${ACCOUNT} -n $ctr  -o ${logf} -D . -J ${job} \
            --time=10 --partition=$PARTITION_OZNMON --wrap "srun -l --multi-prog ${cmdfile}"
 
-   elif [[ ${MY_MACHINE} = "wcoss_c" ]]; then
+   elif [[ $MY_MACHINE = "wcoss2" ]]; then
 
-      $SUB -q ${JOB_QUEUE} -P ${PROJECT} -o ${logf} -e ${errf} \
-           -R "select[mem>100] rusage[mem=100]" \
-           -M 100 -W 0:05 -J ${job} -cwd ${WORKDIR} ${WORKDIR}/${cmdfile}
-
-   elif [[ ${MY_MACHINE} = "wcoss_d" ]]; then
-
-      $SUB -q ${JOB_QUEUE} -P ${PROJECT} -M 50 -R affinity[core] \
-           -o ${logf} -e ${errf} -W 0:05 -J ${job} -cwd ${WORKDIR} \
-	   ${WORKDIR}/${cmdfile}
-
+      $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logf} -e ${errf} \
+           -V -l select=1:mem=5000M -l walltime=20:00 -N ${job} ${cmdfile}
 
    fi
  

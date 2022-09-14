@@ -1,15 +1,8 @@
-#! /bin/ksh -l
+#! /bin/bash
 
 #------------------------------------------------------------------
 #  plot_time.sh
 #
-
-set -ax
-
-if [[ ${MY_MACHINE} = "hera" ]]; then
-   module load grads
-fi
-
 
 export SATYPE=$1
 export PVAR=$2
@@ -48,27 +41,29 @@ while [[ $ctr -le 119 ]]; do
    c_pdy=`echo $cdate|cut -c1-8`
    c_cyc=`echo $cdate|cut -c9-10`
 
-   tankdir_cdate=${TANKDIR}/${RUN}.${c_pdy}/${c_cyc}/atmos/oznmon/time
-   if [[ ! -d ${tankdir_cdate} ]]; then 
-      tankdir_cdate=${TANKDIR}/${RUN}.${c_pdy}/${c_cyc}/oznmon/time
+   tankdir_cdate=${OZN_TANKDIR_STATS}/${RUN}.${c_pdy}/${c_cyc}/atmos/oznmon/time
+   if [[ ! -d ${tankdir_cdate} ]]; then
+      tankdir_cdate=${OZN_TANKDIR_STATS}/${RUN}.${c_pdy}/${c_cyc}/oznmon/time
       if [[ ! -d ${tankdir_cdate} ]]; then
-         tankdir_cdate=${TANKDIR}/${RUN}.${c_pdy}/time
+         tankdir_cdate=${OZN_TANKDIR_STATS}/${RUN}.${c_pdy}/horiz
       fi
    fi
+   echo "tankdir_cdate = $tankdir_cdate"
 
    if [[ ! -e ./${SATYPE}.${dsrc}.ctl ]]; then
-      $NCP ${tankdir_cdate}/${SATYPE}.${dsrc}.ctl ./
+      if [[ -e ${tankdir_cdate}/${SATYPE}.${dsrc}.ctl ]]; then
+         $NCP ${tankdir_cdate}/${SATYPE}.${dsrc}.ctl ./
+      fi
    fi
 
    data_file=${tankdir_cdate}/${SATYPE}.${dsrc}.${cdate}.ieee_d
    if [[ -s ${data_file} ]]; then
       $NCP ${data_file} ./
+   elif [[ -s ${data_file}.gz ]]; then
+      $NCP ${data_file}.gz ./
+      $UNCOMPRESS ${data_file}.gz
    else
-      data_file=${data_file}.${Z}
-      if [[ -s ${data_file} ]]; then
-         $NCP ${data_file} ./
-         $UNCOMPRESS ${data_file}
-      fi
+      echo "unable to location data file: ${data_file}"
    fi
 
    if [[ $ADD_COMP -eq 1 ]]; then
@@ -105,13 +100,12 @@ if [[ -e ${SATYPE}.${dsrc}.ctl ]]; then
    if [[ $ADD_COMP -eq 1 ]]; then
       ${OZN_IG_SCRIPTS}/update_ctl_tdef.sh ${COMP2}.${dsrc}.ctl ${edate} 121
    fi
-fi
 
 
-for var in ${PTYPE}; do
-   echo $var
+   for var in ${PTYPE}; do
+      echo $var
 
-   if [[ $ADD_COMP -eq 0 ]]; then
+      if [[ $ADD_COMP -eq 0 ]]; then
 
 cat << EOF > ${SATYPE}_${var}.gs
 'reinit'
@@ -121,7 +115,7 @@ cat << EOF > ${SATYPE}_${var}.gs
 'quit'
 EOF
 
-   else
+      else
 
 cat << EOF > ${SATYPE}_${var}.gs
 'reinit'
@@ -132,25 +126,30 @@ cat << EOF > ${SATYPE}_${var}.gs
 'quit'
 EOF
 
-   fi
+      fi
 
-   echo ${tmpdir}/${SATYPE}_${var}.gs
-   $GRADS -bpc "run ${tmpdir}/${SATYPE}_${var}.gs"
+      echo ${tmpdir}/${SATYPE}_${var}.gs
+      $GRADS -bpc "run ${tmpdir}/${SATYPE}_${var}.gs"
 
-done 
+   done 
+
+
+   #--------------------------------------------------------------------
+   #  copy image files to TANKDIR
+   #
+   ${NCP} *.png ${OZN_IMGS_TIME}/.
+
+else
+   echo "Unable to plot $SATYPE, no ctl file found"
+fi
 
 
 #--------------------------------------------------------------------
-#  copy image files to TANKDIR
-#
-${NCP} *.png ${OZN_IMGN_TANKDIR}/.
-
-
-#--------------------------------------------------------------------
-# Clean $tmpdir.  Submit done job.
-#cd $tmpdir
-#cd ../
-#rm -rf $tmpdir
+# Clean $tmpdir.
+if [[ ${KEEPDATA} -ne 1 ]]; then
+   cd ../
+   rm -rf $tmpdir
+fi
 
 exit
 

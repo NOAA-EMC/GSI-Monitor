@@ -21,8 +21,6 @@ function usage {
   echo " "
 }
 
-set -ax
-
 echo start mk_err_rpt.sh
 err=0
 
@@ -119,16 +117,22 @@ OZN_TANKDIR_TIME=${TANKDIR}/${RUN}.${PDY}/${cyc}/oznmon/time
 if [[ ! -d ${OZN_TANKDIR_TIME} ]]; then
    OZN_TANKDIR_TIME=${TANKDIR}/${RUN}.${PDY}/time
 fi
-echo "OZN_TANKDIR_TIME = $OZN_TANKDIR_TIME"
 
+bad_cnt=$OZN_TANKDIR_TIME/bad_cnt.${PDATE}
+if [[ ! -e ${bad_cnt} ]]; then
+   bad_cnt=""
+fi
 
-bad_cnt=`ls $OZN_TANKDIR_TIME/bad_cnt.${PDATE}`
-bad_diag=`ls $OZN_TANKDIR_TIME/bad_diag.${PDATE}`
-bad_pen=`ls $OZN_TANKDIR_TIME/bad_pen.${PDATE}`
+bad_diag=$OZN_TANKDIR_TIME/bad_diag.${PDATE}
+if [[ ! -e ${bad_diag} ]]; then
+   bad_diag=""
+fi
 
-echo "bad_cnt  = $bad_cnt"
-echo "bad_diag = $bad_diag"
-echo "bad_pen  = $bad_pen"
+bad_pen=$OZN_TANKDIR_TIME/bad_pen.${PDATE}
+if [[ ! -e ${bad_pen} ]]; then
+   bad_pen=""
+fi
+
 
 prev_cycle=`$NDATE -6 $PDATE`
 prev_pdy=`echo $prev_cycle | cut -c1-8`
@@ -140,11 +144,16 @@ if [[ ! -d ${OZN_TANKDIR_PREV} ]]; then
 fi
 echo "OZN_TANKDIR_PREV = $OZN_TANKDIR_PREV"
 
-prev_bad_cnt=`ls $OZN_TANKDIR_PREV/bad_cnt.${prev_cycle}`
-prev_bad_pen=`ls $OZN_TANKDIR_PREV/bad_pen.${prev_cycle}`
+prev_bad_cnt=$OZN_TANKDIR_PREV/bad_cnt.${prev_cycle}
+if [[ ! -e ${prev_bad_cnt} ]]; then
+   prev_bad_cnt=""
+fi
 
-echo "prev_bad_cnt = $prev_bad_cnt"
-echo "prev_bad_pen = $prev_bad_pen"
+prev_bad_pen=$OZN_TANKDIR_PREV/bad_pen.${prev_cycle}
+if [[ ! -e ${prev_bad_pen} ]]; then
+   prev_bad_pen=""
+fi
+
 
 have_err_rpt=0
 

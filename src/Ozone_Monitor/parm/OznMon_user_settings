@@ -7,24 +7,6 @@
 #------------------------------------------------------------------------------
 
 #
-#  ACCOUNT is used on zeus only for use with the qsub -a flag.  It is
-#  empty on other platforms.
-#
-export ACCOUNT=${ACCOUNT:-GFS-DEV}
-
-#
-#  PROJECT is used on wcoss only with the bjob -P flag.  It is 
-#  empty on other platforms.
-#
-export PROJECT=${PROJECT:-GDAS-DEV}
-
-#
-#  JOB_QUEUE is used on wcoss only with the bjob -q flag.  It is 
-#  empty on other platforms.
-#
-export JOB_QUEUE=${JOB_QUEUE:-dev}
-
-#
 #  GLB_AREA is either 1 (global) or 0 (regional)
 #
 export GLB_AREA=${GLB_AREA:-1}
@@ -37,7 +19,7 @@ export GLB_AREA=${GLB_AREA:-1}
 #    horizontal data when it's needed rather than storing huge files all the 
 #    time).
 #
-export OZNSTAT_LOCATION=${OZNSTAT_LOCATION:-/gpfs/dell1/nco/ops/com/gfs/prod}
+export OZNSTAT_LOCATION=${OZNSTAT_LOCATION:-/lfs/h1/ops/prod/com/gfs/v16.2}
 
 #
 #  USE_ANL switches on/off data extraction for analysis files (ges is always on)
@@ -45,25 +27,6 @@ export OZNSTAT_LOCATION=${OZNSTAT_LOCATION:-/gpfs/dell1/nco/ops/com/gfs/prod}
 #     0 = off, 1 = on
 #
 export USE_ANL=${USE_ANL:-1}
-
-#
-#  OZN_USE_RUN affects the data, image, and log file naming scheme, and is 
-#  designed to support both gdas and gfs runs for a common data source.
-#  (Note, lcm means lower case monitor name ("oznmon".) 
-#
-#  If set to 1 (default) then storage is :
-#      nbns/stats/$suffix/$RUN.$pdy/$lcm
-#      nbns/imgn/$suffix/$RUN/$lcm/pngs  
-#      $LOGdir/$suffix/$RUN/$lcm
-#
-#  set to #  0 then the resulting storage locations are:
-#      nbns/data/$suffix/$lcm.$PDY
-#      nbns/imgn/$suffix/$lcm/pngs
-#      $LOGdir/$suffix/$lcm
-#
-#  $RUN is "gdas"|"gfs" or whatever else makes sense for a RUN value.
-#
-export OZN_USE_RUN=${OZN_USE_RUN:-1}
 
 #  DO_DATA_RPT switches on/off error checking and reporting of the penalty 
 #  values by channel for each sat/instrument source plus a check for any 
@@ -84,20 +47,10 @@ export MAIL_TO=${MAIL_TO:-'edward.safford@noaa.gov'}
 #  MAIL_CC is the the cc list of recipients of generated email warning messages
 #  (if DO_DATA_RPT = 1).
 #
+cc_list=""
 if [[ -e /u/${LOGNAME}/bin/get_cc_list.pl ]]; then
    cc_list=`/u/${LOGNAME}/bin/get_cc_list.pl --nr ${OZNMON_SUFFIX}_${RUN} --mon OznMon`
-else
-   cc_list=""
 fi
-export MAIL_CC=${MAIL_CC:=${cc_list}}
-
-#
-#  RUN_ONLY_ON_DEV switches on/off the constraint to run only on the 
-#  development machine.
-#
-#  0 = prod or dev, 1 = dev only.
-#  
-export RUN_ONLY_ON_DEV=${RUN_ONLY_ON_DEV:-1}
 
 #
 #  KEEPDATA switches on/off allowing the work directory to remain after data 
