@@ -78,7 +78,7 @@ export OZN_TANKDIR_IMGS=${OZN_TANKimg}/oznmon/pngs
 #  Log and work space definitions
 #
 export OZN_LOGDIR=${OZN_LOGDIR:-${MON_LOGDIR}/${OZNMON_SUFFIX}/${RUN}/oznmon}
-export OZN_WORK_DIR=${OZN_WORK_DIR:-${STMP_USER}/${OZNMON_SUFFIX}/${RUN}/oznmon}
+export OZN_WORK_DIR=${OZN_WORK_DIR:-${MON_STMP}/${OZNMON_SUFFIX}/${RUN}/oznmon}
 
 
 echo "end OznMon_config"
