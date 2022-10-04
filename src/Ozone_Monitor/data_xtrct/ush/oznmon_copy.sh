@@ -6,20 +6,16 @@
 #    This script is run as a submitted job by OznMon_CP.sh and
 #    should not be run directly.
 #
-#    This script searches for new radmon output and copies those 
-#    filess to the user's $TANKDIR directory under the specified 
-#    suffix argument. 
+#    This script searches for new oznmon output and copies those 
+#    files to the user's $OZN_TANKDIR_STATS directory.
 #
 #    The bad_penalty, low count, and missing diag reports are 
 #    reevaluated using local copies of the base file and satype
 #    files in the $TANKdir/$suffix/info directory. 
 #    
-#    Note that processing occurs within TANKdir, not in stmp space.
-#
 #    The unified error report is journaled to warning.${PDY}${CYC}.
 #
 #--------------------------------------------------------------------
-
 
 echo ""
 echo "--> oznmon_copy.sh"
@@ -27,12 +23,10 @@ echo ""
 echo "OZNMON_SUFFIX     = $OZNMON_SUFFIX"
 echo "PDATE             = $PDATE"
 echo "RUN               = $RUN"
-echo "DATA_LOCATION     = ${DATA_LOCATION}" 
+echo "OZN_DATA_DIR      = ${OZN_DATA_DIR}" 
 
 exit_value=0
 monitor=oznmon
-
-set -ax
 
 prev=`$NDATE -06 $PDATE`
 prev_day=`echo $prev|cut -c1-8`
@@ -40,9 +34,9 @@ prev_cyc=`echo $prev|cut -c9-10`
 
 echo prev_day, prev_cyc = $prev_day, $prev_cyc
 
-dest_dir=${OZN_STATS_TANKDIR}/${RUN}.${PDY}/${CYC}/oznmon
+dest_dir=${OZN_TANKDIR_STATS}/${RUN}.${PDY}/${CYC}/oznmon
 echo "dest_dir = ${dest_dir}"
-satype_file=${OZN_STATS_TANKDIR}/info/${RUN}_oznmon_satype.txt
+satype_file=${OZN_TANKDIR_STATS}/info/${RUN}_oznmon_satype.txt
 
 if [[ ! -s ${satype_file} ]]; then
    satype_file=${FIXgdas_ozn}/gdas_oznmon_satype.txt
@@ -65,11 +59,8 @@ fi
 
 subdir_list="horiz time"
 for sub in ${subdir_list}; do
-   nfile_src=`ls -l ${DATA_LOCATION}/${sub}/*${PDATE}*ieee_d* | egrep -c '^-'`
-   echo "nfile_src = ${nfile_src}"
-
-   nfile_thirty=`find ${DATA_LOCATION}/${sub}/*${PDATE}*ieee_d* -maxdepth 0 -mmin -30`
-   echo "nfile_thirty = ${nfile_thirty}"
+   nfile_src=`ls -l ${OZN_DATA_DIR}/${sub}/*${PDATE}*ieee_d* | egrep -c '^-'`
+   nfile_thirty=`find ${OZN_DATA_DIR}/${sub}/*${PDATE}*ieee_d* -maxdepth 0 -mmin -30`
 
    if [[ ${nfile_src} -le 0 ]]; then
       exit_value=5
@@ -91,21 +82,20 @@ if [[ ${exit_value} -eq 0 ]]; then
      
       mkdir -p ${dest_dir}/${sub} 
 
-      $NCP ${DATA_LOCATION}/${sub}/*${PDATE}.ieee_d* ${dest_dir}/${sub}/.
-      $NCP ${DATA_LOCATION}/${sub}/*.ctl* ${dest_dir}/${sub}/.
+      $NCP ${OZN_DATA_DIR}/${sub}/*${PDATE}.ieee_d* ${dest_dir}/${sub}/.
+      $NCP ${OZN_DATA_DIR}/${sub}/*.ctl* ${dest_dir}/${sub}/.
       if [[ ${sub} = "time" ]]; then
-         $NCP ${DATA_LOCATION}/${sub}/bad*${PDATE}* ${dest_dir}/${sub}/.
+         $NCP ${OZN_DATA_DIR}/${sub}/bad*${PDATE}* ${dest_dir}/${sub}/.
       fi
    done
 
-
-   if [[ $DO_DATA_RPT -eq 1 && ${#satype_list} -gt 0 ]]; then
+   if [[ $DO_DATA_RPT -eq 1 && ${#satype_list} -gt 0 && -e ${OZNSTAT} ]]; then
 
       #-------------------------------------------------------------------
       # re-run the bad_diag report 
       #    1.  Rm any existing bad_diag file.      
       #    2.  Get the contents of the SATYPE list in this order:
-      #           $OZN_TANKdir/$SUFFIX/info/gdas_oznmon_satype.txt
+      #           $OZN_TANKDIR_STATS/info/gdas_oznmon_satype.txt
       #           $GDAS_OZNMON/fix/gdas/oznmon_satype.txt
       #    3.  Get contents of oznstat file & strip to sat/instr.
       #    4.  Compare satype list to oznstat contents; report missing.
@@ -115,6 +105,7 @@ if [[ ${exit_value} -eq 0 ]]; then
          rm ${bad_diag}
       fi
 
+      oznstat_list=""
       oznstat_files=`tar -tf ${OZNSTAT}`
       #-------------------------------------------------------------------------
       # Diag files are in this format: 
@@ -141,7 +132,6 @@ if [[ ${exit_value} -eq 0 ]]; then
 
          for sat in ${satype_list}; do
             test=`echo ${oznstat_list} | grep ${sat}`
-            echo "test length = ${#test}"
 
             if [[  "${#test}" -eq 0 ]]; then
                echo " missing diag file -- diag_${sat}.${PDATE} not found" >> ${diag_rpt}

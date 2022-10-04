@@ -1,10 +1,8 @@
-#! /bin/ksh -l
+#! /bin/bash 
 
 #------------------------------------------------------------------
 #  plot_summary.sh
 #
-
-set -ax
 
 if [[ ${MY_MACHINE} = "hera" ]]; then
    module load grads
@@ -34,35 +32,27 @@ cdate=$PDATE
 
 while [[ $ctr -le 120 ]]; do
    c_pdy=`echo $cdate|cut -c1-8`
-   c_cyc=`echo $cdate|cut -c9-10`
 
-   tankdir_cdate=${TANKDIR}/${RUN}.${c_pdy}/${c_cyc}/atmos/oznmon/time
-   if [[ ! -d ${tankdir_cdate} ]]; then
-      tankdir_cdate=${TANKDIR}/${RUN}.${c_pdy}/${c_cyc}/oznmon/time
-      if [[ ! -d ${tankdir_cdate} ]]; then
-         tankdir_cdate=${TANKDIR}/${RUN}.${c_pdy}/time
+   tankdir_cdate=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${cdate} \
+	          --net ${OZNMON_SUFFIX} --tank ${OZN_TANKDIR} --mon oznmon`
+   tankdir_cdate=${tankdir_cdate}/time
+
+   if [[ -d ${tankdir_cdate} ]]; then
+  
+      if [[ -e ${tankdir_cdate}/${SATYPE}.${ptype}.ctl ]]; then
+         $NCP ${tankdir_cdate}/${SATYPE}.${ptype}.ctl ./
+      fi
+
+      if compgen -G "${tankdir_cdate}/${SATYPE}.${ptype}.${c_pdy}*ieee_d*" > /dev/null; then
+         $NCP ${tankdir_cdate}/${SATYPE}.${ptype}.${c_pdy}*ieee_d* ./
       fi
    fi
-
-   if [[ ! -e ./${SATYPE}.${ptype}.ctl ]]; then
-      $NCP ${tankdir_cdate}/${SATYPE}.${ptype}.ctl ./
-   fi
-   
-   data_file=${tankdir_cdate}/${SATYPE}.${ptype}.${cdate}.ieee_d
-   if [[ -s ${data_file} ]]; then
-      $NCP ${data_file} ./
-   else
-      data_file=${data_file}.${Z}
-      if [[ -s ${data_file} ]]; then
-         $NCP ${data_file} ./
-         $UNCOMPRESS ${data_file}
-      fi
-   fi
-
+      
    cdate=`$NDATE -6 $cdate`
    ctr=`expr $ctr + 1`
 done
 
+$UNCOMPRESS *.gz
 
 #----------------------------------------------------------------
 #  Modify tdef line in .ctl file to start at bdate.  tdef line 
@@ -72,7 +62,6 @@ done
 if [[ -e ${SATYPE}.${ptype}.ctl ]]; then
    bdate=`$NDATE -720 $PDATE`
    ${OZN_IG_SCRIPTS}/update_ctl_tdef.sh ${SATYPE}.${ptype}.ctl ${bdate} 121 
-fi
 
 cat << EOF > ${SATYPE}.gs
 'open ${SATYPE}.${ptype}.ctl'
@@ -80,20 +69,25 @@ cat << EOF > ${SATYPE}.gs
 'quit'
 EOF
 
-$GRADS -bpc "run ${tmpdir}/${SATYPE}.gs"
+   $GRADS -bpc "run ${tmpdir}/${SATYPE}.gs"
 
 
-#--------------------------------------------------------------------
-#  copy image files to TANKDIR
-#
-${NCP} *.png ${OZN_IMGN_TANKDIR}/.
+   #--------------------------------------------------------------------
+   #  copy image files to TANKDIR
+   #
+   ${NCP} *.png ${OZN_IMGS_SUMMARY}/.
 
+else
+   echo "Unable to plot ${SATYPE}, no ctl file found"
+fi
 
 #--------------------------------------------------------------------
 # Clean $tmpdir. 
-#cd $tmpdir
-#cd ../
-#rm -rf $tmpdir
+#
+if [[ ${KEEPDATA} -ne 1 ]]; then
+  cd ../
+  rm -rf $tmpdir
+fi
 
 exit
 
