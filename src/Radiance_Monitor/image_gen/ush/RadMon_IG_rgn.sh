@@ -11,7 +11,7 @@
 #  usage
 #--------------------------------------------------------------------
 function usage {
-  echo "Usage:  RadMon_IG_rgn.sh suffix [-p|--pdate -r|--run ]"
+  echo "Usage:  RadMon_IG_rgn.sh suffix [-p|--pdate -r|--run -n|--ncyc]"
   echo ""
   echo "            suffix is the indentifier for this data source."
   echo "              This is usually the same as the NET value."
@@ -21,6 +21,9 @@ function usage {
   echo ""
   echo "            -r|--run  nam is the default if not specified."
   echo ""
+  echo "            -n|--ncyc is the number of cycles to be used in time series plots.  If"
+  echo "              not specified the default value in parm/RadMon_user_settins will be used"
+  echo ""
 }
 
 
@@ -28,7 +31,7 @@ echo start RadMon_IG_rgn.sh
 
 
 nargs=$#
-if [[ $nargs -lt 1 || $nargs -gt 5 ]]; then
+if [[ $nargs -lt 1 || $nargs -gt 7 ]]; then
    usage
    exit 1
 fi
@@ -37,6 +40,8 @@ fi
 #  Process command line arguments.
 #
 run=nam
+pdate=""
+num_cycles=""
 
 while [[ $# -ge 1 ]]
 do
@@ -49,6 +54,10 @@ do
       ;;
       -r|--run)
          run="$2"
+         shift # past argument
+      ;;
+      -n|--ncyc)
+         num_cycles="$2"
          shift # past argument
       ;;
       *)
@@ -65,9 +74,11 @@ export RUN=${run}
 echo "RADMON_SUFFIX = ${RADMON_SUFFIX}"
 echo "RUN           = ${RUN}"
 echo "pdate         = ${pdate}"
+echo "num_cycles    = ${num_cycles}"
 
-
-set -ax
+if [[ ${#num_cycles} -gt 0 ]]; then
+   export NUM_CYCLES=${num_cycles}
+fi
 
 #--------------------------------------------------------------------
 # Set environment variables

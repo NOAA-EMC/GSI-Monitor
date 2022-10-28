@@ -71,7 +71,7 @@ done
 #
 if [[ -e ${SATYPE}.${ptype}.ctl ]]; then
    bdate=`$NDATE -720 $PDATE`
-   ${OZN_IG_SCRIPTS}/update_ctl_tdef.sh ${SATYPE}.${ptype}.ctl ${bdate} 121 
+   ${OZN_IG_SCRIPTS}/update_ctl_tdef.sh ${SATYPE}.${ptype}.ctl ${bdate} ${NUM_CYCLES} 
 fi
 
 cat << EOF > ${SATYPE}.gs

@@ -178,6 +178,11 @@ if [[ $CONMON_CONFIG -ne 1 ]]; then
    export WORK_conmon=${WORK_conmon:-${C_STMP_USER}/${CONMON_SUFFIX}/${RUN}/ConMon}
 
    #
+   #  NUM_CYCLES is the number of cycles to be used time series plots.
+   #
+   export NUM_CYCLES=${NUM_CYCLES:-121}
+   
+   #
    #  Automatically remove old, extracted data files
    #
    export CLEAN_TANKDIR=${CLEAN_TANKDIR:-1}

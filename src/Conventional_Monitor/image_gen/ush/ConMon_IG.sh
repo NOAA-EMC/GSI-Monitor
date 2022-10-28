@@ -15,7 +15,7 @@
 function usage {
   echo " "
   echo " "
-  echo "Usage:  ConMon_IG.sh suffix [-p|--pdate pdate -r|--run gdas|gfs]"
+  echo "Usage:  ConMon_IG.sh suffix [-p|--pdate pdate -r|--run gdas|gfs -n|--ncyc]"
   echo "            Suffix is the indentifier for this data source."
   echo " "
   echo "            -p | --pdate yyyymmddcc to specify the cycle to be plotted."
@@ -27,6 +27,8 @@ function usage {
   echo "                 Use only if data in TANKdir stores both runs, gdas"
   echo "                 gdas is the default value."
   echo " "
+  echo "            -n | --ncyc is the number of cycles to be used in time series plots.  If"
+  echo "              not specified the default value in parm/RadMon_user_settins will be used"
 }
 
 
@@ -38,17 +40,16 @@ echo "Begin ConMon_IG.sh"
 
 
 nargs=$#
-if [[ $nargs -lt 1 || $nargs -gt 5 ]]; then
+if [[ $nargs -lt 1 || $nargs -gt 7 ]]; then
    usage
    exit 1
 fi
-
-set -ax
 
 #-----------------------------------------------
 #  Process command line arguments
 #
 export RUN=gdas
+num_cycles=""
 
 while [[ $# -ge 1 ]]
 do
@@ -62,6 +63,10 @@ do
       ;;
       -r|--run)
          export RUN="$2"
+         shift # past argument
+      ;;
+      -n|--ncyc)
+         export num_cycles="$2"
          shift # past argument
       ;;
       *)
@@ -80,7 +85,11 @@ echo "CONMON_SUFFIX = $CONMON_SUFFIX"
 echo "PDATE         = $PDATE"
 echo "RUN           = $RUN"
 
-export NUM_CYCLES=${NUM_CYCLES:-121}			# number of cycles in plot
+if [[ ${#num_cycles} -gt 0 ]]; then
+   export NUM_CYCLES=${num_cycles}
+fi
+
+
 export JOBNAME=${JOBNAME:-ConMon_plt_${CONMON_SUFFIX}}
 export grib2=${grib2:-1}				# 1 = grib2 (true), 0 = grib
 							# should this move to config?
