@@ -16,7 +16,6 @@ function usage {
 }
 
 echo start OznMon_Transfer.sh
-set -ax
 
 nargs=$#
 
@@ -57,33 +56,36 @@ this_dir=`dirname $0`
 top_parm=${this_dir}/../../parm
 
 oznmon_user_settings=${oznmon_user_settings:-${top_parm}/OznMon_user_settings}
-if [[ -s ${oznmon_user_settings} ]]; then
-   . ${oznmon_user_settings}
-   echo "able to source ${oznmon_user_settings}"
-else
+if [[ ! -s ${oznmon_user_settings} ]]; then
    echo "Unable to source ${oznmon_user_settings} file"
    exit 4
 fi
+. ${oznmon_user_settings}
+if [[ $? -ne 0 ]]; then
+   echo "Error detected while sourcing ${oznmon_user_settings} file"
+   exit $?
+fi
 
 oznmon_config=${oznmon_config:-${top_parm}/OznMon_config}
-if [[ -s ${oznmon_config} ]]; then
-   . ${oznmon_config}
-   echo "able to source ${oznmon_config}"
-else
+if [[ ! -s ${oznmon_config} ]]; then
    echo "Unable to source ${oznmon_config} file"
    exit 3
 fi
-
+. ${oznmon_config}
+if [[ $? -ne 0 ]]; then
+   echo "Error detected while sourcing ${oznmon_config} file"
+   exit $?
+fi
 
 
 job=${OZNMON_SUFFIX}_ozn_transfer
 
-logf=${OZN_LOGdir}/TF.log
+logf=${OZN_LOGDIR}/TF.log
 if [[ -e $logf ]]; then
    rm -f $logf
 fi
 
-errf=${OZN_LOGdir}/TF.err
+errf=${OZN_LOGDIR}/TF.err
 if [[ -e $errf ]]; then
    rm -f $errf
 fi
@@ -91,19 +93,16 @@ fi
 transfer_script=${OZN_IG_SCRIPTS}/transfer.sh
 job=${OZNMON_SUFFIX}_ozn_transfer
 
-if [[ $MY_MACHINE = "wcoss_d" || $MY_MACHINE = "wcoss_c" ]]; then
+if [[ $MY_MACHINE = "wcoss2" ]]; then
 
    job_queue="dev_transfer"
 
    echo "PROJECT = $PROJECT"
    echo "logf    = $logf"
    echo "errf    = $errf"
-   echo "transfer_script = $transfer_script"
 
-   $SUB -P $PROJECT -q $job_queue -o ${logf} -e ${errf} -M 50 -W 0:20 \
-        -R affinity[core] -J ${job} -cwd ${OZN_IG_SCRIPTS} \
-        ${transfer_script} 
-   
+   $SUB -q dev_transfer -A $ACCOUNT -o ${logf} -e ${errf} \
+        -V -l select=1:mem=500M -l walltime=10:00 -N ${job} ${transfer_script}   
 fi
 
 exit
