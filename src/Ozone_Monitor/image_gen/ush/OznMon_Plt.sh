@@ -1,4 +1,4 @@
-#!/bin/sh -l
+#!/bin/bash
 
 #-----------------------------------------------------------------------
 #  OznMon_Plt.sh
@@ -11,12 +11,15 @@ function usage {
   echo " "
   echo "Usage:  OznMon_Plt.sh OZNMON_SUFFIX [-p|--pdate -r|--run -n|--ncyc -c1|--comp1 -c2|--comp2] "
   echo "            OZNMON_SUFFIX is data source identifier which matches data in "
-  echo "              the $TANKverf/stats directory."
+  echo "              the $OZN_TANKDIR directory."
   echo "            -p | --pdate yyyymmddcc to specify the cycle to be plotted."
   echo "              If unspecified the last available date will be plotted."
   echo "            -r | --run  the gdas|gfs run to be plotted, gdas is default"
   echo "            -n | --ncyc is the number of cycles to be used in time series plots.  If"
   echo "              not specified the default value in parm/RadMon_user_settins will be used"
+  echo "            -t | --tank parent directory to the oznmon data file location.  This" 
+  echo "              will be extended by $OZNMON_SUFFIX, $RUN, and $PDATE to locate the"
+  echo "              extracted oznmon data."
   echo "            -c1| --comp1 first instrument/sat source to plotted as a comparision"
   echo "            -c2| --comp2 first instrument/sat source to plotted as a comparision"
   echo " "
@@ -27,11 +30,11 @@ echo start OznMon_Plt.sh
 nargs=$#
 echo nargs = $nargs
 num_cycles=""
+tank=""
 
 while [[ $# -ge 1 ]]
 do
    key="$1"
-   echo $key
 
    case $key in
       -p|--pdate)
@@ -44,6 +47,8 @@ do
       ;;
       -n|--ncyc)
          export num_cycles="$2"
+      -t|--tank)
+         tank="$2" 
          shift # past argument
       ;;
       -c1|--comp1)
@@ -65,7 +70,7 @@ done
 
 echo "num_cycles = $num_cycles"
 
-if [[ $nargs -lt 0 || $nargs -gt 11 ]]; then
+if [[ $nargs -lt 0 || $nargs -gt 13 ]]; then
    usage
    exit 1
 fi
@@ -91,7 +96,7 @@ fi
 echo "OZNMON_SUFFIX = $OZNMON_SUFFIX"
 echo "pdate         = $pdate"
 echo "RUN           = $RUN"
-
+echo "tank          = $tank"
 
 export DO_COMP=0
 if [[ ${#COMP1} > 0 && ${#COMP2} > 0 ]]; then
@@ -109,59 +114,60 @@ top_parm=${this_dir}/../../parm
 
 
 oznmon_user_settings=${oznmon_user_settings:-${top_parm}/OznMon_user_settings}
-if [[ -s ${oznmon_user_settings} ]]; then
-   . ${oznmon_user_settings}
-   echo "able to source ${oznmon_user_settings}"
-else
+if [[ ! -e ${oznmon_user_settings} ]]; then
    echo "Unable to source ${oznmon_user_settings} file"
    exit 4
 fi
 
+. ${oznmon_user_settings}
+if [[ $? -ne 0 ]]; then
+   echo "Error detected while sourcing ${oznmon_user_settings} file"
+   exit $?
+fi
+
+
 oznmon_config=${oznmon_config:-${top_parm}/OznMon_config}
-if [[ -s ${oznmon_config} ]]; then
-   . ${oznmon_config}
-   echo "able to source ${oznmon_config}"
-else
+if [[ ! -e ${oznmon_config} ]]; then
    echo "Unable to source ${oznmon_config} file"
    exit 3
 fi
 
+. ${oznmon_config}
+if [[ $? -ne 0 ]]; then
+   echo "Error detected while sourcing ${oznmon_config} file"
+   exit $?
+fi
 
 #--------------------------------------------------------------------
-#  Check for my monitoring use.  Abort if running on prod machine.
+#  Set up OZN_TANKDIR
 #--------------------------------------------------------------------
-if [[ RUN_ONLY_ON_DEV =  1 ]]; then
-   is_prod=`${OZN_IG_SCRIPTS}/onprod.sh`
-   if [[ $is_prod = 1 ]]; then
-      exit 10
+if [[ ${tank} = "" ]]; then	 
+   ozn_tankdir=${TANKDIR}
+else
+   if [[ -d ${tank} ]]; then
+      ozn_tankdir=${tank}   
+   else
+      echo "Error:  tank argument is not a directory:  ${tank}"
+      echo "must exit"
+      exit
    fi
 fi
-
-
-#--------------------------------------------------------------------
-#  Specify TANKDIR for this suffix
-#--------------------------------------------------------------------
-if [[ $GLB_AREA -eq 1 ]]; then
-   export TANKDIR=${OZN_TANKDIR}/stats/${OZNMON_SUFFIX}
-else
-   export TANKDIR=${OZN_TANKDIR}/stats/regional/${OZNMON_SUFFIX}
-fi
+export OZN_TANKDIR=${ozn_tankdir}
+echo "OZN_TANKDIR = $OZN_TANKDIR"
 
 #--------------------------------------------------------------------
-#  Set up OZN_IMGN_TANKDIR
+#  Set up OZN_TANKDIR_IMGS
 #--------------------------------------------------------------------
-if [[ ! -d ${OZN_IMGN_TANKDIR} ]]; then
-   mkdir -p ${OZN_IMGN_TANKDIR}
+if [[ ! -d ${OZN_TANKDIR_IMGS} ]]; then
+   mkdir -p ${OZN_TANKDIR_IMGS}
 fi
 
 #---------------------------------------------------------------
 # Create any missing directories.
 #---------------------------------------------------------------
-if [[ ! -d $OZN_LOGdir ]]; then
-   mkdir -p $OZN_LOGdir
+if [[ ! -d $OZN_LOGDIR ]]; then
+   mkdir -p $OZN_LOGDIR
 fi
-
-
 
 
 #--------------------------------------------------------------------
@@ -171,20 +177,16 @@ fi
 # PDATE can be set one of 3 ways.  This is the order of priority:
 #
 #   1.  Specified via command line argument
-#   2.  Read from ${OZN_IMGN_TANKbase}/last_plot_time file and
+#   2.  Read from ${OZN_TANKBASE_IMGS}/last_plot_time file and
 #        advanced one cycle.
-#   3.  Using the last available cycle for which there is
-#        data in ${TANKDIR}.
+#   3.  The last cycle time for which there is data.
 #
-# If option 2 has been used the ${IMGNDIR}/last_plot_time file
+# If option 2 has been used the last_plot_time file
 # will be updated with ${PDATE} if the plot is able to run.
 #--------------------------------------------------------------------
 
-echo "OZN_IMGN_TANKbase = ${OZN_IMGN_TANKbase}"
-last_plot_time=${OZN_IMGN_TANKbase}/${RUN}/oznmon/last_plot_time
-echo "last_plot_time file = ${last_plot_time}"
-
-latest_data=`${OZN_IG_SCRIPTS}/find_cycle.pl -run gdas -cyc 1 -dir ${OZN_STATS_TANKDIR}`
+last_cycle=`${MON_USH}/find_last_cycle.sh --net ${OZNMON_SUFFIX} --run ${RUN} --tank ${OZN_TANKDIR} --mon oznmon`
+last_plot_time=${OZN_TANKBASE_IMGS}/oznmon/last_plot_time
 
 if [[ ${#pdate} -le 0 ]]; then
    if [[ -e ${last_plot_time} ]]; then
@@ -192,29 +194,33 @@ if [[ ${#pdate} -le 0 ]]; then
       last_plot=`cat ${last_plot_time}`
       pdate=`$NDATE +6 ${last_plot}`
    else
-      echo " USING find_cycle file"
-      pdate=${latest_data}
+      echo " USING last_cycle"
+      pdate=${last_cycle}
    fi
 fi
 
-echo "pdate, latest_data = ${pdate} ${latest_data}"
 
-if [[ ${pdate} -le ${latest_data} ]]; then
-   echo " proceeding with plot"
+#------------------------------------
+#  Confirm there is data for $pdate
+#
+dp=""
+dp=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${pdate} --net ${OZNMON_SUFFIX} --tank ${OZN_TANKDIR} --mon oznmon`
 
-   export PDATE=$pdate
+if [[ $pdate -le $last_cycle && -d ${dp} ]]; then
+
+   export PDATE=${pdate}
    export PDY=`echo $PDATE|cut -c1-8`
-   export cyc=`echo $PDATE|cut -c9-10`
+   export CYC=`echo $PDATE|cut -c9-10`
 
    #--------------------------------------------------------------------
    #  Create the WORKDIR and link the data files to it
    #--------------------------------------------------------------------
-   export WORKDIR=${STMP_USER}/${OZNMON_SUFFIX}/${RUN}/oznmon/IG.${PDY}.${cyc}
-   if [[ -d $WORKDIR ]]; then
-     rm -rf $WORKDIR
+   export WORKDIR=${OZN_WORK_DIR}/IG.${PDY}.${CYC}
+   if [[ -d ${WORKDIR} ]]; then
+     rm -rf ${WORKDIR}
    fi
-   mkdir $WORKDIR
-   cd $WORKDIR
+   mkdir -p ${WORKDIR}
+   cd ${WORKDIR}
 
    #--------------------------------------------------------------------
    #  Plot scripts are plot_time.sh and plot_horiz.sh.  The plot_time.sh
@@ -225,16 +231,16 @@ if [[ ${pdate} -le ${latest_data} ]]; then
    #  other monitors.
    #--------------------------------------------------------------------
 
-   if [[ -e ${TANKDIR}/info/gdas_oznmon_satype.txt ]]; then
-      export SATYPE=${SATYPE:-`cat ${TANKDIR}/info/${RUN}_oznmon_satype.txt`}
+   if [[ -e ${OZN_TANKDIR_STATS}/info/gdas_oznmon_satype.txt ]]; then
+      export SATYPE=${SATYPE:-`cat ${OZN_TANKDIR}/info/${RUN}_oznmon_satype.txt`}
    else
       export SATYPE=${SATYPE:-`cat ${HOMEgdas_ozn}/fix/${RUN}_oznmon_satype.txt`}
    fi
 
-
    ${OZN_IG_SCRIPTS}/mk_horiz.sh
    ${OZN_IG_SCRIPTS}/mk_time.sh
    ${OZN_IG_SCRIPTS}/mk_summary.sh
+
 
    if [[ $DO_DATA_RPT -eq 1 ]]; then
       ${OZN_IG_SCRIPTS}/mk_err_rpt.sh
@@ -256,7 +262,7 @@ if [[ ${pdate} -le ${latest_data} ]]; then
    #  time-stampped plots.  But it's here (borrowed from the RadMon) 
    #  to meet that contingency. 
    #--------------------------------------------------------------------
-   #${OZN_IG_SCRIPTS}/rm_img_files.pl --dir ${OZN_IMGN_TANKDIR} --nfl 30
+   ${OZN_IG_SCRIPTS}/rm_img_files.pl --dir ${OZN_TANKDIR_IMGS} --nfl 30
 
 else
   echo "unable to plot"

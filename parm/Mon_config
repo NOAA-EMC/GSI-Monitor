@@ -108,6 +108,7 @@ export JOB_QUEUE=${JOB_QUEUE:-$queue}
 export MON_PTMP=${MON_PTMP:-$ptmp}
 export MON_STMP=${MON_STMP:-$stmp}
 export MON_LOGDIR=${MON_LOGDIR:-$ptmp/logs}
+export MON_USH=${MON_USH:-${MY_GSI_MONITOR}/ush}
 export TANKDIR=${TANKDIR:-$tankdir}
 
 export WEBUSER=${WEBUSER:-esafford}
