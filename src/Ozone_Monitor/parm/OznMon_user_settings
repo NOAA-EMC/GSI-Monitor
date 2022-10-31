@@ -72,6 +72,10 @@ export REGIONAL_RR=${REGIONAL_RR:-0}
 #
 export CYCLE_INTERVAL=${CYCLE_INTERVAL:-6}
 
+#
+#  NUM_CYCLES is the number of cycles to be used time series plots.
+#
+export NUM_CYCLES=${NUM_CYCLES:-121}
 
 #
 #  CLEAN_TANKDIR controls automatic removal of old data files in

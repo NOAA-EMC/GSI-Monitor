@@ -84,11 +84,12 @@ done
 #  Modify tdef line in .ctl file to start at bdate.
 #
 if [[ -e ${SATYPE}.${dsrc}.ctl ]]; then
-   edate=`$NDATE -720 $PDATE`
-   ${OZN_IG_SCRIPTS}/update_ctl_tdef.sh ${SATYPE}.${dsrc}.ctl ${edate} 121
+   ((cyc=${NUM_CYCLES}-1, hrs=cyc*${CYCLE_INTERVAL}))
+   edate=`${NDATE} -${hrs} ${PDATE}`
+   ${OZN_IG_SCRIPTS}/update_ctl_tdef.sh ${SATYPE}.${dsrc}.ctl ${edate} ${NUM_CYCLES}
 
    if [[ $ADD_COMP -eq 1 ]]; then
-      ${OZN_IG_SCRIPTS}/update_ctl_tdef.sh ${COMP2}.${dsrc}.ctl ${edate} 121
+      ${OZN_IG_SCRIPTS}/update_ctl_tdef.sh ${COMP2}.${dsrc}.ctl ${edate} ${NUM_CYCLES}
    fi
 
 

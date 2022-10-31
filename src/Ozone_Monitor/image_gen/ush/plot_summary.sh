@@ -60,8 +60,9 @@ $UNCOMPRESS *.gz
 #  cycle will be the cycle specified by $PDATE.
 #
 if [[ -e ${SATYPE}.${ptype}.ctl ]]; then
-   bdate=`$NDATE -720 $PDATE`
-   ${OZN_IG_SCRIPTS}/update_ctl_tdef.sh ${SATYPE}.${ptype}.ctl ${bdate} 121 
+   ((cyc=${NUM_CYCLES}-1, hrs=cyc*${CYCLE_INTERVAL}))
+   bdate=`${NDATE} -${hrs} ${PDATE}`
+   ${OZN_IG_SCRIPTS}/update_ctl_tdef.sh ${SATYPE}.${ptype}.ctl ${bdate} ${NUM_CYCLES} 
 
 cat << EOF > ${SATYPE}.gs
 'open ${SATYPE}.${ptype}.ctl'

@@ -5,44 +5,18 @@
 #
 #  Main plot script for OznMon.
 #
-#  Usage:
-#
-#    OznMon_Plt.sh OZNMON_SUFFIX [-p|pdate yyyymmddcc] [-r|run gdas|gfs]
-#
-#	OZNMON_SUFFIX = data source identifier which matches data 
-#		  	in the OZN_TANKDIR directory.
-#       -p|--pdate    = specified cycle to plot.  If not specified the
-#			last available date will be plotted.
-#	-r|--run      = $RUN value, gdas|gfs, default is gdas.
-#
-#       -t|--tank     = parent directory to the oznmon data file location.  This will be extended by 
-#                       $OZNMON_SUFFIX, $RUN, and $PDATE to locate the extracted oznmon data.
-#                       Three data directory formats will be tried:
-#                          ops = ${tankdir}/${net}/${version}/${run}.${pdy}/${hh}/atmos/${monitor}
-#                          dev = ${tankdir}/${monitor}/stats/${net}/${run}.${pdy}/${hh}
-#                          mon = ${tankdir}/stats/${net}/${run}.${pdy}/${hh}/${monitor}
-#                       
-#                       If --tank is not specified then it defaults to OZN_TANKDIR (defined in 
-#                       parm/OznMon_config).
-#
-#       -c1|--comp1   = define first instrument/sat source to plot as comparison
-#                        (applies to time series plots only)
-#       -c2|--comp2   = define second instrument/sat source to plot as comparison
-#                        (applies to time series plots only)
-#
-#	NOTE:  Both COMP1 and COMP2 have to be defined to 
-#	       generate comparison plots as part of the COMP1
-#	       source's time plots.
 #-----------------------------------------------------------------------
 
 function usage {
   echo " "
-  echo "Usage:  OznMon_Plt.sh OZNMON_SUFFIX "
+  echo "Usage:  OznMon_Plt.sh OZNMON_SUFFIX [-p|--pdate -r|--run -n|--ncyc -c1|--comp1 -c2|--comp2] "
   echo "            OZNMON_SUFFIX is data source identifier which matches data in "
   echo "              the $OZN_TANKDIR directory."
   echo "            -p | --pdate yyyymmddcc to specify the cycle to be plotted."
   echo "              If unspecified the last available date will be plotted."
   echo "            -r | --run  the gdas|gfs run to be plotted, gdas is default"
+  echo "            -n | --ncyc is the number of cycles to be used in time series plots.  If"
+  echo "              not specified the default value in parm/RadMon_user_settins will be used"
   echo "            -t | --tank parent directory to the oznmon data file location.  This" 
   echo "              will be extended by $OZNMON_SUFFIX, $RUN, and $PDATE to locate the"
   echo "              extracted oznmon data."
@@ -53,11 +27,12 @@ function usage {
 
 echo start OznMon_Plt.sh
 
-
 nargs=$#
 echo nargs = $nargs
 
+num_cycles=""
 tank=""
+pdate=""
 
 while [[ $# -ge 1 ]]
 do
@@ -70,6 +45,10 @@ do
       ;;
       -r|--run)
          export RUN="$2"
+         shift # past argument
+      ;;
+      -n|--ncyc)
+         num_cycles="$2"
          shift # past argument
       ;;
       -t|--tank)
@@ -93,7 +72,7 @@ do
    shift
 done
 
-if [[ $nargs -lt 0 || $nargs -gt 9 ]]; then
+if [[ $nargs -lt 0 || $nargs -gt 13 ]]; then
    usage
    exit 1
 fi
@@ -110,6 +89,10 @@ fi
 if [[ ${#RUN} -le 0 ]]; then
    echo "setting RUN to gdas"
    export RUN=gdas 
+fi
+
+if [[ ${#num_cycles} -gt 0 ]]; then
+   export NUM_CYCLES=${num_cycles}
 fi
 
 echo "OZNMON_SUFFIX = $OZNMON_SUFFIX"
@@ -172,7 +155,6 @@ else
    fi
 fi
 export OZN_TANKDIR=${ozn_tankdir}
-echo "OZN_TANKDIR = $OZN_TANKDIR"
 
 #--------------------------------------------------------------------
 #  Set up OZN_TANKDIR_IMGS
@@ -217,7 +199,6 @@ if [[ ${#pdate} -le 0 ]]; then
       pdate=${last_cycle}
    fi
 fi
-
 
 #------------------------------------
 #  Confirm there is data for $pdate
