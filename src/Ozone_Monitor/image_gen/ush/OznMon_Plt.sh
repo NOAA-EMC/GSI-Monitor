@@ -29,8 +29,10 @@ echo start OznMon_Plt.sh
 
 nargs=$#
 echo nargs = $nargs
+
 num_cycles=""
 tank=""
+pdate=""
 
 while [[ $# -ge 1 ]]
 do
@@ -46,7 +48,9 @@ do
          shift # past argument
       ;;
       -n|--ncyc)
-         export num_cycles="$2"
+         num_cycles="$2"
+         shift # past argument
+      ;;
       -t|--tank)
          tank="$2" 
          shift # past argument
@@ -67,8 +71,6 @@ do
 
    shift
 done
-
-echo "num_cycles = $num_cycles"
 
 if [[ $nargs -lt 0 || $nargs -gt 13 ]]; then
    usage
@@ -153,7 +155,6 @@ else
    fi
 fi
 export OZN_TANKDIR=${ozn_tankdir}
-echo "OZN_TANKDIR = $OZN_TANKDIR"
 
 #--------------------------------------------------------------------
 #  Set up OZN_TANKDIR_IMGS
@@ -198,7 +199,6 @@ if [[ ${#pdate} -le 0 ]]; then
       pdate=${last_cycle}
    fi
 fi
-
 
 #------------------------------------
 #  Confirm there is data for $pdate
