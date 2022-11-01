@@ -9,6 +9,9 @@ function usage {
   echo "              if unspecified the last available date will be plotted"
   echo "            -r | --run   the gdas|gfs run to be plotted"
   echo "              use only if data in TANKdir stores both runs" 
+  echo "            -t | --tank parent directory to the oznmon data file location.  This"
+  echo "              will be extended by $MINMON_SUFFIX, $RUN, and $PDATE to locate the"
+  echo "              extracted oznmon data."
   echo " "
 }
 
@@ -16,12 +19,13 @@ function usage {
 echo start MinMonPlt.sh
 
 nargs=$#
-if [[ $nargs -lt 1 || $nargs -gt 5 ]]; then
+if [[ $nargs -lt 1 || $nargs -gt 7 ]]; then
    usage
    exit 1
 fi
 
 PDATE=""
+tank=""
 
 while [[ $# -ge 1 ]]
 do
@@ -35,6 +39,10 @@ do
       ;;
       -r|--run)
          export RUN="$2"
+         shift # past argument
+      ;;
+      -t|--tank)
+         export tank="$2"
          shift # past argument
       ;;
       *)
@@ -54,6 +62,11 @@ fi
 if [[ ${#RUN} -le 0 ]]; then 
    export RUN=gdas
 fi
+
+if [[ ${#tank} -le 0 ]]; then
+   tank=${TANKDIR}
+fi
+
 run_suffix=${MINMON_SUFFIX}_${RUN}
 
 echo "MINMON_SUFFIX = $MINMON_SUFFIX"
@@ -94,15 +107,6 @@ fi
 
 
 #--------------------------------------------------------------------
-#  Specify STATSDIR for this suffix
-#--------------------------------------------------------------------
-if [[ $GLB_AREA -eq 1 ]]; then
-   STATSDIR=${M_TANKverf}/${MINMON_SUFFIX}
-else
-   STATSDIR=${M_TANKverf}/regional/${MINMON_SUFFIX}
-fi
-
-#--------------------------------------------------------------------
 # Determine cycle to plot.  Exit if cycle is > last available
 # data.
 #
@@ -112,14 +116,15 @@ fi
 #   2.  Read from ${TANKimg}/last_plot_time file and advanced
 #        one cycle.
 #   3.  Using the last available cycle for which there is
-#        data in ${STATSDIR}.
+#        data in ${tank}.
 #
 # If option 2 has been used the ${IMGNDIR}/last_plot_time file
 # will be updated with ${PDATE} if the plot is able to run.
 #--------------------------------------------------------------------
 
 last_plot_time=${MIN_IMGN_TANKDIR}/${RUN}/minmon/last_plot_time
-latest_data=`${M_IG_SCRIPTS}/find_cycle.pl --cyc 1 --dir ${STATSDIR} --run ${RUN}`
+latest_data=`${MON_USH}/find_last_cycle.sh --net ${MINMON_SUFFIX} --run ${RUN} --mon minmon --tank ${tank}`
+echo "latest_data = $latest_data"
 
 if [[ ${PDATE} = "" ]]; then
    if [[ -e ${last_plot_time} ]]; then
@@ -146,28 +151,19 @@ fi
 #--------------------------------------------------------------------
 pid=${pid:-$$}
 
-if [[ ${#RUN} -gt 0 ]]; then
-   WORKDIR=${WORKDIR}/IG.${RUN}.${PDATE}.o${pid}
-else
-   WORKDIR=${WORKDIR}/IG.${PDATE}.o${pid}
-fi
-
+WORKDIR=${WORKDIR}/IG.${RUN}.${PDATE}.o${pid}
 if [[ ! -d $WORKDIR ]]; then
    mkdir -p $WORKDIR
 fi
+
 cd $WORKDIR
 
-#--------------------------------------------------------------------
-#  Copy gnorm_data.txt file to WORKDIR.
-#--------------------------------------------------------------------
-pdy=`echo $PDATE|cut -c1-8`
-cyc=`echo $PDATE|cut -c9-10`
-echo STATSDIR = ${STATSDIR}
 
-gnorm_dir=${STATSDIR}/${RUN}.${pdy}/${cyc}/minmon
-if [[ ! -d ${gnorm_dir} ]]; then
-   gnorm_dir=${STATSDIR}/${RUN}.${pdy}
-fi
+#--------------------------------------------------------------------
+#  Copy gnorm_data.txt and errmsg file to WORKDIR.
+#--------------------------------------------------------------------
+gnorm_dir=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${PDATE} \
+                  --net ${MINMON_SUFFIX} --tank ${tank} --mon minmon`
 
 gnorm_file=${gnorm_dir}/gnorm_data.txt
 
@@ -177,6 +173,7 @@ else
    echo "WARNING:  Unable to locate ${gnorm_file}!"
 fi
 
+errmsg_file=${gnorm_dir}/${PDATE}.errmsg.txt
 
 #------------------------------------------------------------------
 #  Copy the cost.txt and cost_terms.txt files files locally
@@ -208,16 +205,9 @@ cdate=$bdate
 #   enable calculation of 7 day average
 #------------------------------------------------------------------
 while [[ $cdate -le $edate ]]; do
-   echo "processing cdate = $cdate"
 
-   pdy=`echo $cdate | cut -c1-8`
-   cyc=`echo $cdate | cut -c9-10`
-
-   gnorm_dir=${STATSDIR}/${RUN}.${pdy}/${cyc}/minmon
-
-   if [[ ! -d ${gnorm_dir} ]]; then
-      gnorm_dir=${STATSDIR}/${RUN}.${pdy}
-   fi
+   gnorm_dir=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${cdate} \
+                  --net ${MINMON_SUFFIX} --tank ${tank} --mon minmon`
 
    gnorms_file=${gnorm_dir}/${cdate}.gnorms.ieee_d
    local_gnorm=${cdate}.gnorms.ieee_d
@@ -283,7 +273,6 @@ if [[ ! -e ${WORKDIR}/plot_4_gnorms.gs ]]; then
    cp ${M_IG_GRDS}/plot_4_gnorms.gs ${WORKDIR}/.
 fi
 
- 
 cat << EOF >${PDATE}_plot_gnorms.gs
 'open allgnorm.ctl'
 'run plot_gnorms.gs $run_suffix $PDATE x1100 y850'
@@ -327,25 +316,17 @@ cp *cost*.txt tmp/.
 #--------------------------------------------------------------------
 if [[ ${DO_ERROR_RPT} -eq 1 ]]; then
 
-   err_msg=${STATSDIR}/${RUN}.${pdy}/${cyc}/minmon/${PDATE}.errmsg.txt
-
-   if [[ $MAIL_CC == "" ]]; then
-      if [[ -e /u/Edward.Safford/bin/get_cc_list.pl ]]; then
-         MAIL_CC=`/u/Edward.Safford/bin/get_cc_list.pl --nr ${run_suffix} --mon MinMon`
-      fi
-   fi
-
-   if [[ -e $err_msg ]]; then
+   if [[ -e ${errmsg_file} ]]; then
       err_rpt="./err_rpt.txt"
-      `cat $err_msg > $err_rpt`
-      echo "" >> $err_rpt
-      echo "" >> $err_rpt
-      echo "" >> $err_rpt
-      echo "*********************** WARNING ***************************" >> $err_rpt
-      echo "THIS IS AN AUTOMATED EMAIL.  REPLIES TO SENDER WILL NOT BE"  >> $err_rpt
-      echo "RECEIVED.  PLEASE DIRECT REPLIES TO $MAIL_TO"                >> $err_rpt
-      echo "*********************** WARNING ***************************" >> $err_rpt
-    
+      `cat ${errmsg_file} > ${err_rpt}`
+      echo "" >> ${err_rpt}
+      echo "" >> ${err_rpt}
+      echo "" >> ${err_rpt}
+      echo "*********************** WARNING ***************************" >> ${err_rpt}
+      echo "THIS IS AN AUTOMATED EMAIL.  REPLIES TO SENDER WILL NOT BE"  >> ${err_rpt}
+      echo "RECEIVED.  PLEASE DIRECT REPLIES TO $MAIL_TO"                >> ${err_rpt}
+      echo "*********************** WARNING ***************************" >> ${err_rpt}
+   
       if [[ $MAIL_CC == "" ]]; then
          /bin/mail -s MinMon_error_report ${MAIL_TO}< ${err_rpt}
       else
