@@ -1,6 +1,14 @@
 #!/bin/bash
 
+#---------------------------------------------------------------------------
 #  MinMon data copy script
+#
+#  This script copies extracted MinMon data from ops, wkfl, or mon format
+#  (see GSI-monitor/ush/get_stats_path.sh for formats) and stores it in
+#  $TANKDIR (see GSI-monitor/parm/Mon_config) in mon format.
+#
+#---------------------------------------------------------------------------
+
 
 #--------------------------------------------------------------------
 #  usage
@@ -111,14 +119,6 @@ echo "pdate = $pdate"
 pdy=`echo $pdate|cut -c1-8`
 cyc=`echo $pdate|cut -c9-10`
 
-#----------------------------------------------
-#  Create the new directory to store the data
-#
-min_tank=${M_TANKverf}/${MINMON_SUFFIX}/${run}.${pdy}/${cyc}/minmon
-if [[ ! -d ${min_tank} ]]; then
-   mkdir -p ${min_tank}
-fi
-
 #---------------------------------------------------------------
 #  Verify the data files are available for this cycle
 #
@@ -129,6 +129,14 @@ echo data_dir = $data_dir
 if [[ ! -d ${data_dir} ]]; then
    echo "Unable to copy, ${data_dir} not found"
    exit 5
+fi
+
+#-----------------------------------------------------------------
+#  Create the new directory to store the data and copy the files
+#
+min_tank=${M_TANKverf}/${MINMON_SUFFIX}/${run}.${pdy}/${cyc}/minmon
+if [[ ! -d ${min_tank} ]]; then
+   mkdir -p ${min_tank}
 fi
 
 cp ${data_dir}/*${pdate}* ${min_tank}/.

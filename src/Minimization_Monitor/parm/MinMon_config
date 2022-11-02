@@ -38,29 +38,12 @@ TANKimg=${TANKimg:-${TANKDIR}/imgn}
 #
 export MY_MINMON=$MY_GSI_MONITOR/src/Minimization_Monitor
 
-export HOMEgdas=${HOMEgdas:-${MY_MINMON}/nwprod/gdas}
-export HOMEgfs=${HOMEgdas:-${MY_MINMON}/nwprod/gfs}
-
-export M_FIXgdas=${M_FIXgdas:-${HOMEgdas}/fix}
-export M_FIXgfs=${M_FIXgfs:-${HOMEgfs}/fix}
-
-export HOMEnam=${MY_MINMON}/nwprod/nam_minmon
-export HOMEminmon=${MY_MINMON}/nwprod/minmon_shared
-
-export MINMON_DE=${MINMON_DE:-${MY_MINMON}/data_xtrct}
-export M_DE_SCRIPTS=${M_DE_SCRIPTS:-${MINMON_DE}/ush}
-
-export MINMON_IG=${MINMON_IG:-${MY_MINMON}/image_gen}
+MINMON_IG=${MINMON_IG:-${MY_MINMON}/image_gen}
 export M_IG_SCRIPTS=${M_IG_SCRIPTS:-${MINMON_IG}/ush}
 export M_IG_GRDS=${M_IG_GRDS:-${MINMON_IG}/grds}
-export M_IG_PARM=${M_IG_PARM:-${MINMON_IG}/parm}
 
 export MY_STMP=${MY_STMP:-$MON_STMP}
-export MY_PTMP=${MY_PTMP:-$MON_PTMP}
 
-export DATA_IN=${DATA_IN:-${MY_STMP}/${MINMON_SUFFIX}/${RUN}/minmon}	 #rename to WORK_DIR
-export LOGdir=${LOGdir:-${MON_LOGDIR}/${MINMON_SUFFIX}/${RUN}/minmon}
-
-export M_TANKverf=${M_TANKverf:-${TANKverf}}	
-export MIN_IMGN_TANKDIR=${MIN_IMGN_TANKDIR:-${TANKimg}/${MINMON_SUFFIX}}
+export M_TANKverf=${M_TANKverf:-${TANKverf}}
+export MIN_IMG_TANKDIR=${MIN_IMG_TANKDIR:-${TANKimg}/${MINMON_SUFFIX}}
 

@@ -2,9 +2,9 @@
 
 function usage {
   echo " "
-  echo "Usage:  MinMonPlt.sh MINMON_SUFFIX "
+  echo "Usage:  MinMonPlt.sh MINMON_SUFFIX [-p|--pdate -r|--run -t|--tank]"
   echo "            MINMON_SUFFIX is data source identifier that matches data in "
-  echo "              the $M_TANKverf/stats directory."
+  echo "              the $TANKDIR/stats or input tank directory."
   echo "            -p | --pdate yyyymmddcc to specify the cycle to be plotted"
   echo "              if unspecified the last available date will be plotted"
   echo "            -r | --run   the gdas|gfs run to be plotted"
@@ -14,7 +14,6 @@ function usage {
   echo "              extracted oznmon data."
   echo " "
 }
-
 
 echo start MinMonPlt.sh
 
@@ -63,10 +62,6 @@ if [[ ${#RUN} -le 0 ]]; then
    export RUN=gdas
 fi
 
-if [[ ${#tank} -le 0 ]]; then
-   tank=${TANKDIR}
-fi
-
 run_suffix=${MINMON_SUFFIX}_${RUN}
 
 echo "MINMON_SUFFIX = $MINMON_SUFFIX"
@@ -113,16 +108,19 @@ fi
 # PDATE can be set one of 3 ways.  This is the order of priority:
 #
 #   1.  Specified via command line argument
-#   2.  Read from ${TANKimg}/last_plot_time file and advanced
-#        one cycle.
+#   2.  Read from last_plot_time file and advance one cycle.
 #   3.  Using the last available cycle for which there is
 #        data in ${tank}.
 #
-# If option 2 has been used the ${IMGNDIR}/last_plot_time file
+# If option 2 has been used the last_plot_time file
 # will be updated with ${PDATE} if the plot is able to run.
 #--------------------------------------------------------------------
 
-last_plot_time=${MIN_IMGN_TANKDIR}/${RUN}/minmon/last_plot_time
+if [[ ${#tank} -le 0 ]]; then
+   tank=${TANKDIR}
+fi
+
+last_plot_time=${MIN_IMG_TANKDIR}/${RUN}/minmon/last_plot_time
 latest_data=`${MON_USH}/find_last_cycle.sh --net ${MINMON_SUFFIX} --run ${RUN} --mon minmon --tank ${tank}`
 echo "latest_data = $latest_data"
 
@@ -136,7 +134,6 @@ if [[ ${PDATE} = "" ]]; then
       PDATE=${latest_data}
    fi
 fi
-
 
 if [[ ${PDATE} -gt ${latest_data} ]]; then
   echo " Unable to plot, pdate is > latest_data, ${PDATE}, ${latest_data}"
@@ -160,7 +157,7 @@ cd $WORKDIR
 
 
 #--------------------------------------------------------------------
-#  Copy gnorm_data.txt and errmsg file to WORKDIR.
+#  Copy gnorm_data.txt file to WORKDIR.
 #--------------------------------------------------------------------
 gnorm_dir=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${PDATE} \
                   --net ${MINMON_SUFFIX} --tank ${tank} --mon minmon`
@@ -338,14 +335,14 @@ fi
 
 #--------------------------------------------------------------------
 #  Push the image & txt files over to the server 
-#  or move files to $MIN_IMGN_TANKDIR
+#  or move files to $MIN_IMG_TANKDIR
 #--------------------------------------------------------------------
 cd ./tmp
 if [[ ${MY_MACHINE} = "wcoss2" ]]; then
    $RSYNC -ave ssh --exclude *.ctl*  ./ \
      ${WEBUSER}@${WEBSVR}:${WEBDIR}/$run_suffix/
 else
-   img_dir=${MIN_IMGN_TANKDIR}/${RUN}/minmon
+   img_dir=${MIN_IMG_TANKDIR}/${RUN}/minmon
    if [[ ! -d ${img_dir} ]]; then
       mkdir -p ${img_dir}
    fi
