@@ -41,7 +41,7 @@ case $MY_MACHINE in
    s4)
       export SUB=/usr/bin/sbatch
       export SERVICE_PARTITION="serial"
-      tankdir="/data/users/dhuber/monitor"
+      tankdir="/data/users/$USER/monitor"
       ptmp="/scratch/users/$USER"
       stmp="/scratch/users/$USER"
       queue=""
