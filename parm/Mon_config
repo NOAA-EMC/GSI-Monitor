@@ -53,14 +53,20 @@ case $MY_MACHINE in
       ;;
            
    jet)
-      module use /lfs4/HFIP/hfv3gfs/nwprod/hpc-stack/libs/modulefiles/stack
-      module load hpc/1.1.0 hpc-intel/18.0.5.274 hpc-impi/2018.4.274
-      module load wgrib2/2.0.8
-      module load grads/2.2.1
-      module load prod_util/1.2.2
-
       export SUB=/apps/slurm/default/bin/sbatch
       export SERVICE_PARTITION="service"
+      account="nesdis-rdo2"
+
+      tankdir="/lfs1/NESDIS/nesdis-rdo2/$USER/monitor"
+      ptmp="/lfs1/NESDIS/nesdis-rdo2/$USER/para/ptmp"
+      stmp="/lfs1/NESDIS/nesdis-rdo2/$USER/para/stmp"
+      BATCH_PARTITION="xjet"
+
+      export PARTITION_OZNMON=${PARTITION_OZNMON:-${BATCH_PARTITION}}
+
+      queue=""
+      project=""
+
       ;;
 
    hera)
