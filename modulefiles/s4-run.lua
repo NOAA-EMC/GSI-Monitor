@@ -18,4 +18,4 @@ load(pathJoin("prod_util", prod_util_ver))
 load("common-run")
 
 
-whatis("Description: GSI Monitoring run-time environment on Hera.intel")
+whatis("Description: GSI Monitoring run-time environment on S4")
