@@ -1,6 +1,14 @@
 #!/bin/bash
 
+#---------------------------------------------------------------------------
 #  MinMon data copy script
+#
+#  This script copies extracted MinMon data from ops, wkfl, or mon format
+#  (see GSI-monitor/ush/get_stats_path.sh for formats) and stores it in
+#  $TANKDIR (see GSI-monitor/parm/Mon_config) in mon format.
+#
+#---------------------------------------------------------------------------
+
 
 #--------------------------------------------------------------------
 #  usage
@@ -59,7 +67,7 @@ do
 done
 
 if [[ $data = "" ]]; then
-   data=/lfs/h1/ops/prod/com/gfs/v16.2
+   data=/lfs/h1/ops/prod/com		# default to wcoss2 operational data
 fi
 
 if [[ $run = "" ]]; then
@@ -98,28 +106,40 @@ if [[ $? -ne 0 ]]; then
 fi
 
 
-tank=${M_TANKverf}/${MINMON_SUFFIX}
+#------------------------------------------------------------------------------------
+#  If pdate was not supplied, find the last cycle in TANKDIR and increment one cycle
+#
 if [[ $pdate = "" ]]; then
-   ldate=`${M_DE_SCRIPTS}/find_cycle.pl --cyc 1 --dir ${tank} --run ${run}`
+   ldate=`${MON_USH}/find_last_cycle.sh --net ${MINMON_SUFFIX} --run ${run} --mon minmon --tank ${TANKDIR}`
    pdate=`${NDATE} +06 $ldate`
 fi
 
 echo "pdate = $pdate"
-echo ""
 
 pdy=`echo $pdate|cut -c1-8`
 cyc=`echo $pdate|cut -c9-10`
 
-data_loc=${data}/${run}.${pdy}/${cyc}/atmos/minmon
-tank=${tank}/${run}.${pdy}/${cyc}/minmon
-mkdir -p ${tank}
+#---------------------------------------------------------------
+#  Verify the data files are available for this cycle
+#
+data_dir=""
+data_dir=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${pdate} --net ${MINMON_SUFFIX} --tank ${data} --mon minmon`
+echo data_dir = $data_dir
 
-if [[ ! -d ${data_loc} ]]; then
-   echo "Unable to copy, ${data_loc} not found"
+if [[ ! -d ${data_dir} ]]; then
+   echo "Unable to copy, ${data_dir} not found"
    exit 5
 fi
 
-cp ${data_loc}/*${pdate}* ${tank}/.
-cp ${data_loc}/gnorm_data.txt ${tank}/.
+#-----------------------------------------------------------------
+#  Create the new directory to store the data and copy the files
+#
+min_tank=${M_TANKverf}/${MINMON_SUFFIX}/${run}.${pdy}/${cyc}/minmon
+if [[ ! -d ${min_tank} ]]; then
+   mkdir -p ${min_tank}
+fi
+
+cp ${data_dir}/*${pdate}* ${min_tank}/.
+cp ${data_dir}/gnorm_data.txt ${min_tank}/.
 
 
