@@ -132,12 +132,11 @@ fi
 
 echo GDATE = $GDATE
 
-PDY=`echo $PDATE|cut -c1-8`
+export PDY=`echo $PDATE|cut -c1-8`
 export CYC=`echo $PDATE|cut -c9-10`
 
 export GCYC=`echo $GDATE|cut -c9-10`
 export PDYm6h=`echo $GDATE|cut -c1-8`
-echo PDYm6h = $PDYm6h
 
 
 if [[ $MY_MACHINE == "hera" ]]; then
@@ -191,6 +190,7 @@ if [[ ! -s ${pgrbf06} ]]; then
    export pgrbf06="${C_GDATDIR}/gdas.t${GCYC}z.pgrb2.1p00.f006"
 fi
 
+
 #---------------------------------------------
 # override the default convinfo definition
 # if there's a copy in C_TANKDIR/info
@@ -228,12 +228,7 @@ if [ -s $cnvstat  -a -s $pgrbf00 -a -s $pgrbf06 ]; then
          rm -f ${logfile}
       fi
 
-      if [[ $MY_MACHINE = "wcoss_d" || $MY_MACHINE = "wcoss_c" ]]; then
-        $SUB -q $JOB_QUEUE -P $PROJECT -o ${logfile} -M 1500 \
-		-R affinity[core] -W 0:50 -J ${jobname} \
-		-cwd $PWD ${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON
-
-      elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
+      if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
          $SUB -A $ACCOUNT --ntasks=1 --time=00:30:00 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o $C_LOGDIR/DE.${PDY}.${CYC}.log \
 		${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON

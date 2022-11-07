@@ -27,7 +27,7 @@ export WEBDIR=${WEBDIR:-/home/people/emc/www/htdocs/gmb/gdas/es_conv}
 #export C_TANKverf=${C_TANKverf:-${CONMON_TANKDIR}}
 
 export C_TANKDIR=${TANKDIR}/stats/${CONMON_SUFFIX}
-export C_IMGNDIR=${CTANKDIR}/imgn/${CONMON_SUFFIX}/${RUN}/conmon
+export C_IMGNDIR=${TANKDIR}/imgn/${CONMON_SUFFIX}/${RUN}/conmon
 
 
 
@@ -57,109 +57,45 @@ export C_IMGNDIR=${CTANKDIR}/imgn/${CONMON_SUFFIX}/${RUN}/conmon
 #   export grib2=${grib2:-1}
 
 
+#---------------------------------------------------------------------
+# The ConMon time and vert plots include 10 regions, some of which   
+# include others.  This takes up an inordinate amount of server space.
+# The CONMON_RESTRICT_PLOT_AREAS reduces the regions to Global, 
+# N. America, S. America, Tropics, Europe, and Asia.
+#
+export CONMON_RESTRICT_PLOT_AREAS=1
+
+#
+#  NUM_CYCLES is the number of cycles to be used time series plots.
+#
+export NUM_CYCLES=${NUM_CYCLES:-121}
+   
+#
+#  Automatically remove old, extracted data files
+#
+export CLEAN_TANKDIR=${CLEAN_TANKDIR:-1}
+
+#
+#  Number of cycles worth of image data to be retained in tankdir
+#
+export NUM_IMG_CYCLES=${NUM_IMG_CYCLES:-4}
+
+export WGRIB2=`which wgrib2`
+export GRADS=`which grads`
+export STNMAP=`which stnmap`
+
 
 #--------------------------------------
 #  Definitions for internal reference
 #
-
 export MY_CONMON=${MY_GSI_MONITOR}/src/Conventional_Monitor
 
-   
-   #---------------------------------------------------------------------
-   # The ConMon time and vert plots include 10 regions, some of which   
-   # include others.  This takes up an inordinate amount of server space.
-   # The CONMON_RESTRICT_PLOT_AREAS reduces the regions to Global, 
-   # N. America, S. America, Tropics, Europe, and Asia.
-   #
-#   export CONMON_RESTRICT_PLOT_AREAS=1
+export C_STMP_USER=${C_STMP_USER:-${MON_STMP}/${LOGNAME}}
+export C_PTMP_USER=${C_PTMP_USER:-${MON_PTMP}/${LOGNAME}}
 
+export C_LOGDIR=${MON_LOGDIR}/${CONMON_SUFFIX}/${RUN}/conmon
+#export WORK_conmon=${WORK_conmon:-${C_STMP_USER}/${CONMON_SUFFIX}/${RUN}/ConMon}
 
-   if [[ $MY_MACHINE = "s4" ]]; then
-      module load license_intel
-      module use /data/prod/hpc-stack/modulefiles/stack
-      module load hpc/1.1.0 hpc-intel/18.0.4 hpc-impi/18.0.4
-      module load wgrib2/2.0.8
-      module load grads/2.2.1
-      module load prod_util/1.2.2
-
-      export SUB=/usr/bin/sbatch
-      export NDATE=/data/prod/hpc-stack/intel-18.0.4/prod_util/1.2.2/bin/ndate
-      export COMPRESS=${COMPRESS:-gzip}
-      export UNCOMPRESS=${UNCOMPRESS:-"gunzip -f"}
-      export SERVICE_PARTITION="serial"
-
-   elif [[ $MY_MACHINE = "jet" ]]; then
-      module use /lfs4/HFIP/hfv3gfs/nwprod/hpc-stack/libs/modulefiles/stack
-      module load hpc/1.1.0 hpc-intel/18.0.5.274 hpc-impi/2018.4.274
-      module load wgrib2/2.0.8
-      module load grads/2.2.1
-      module load prod_util/1.2.2
-
-      export SUB=/apps/slurm/default/bin/sbatch
-      export NDATE=/lfs4/HFIP/hfv3gfs/nwprod/hpc-stack/libs/intel-18.0.5.274/prod_util/1.2.2/bin/ndate
-      export COMPRESS=${COMPRESS:-gzip}
-      export UNCOMPRESS=${UNCOMPRESS:-"gunzip -f"}
-      export SERVICE_PARTITION="service"
-
-   elif [[ $MY_MACHINE = "hera" ]]; then
-
-      export SUB=/apps/slurm/default/bin/sbatch
-      export NDATE=/home/Edward.Safford/bin/ndate
-      export COMPRESS=${COMPRESS:-gzip}
-      export UNCOMPRESS=${UNCOMPRESS:-"gunzip -f"}
-      export SERVICE_PARTITION="service"
-
-   elif [[ $MY_MACHINE = "wcoss2" ]]; then
-      export COMPRESS=/usr/bin/gzip
-      export UNCOMPRESS="/usr/bin/gunzip -f"
-   fi
-
-   export WGRIB2=`which wgrib2`
-   export GRADS=`which grads`
-   export STNMAP=`which stnmap`
-
-
-#   export Z="gz"
-#
-#   export ACCOUNT=${ACCOUNT:-}
-#   export PROJECT=
-#   export JOB_QUEUE=
-# 
-#   export C_STMP=${C_STMP:-/gpfs/dell2/stmp}
-#   export C_STMP_USER=${C_STMP_USER:-${C_STMP}/${LOGNAME}}
-#   export C_PTMP=${C_PTMP:-/gpfs/dell2/ptmp}
-#   export C_PTMP_USER=${C_PTMP_USER:-${C_PTMP}/${LOGNAME}}
-#
-#   export C_LOGDIR=${C_PTMP_USER}/logs/${CONMON_SUFFIX}/${RUN}/conmon
-#   export WORK_conmon=${WORK_conmon:-${C_STMP_USER}/${CONMON_SUFFIX}/${RUN}/ConMon}
-
-   #
-   #  NUM_CYCLES is the number of cycles to be used time series plots.
-   #
-#   export NUM_CYCLES=${NUM_CYCLES:-121}
-   
-   #
-   #  Automatically remove old, extracted data files
-   #
-#   export CLEAN_TANKDIR=${CLEAN_TANKDIR:-1}
-
-   #
-   #  Number of cycles worth of image data to be retained in tankdir
-   #
-#   export NUM_IMG_CYCLES=${NUM_IMG_CYCLES:-4}
-
-   #
-   #  Web server resources include the sever name (WEB_SVR), the user name
-   #  on the web server (WEB_USER), and location of the top level directory
-   #  for the html on the web server (WEBDIR).
-   #
-#   export WEBUSER=esafford
-#   export WEBSVR=emcrzdm
-
-
-   #
-   #  Definitions for internal reference
-   #
 #   export CONMON_DATA_EXTRACT=${CONMON_DATA_EXTRACT:-${MY_CONMON}/data_extract}
 #   export C_DE_EXEC=${C_DE_EXEC:-${CONMON_DATA_EXTRACT}/exec}
 #   export C_DE_PARM=${C_DE_PARM:-${CONMON_DATA_EXTRACT}/parm}
@@ -176,10 +112,10 @@ export MY_CONMON=${MY_GSI_MONITOR}/src/Conventional_Monitor
 #
 #   export CONMON_PARM=${CONMON_PARM:-${MY_CONMON}/parm}
 #
-#   export HOMEconmon_shared=${HOMEconmon_shared:-${MY_CONMON}/nwprod/conmon_shared}
-#   export HOMEgdas_conmon=${HOMEgdas_conmon:-${MY_CONMON}/nwprod/gdas_conmon}
+   export HOMEconmon_shared=${HOMEconmon_shared:-${MY_CONMON}/nwprod/conmon_shared}
+   export HOMEgdas_conmon=${HOMEgdas_conmon:-${MY_CONMON}/nwprod/gdas_conmon}
 #   export HOMEgfs_conmon=$HOMEgdas_conmon
 #
-#   export USHconmon=${USHconmon:-${HOMEconmon_shared}/ush}
-#   export EXECconmon=${EXECconmon:-${HOMEconmon_shared}/exec}
+   export USHconmon=${USHconmon:-${HOMEconmon_shared}/ush}
+   export EXECconmon=${EXECconmon:-${GSI_MON_BIN}}
 
