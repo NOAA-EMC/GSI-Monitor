@@ -43,14 +43,14 @@ for type in ${SATYPE}; do
  
    while [[ ${found} -eq 0 && $ctr -gt 0 ]]; do
  
-      if [[ $REGIONAL_RR -eq 1 ]]; then         # REGIONAL_RR stores hrs 18-23 in next
-         tdate=`$NDATE +6 ${test_day}`          # day's radmon.yyymmdd directory
-         pdy=`echo $tdate|cut -c1-8`
-         cyc=`echo $tdate|cut -c9-10`
-      else
+#      if [[ $REGIONAL_RR -eq 1 ]]; then         # REGIONAL_RR stores hrs 18-23 in next
+#         tdate=`$NDATE +6 ${test_day}`          # day's radmon.yyymmdd directory
+#         pdy=`echo $tdate|cut -c1-8`
+#         cyc=`echo $tdate|cut -c9-10`
+#      else
          pdy=`echo $test_day|cut -c1-8`
          cyc=`echo $test_day|cut -c9-10`
-      fi
+#      fi
  
 
       #---------------------------------------------------
@@ -66,15 +66,16 @@ for type in ${SATYPE}; do
          #  Locate $ieee_src
          #
          ieee_src=${TANKverf}/${RUN}.${pdy}/${cyc}/${MONITOR}
-         if [[ ! -d ${ieee_src} ]]; then
-            ieee_src=${TANKverf}/${RUN}.${pdy}/${MONITOR}
-         fi
-         if [[ ! -d ${ieee_src} ]]; then
-            ieee_src=${TANKverf}/${RUN}.${pdy}
-         fi
-         if [[ ! -d ${ieee_src} ]]; then
-            ieee_src=${TANKverf}/${MONITOR}.${pdy}
-         fi
+	 ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${test_day} --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
+#         if [[ ! -d ${ieee_src} ]]; then
+#            ieee_src=${TANKverf}/${RUN}.${pdy}/${MONITOR}
+#         fi
+#         if [[ ! -d ${ieee_src} ]]; then
+#            ieee_src=${TANKverf}/${RUN}.${pdy}
+#         fi
+#         if [[ ! -d ${ieee_src} ]]; then
+#            ieee_src=${TANKverf}/${MONITOR}.${pdy}
+#         fi
  
          using_tar=0
          #--------------------------------------------------------------

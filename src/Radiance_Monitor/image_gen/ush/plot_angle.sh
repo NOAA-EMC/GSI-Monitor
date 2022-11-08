@@ -71,29 +71,31 @@ for type in ${SATYPE2}; do
    #
    while [[ $cdate -le $edate ]]; do
 
-      if [[ $REGIONAL_RR -eq 1 ]]; then
-         tdate=`$NDATE +6 $cdate`
-         day=`echo $tdate | cut -c1-8`
-         cyc=`echo $cdate | cut -c9-10`
-         . ${IG_SCRIPTS}/rr_set_tz.sh $cyc
-      else
+  #    if [[ $REGIONAL_RR -eq 1 ]]; then
+  #       tdate=`$NDATE +6 $cdate`
+  #       day=`echo $tdate | cut -c1-8`
+  #       cyc=`echo $cdate | cut -c9-10`
+  #       . ${IG_SCRIPTS}/rr_set_tz.sh $cyc
+  #    else
          day=`echo $cdate | cut -c1-8`
          cyc=`echo $cdate | cut -c9-10`
-      fi
+  #    fi
 
       #----------------------------------------------------
       #  Attempt to locate the extracted ieee data files.
       #
-      ieee_src=${TANKverf}/${RUN}.${day}/${cyc}/${MONITOR}
-      if [[ ! -d ${ieee_src} ]]; then
-         ieee_src=${TANKverf}/${RUN}.${day}/${MONITOR}
-      fi
-      if [[ ! -d ${ieee_src} ]]; then
-         ieee_src=${TANKverf}/${MONITOR}.${day}
-      fi
-      if [[ ! -d ${ieee_src} ]]; then
-         ieee_src=${TANKverf}/${RUN}.${day}
-      fi
+#      ieee_src=${TANKverf}/${RUN}.${day}/${cyc}/${MONITOR}
+      ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${cdate} --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
+
+#      if [[ ! -d ${ieee_src} ]]; then
+#         ieee_src=${TANKverf}/${RUN}.${day}/${MONITOR}
+#      fi
+#      if [[ ! -d ${ieee_src} ]]; then
+#         ieee_src=${TANKverf}/${MONITOR}.${day}
+#      fi
+#      if [[ ! -d ${ieee_src} ]]; then
+#         ieee_src=${TANKverf}/${RUN}.${day}
+#      fi
 
       #-----------------------------------------------------------
       #  Locate the data files, first checking for a tar file,
@@ -129,7 +131,7 @@ for type in ${SATYPE2}; do
    prefix="angle."
    dfiles=`ls *.ieee_d`
    if [[ $dfiles = "" ]]; then
-      echo "NO DATA available for $type, aborting bcoef plot"
+      echo "NO DATA available for $type, aborting angle plot"
       continue
    fi
 
@@ -195,9 +197,9 @@ fi
 #--------------------------------------------------------------------
 # Clean $wrkdir 
 #
-echo Removing wrkdir = $wrkdir
-cd $wrkdir
-cd ../
-rm -rf $wrkdir
+#echo Removing wrkdir = $wrkdir
+#cd $wrkdir
+#cd ../
+#rm -rf $wrkdir
 
 exit

@@ -26,11 +26,16 @@ function usage {
   echo "            -n|--ncyc is the number of cycles to be used in time series plots.  If"
   echo "              not specified the default value in parm/RadMon_user_settins will be used"
   echo ""
+  echo "            -t | --tank parent directory to the adnmon data file location.  This"
+  echo "              will be extended by \$RADMON_SUFFIX, \$RUN, and \$PDATE to locate the"
+  echo "              extracted radmon data."
+  echo ""
 }
 
 echo start RadMon_IG_glb.sh
 echo
 
+set -ax
 #--------------------------------------------------------------------
 #  RadMon_DE_glb begins here.
 #--------------------------------------------------------------------
@@ -48,6 +53,7 @@ fi
 run=gdas
 pdate=""
 num_cycles=""
+tank=""
 
 while [[ $# -ge 1 ]]
 do
@@ -64,6 +70,10 @@ do
       ;;
       -n|--ncyc)
          num_cycles="$2"
+         shift # past argument
+      ;;
+      -t|--tank)
+         tank="$2"
          shift # past argument
       ;;
       *)
@@ -120,6 +130,10 @@ if [[ $? -ne 0 ]]; then
    exit $?
 fi
 
+if [[ ${#tank} -le 0 ]]; then
+   tank=${TANKDIR}
+fi
+export R_TANKDIR=${tank}
 
 if [[ ! -d ${IMGNDIR} ]]; then
    mkdir -p ${IMGNDIR}
@@ -142,12 +156,12 @@ fi
 #--------------------------------------------------------------------
 last_plot_time=${TANKimg}/last_plot_time
 
-latest_data=`${IG_SCRIPTS}/nu_find_cycle.pl --cyc 1 \
-                           --dir ${TANKverf} --run ${RUN}`
-if [[ ${latest_data} = "" ]]; then
-   latest_data=`${IG_SCRIPTS}/find_cycle.pl --cyc 1 \
-                           --dir ${TANKverf} --run ${RUN}`
-fi
+#latest_data=`${IG_SCRIPTS}/nu_find_cycle.pl --cyc 1 \
+#                           --dir ${TANKverf} --run ${RUN}`
+
+latest_data=`${MON_USH}/find_last_cycle.sh --net ${RADMON_SUFFIX} \
+	                    --run ${RUN} --mon radmon --tank ${R_TANKDIR}`
+echo "latest_data = $latest_data"
 
 if [[ ${pdate} = "" ]]; then
    if [[ -e ${last_plot_time} ]]; then
@@ -194,15 +208,16 @@ export PDY=`echo $PDATE|cut -c1-8`
 #--------------------------------------------------------------------
 #  Locate ieee_src in $TANKverf and verify data files are present
 #
-ieee_src=${TANKverf}/${RUN}.${PDY}/${CYC}/${MONITOR}
+#ieee_src=${TANKverf}/${RUN}.${PDY}/${CYC}/${MONITOR}
+ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${pdate} --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
 
-if [[ ! -d ${ieee_src} ]]; then
-   ieee_src=${TANKverf}/${RUN}.${PDY}/${MONITOR}
-
-   if [[ ! -d ${ieee_src} ]]; then
-      ieee_src=${TANKverf}/${RUN}.${PDY}
-   fi
-fi
+#if [[ ! -d ${ieee_src} ]]; then
+#   ieee_src=${TANKverf}/${RUN}.${PDY}/${MONITOR}
+#
+#   if [[ ! -d ${ieee_src} ]]; then
+#      ieee_src=${TANKverf}/${RUN}.${PDY}
+#   fi
+#fi
 
 if [[ ! -d ${ieee_src} ]]; then
    echo "Unable to set ieee_src, aborting plot"
@@ -217,7 +232,7 @@ fi
 
 test_list=`find ${ieee_src} -name "angle.*${PDATE}.ieee_d*" -exec basename {} \;`
 
-if [[ $test_list = "" ]]; then
+if [[ ${#test_list} -le 0 ]]; then
    if [[ -e ${ieee_src}/radmon_angle.tar && -e ${ieee_src}/radmon_angle.tar.${Z} ]]; then
       echo "Located both radmon_angle.tar and radmon_angle.tar.${Z} in ${ieee_src}.  Unable to plot."
       exit 7
@@ -227,7 +242,7 @@ if [[ $test_list = "" ]]; then
    fi
 fi
 
-if [[ $test_list = "" ]]; then
+if [[ ${#test_list} -le 0 ]]; then
    echo " Missing ieee_src files, nfile_src = ${nfile_src}, aborting plot"
    exit 8
 fi
@@ -240,7 +255,6 @@ if [[ -d $PLOT_WORK_DIR ]]; then
 fi
 mkdir -p $PLOT_WORK_DIR
 cd $PLOT_WORK_DIR
-
 
 #-------------------------------------------------------------
 #  Locate the satype file or set SATYPE by assembling a list 
@@ -282,14 +296,15 @@ for test in "${list_array[@]}"; do
 done
 
 export SATYPE=${satype}
+export SATYPE="abi_g16"
 echo $SATYPE
 
 #------------------------------------------------------------------
 #   Start plot scripts.
 #------------------------------------------------------------------
-${IG_SCRIPTS}/mk_time_plots.sh
+#${IG_SCRIPTS}/mk_time_plots.sh
 
-${IG_SCRIPTS}/mk_bcoef_plots.sh
+#${IG_SCRIPTS}/mk_bcoef_plots.sh
 
 ${IG_SCRIPTS}/mk_angle_plots.sh
 
@@ -313,16 +328,16 @@ fi
 #--------------------------------------------------------------------
 #  Update the last_plot_time file if found
 #--------------------------------------------------------------------
-if [[ -e ${last_plot_time} ]]; then
-   echo "update last_plot_time file"
-   echo ${PDATE} > ${last_plot_time}
-fi
+#if [[ -e ${last_plot_time} ]]; then
+#   echo "update last_plot_time file"
+#   echo ${PDATE} > ${last_plot_time}
+#fi
 
 
 #--------------------------------------------------------------------
 #  Remove all but the last 30 cycles worth of data image files.
 #--------------------------------------------------------------------
-${IG_SCRIPTS}/rm_img_files.pl --dir ${TANKimg}/pngs --nfl 30
+#${IG_SCRIPTS}/rm_img_files.pl --dir ${TANKimg}/pngs --nfl 30
 
 
 
@@ -332,6 +347,7 @@ ${IG_SCRIPTS}/rm_img_files.pl --dir ${TANKimg}/pngs --nfl 30
 #	None:  The $run_time is a one-hour delay to the Transfer job
 #  	       to ensure the plots are all finished prior to transfer.
 #----------------------------------------------------------------------
+RUN_TRANSFER=0
 if [[ $RUN_TRANSFER -eq 1 ]]; then
 
    if [[ $MY_MACHINE = "wcoss2" ]]; then
