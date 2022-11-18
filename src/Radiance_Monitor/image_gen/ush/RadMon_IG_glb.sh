@@ -35,7 +35,6 @@ function usage {
 echo start RadMon_IG_glb.sh
 echo
 
-set -ax
 #--------------------------------------------------------------------
 #  RadMon_DE_glb begins here.
 #--------------------------------------------------------------------
@@ -100,8 +99,6 @@ fi
 # Run config files to load environment variables, 
 # set default plot conditions
 #--------------------------------------------------------------------
-rad_area=glb
-
 this_dir=`dirname $0`
 top_parm=${this_dir}/../../parm
 
@@ -156,12 +153,8 @@ fi
 #--------------------------------------------------------------------
 last_plot_time=${TANKimg}/last_plot_time
 
-#latest_data=`${IG_SCRIPTS}/nu_find_cycle.pl --cyc 1 \
-#                           --dir ${TANKverf} --run ${RUN}`
-
 latest_data=`${MON_USH}/find_last_cycle.sh --net ${RADMON_SUFFIX} \
 	                    --run ${RUN} --mon radmon --tank ${R_TANKDIR}`
-echo "latest_data = $latest_data"
 
 if [[ ${pdate} = "" ]]; then
    if [[ -e ${last_plot_time} ]]; then
@@ -169,21 +162,20 @@ if [[ ${pdate} = "" ]]; then
       last_plot=`cat ${last_plot_time}`
       pdate=`$NDATE +6 ${last_plot}`
    else
-      echo " USING nu_find_cycle file"
+      echo " USING find_last_cycle file"
       pdate=${latest_data}
    fi
 fi
 
 
 if [[ ${pdate} -gt ${latest_data} ]]; then
-  echo " Unable to plot, pdate is > latest_data, ${pdate}, ${latest_data}"
+  echo "Unable to plot, pdate is > latest_data, ${pdate}, ${latest_data}"
   exit 5 
 else
-  echo " OK to plot"
+  echo "OK to plot"
 fi
 
 export PDATE=${pdate}
-echo "PDATE = ${PDATE}"
 
 #--------------------------------------------------------------------
 #  Make sure $R_LOGDIR exists
@@ -208,16 +200,7 @@ export PDY=`echo $PDATE|cut -c1-8`
 #--------------------------------------------------------------------
 #  Locate ieee_src in $TANKverf and verify data files are present
 #
-#ieee_src=${TANKverf}/${RUN}.${PDY}/${CYC}/${MONITOR}
 ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${pdate} --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
-
-#if [[ ! -d ${ieee_src} ]]; then
-#   ieee_src=${TANKverf}/${RUN}.${PDY}/${MONITOR}
-#
-#   if [[ ! -d ${ieee_src} ]]; then
-#      ieee_src=${TANKverf}/${RUN}.${PDY}
-#   fi
-#fi
 
 if [[ ! -d ${ieee_src} ]]; then
    echo "Unable to set ieee_src, aborting plot"
@@ -265,7 +248,6 @@ satype_file=${satype_file:-${tankdir_info}/gdas_radmon_satype.txt}
 if [[ ! -e $satype_file ]]; then
    satype_file=${HOMEgdas}/fix/gdas_radmon_satype.txt
 fi
-echo "using satype_file: ${satype_file}"
 
 if [[ -s ${satype_file} ]]; then
    satype=`cat ${satype_file}`
@@ -296,15 +278,14 @@ for test in "${list_array[@]}"; do
 done
 
 export SATYPE=${satype}
-export SATYPE="abi_g16"
-echo $SATYPE
+echo; echo "SATYPE:  $SATYPE"; echo
 
 #------------------------------------------------------------------
 #   Start plot scripts.
 #------------------------------------------------------------------
-#${IG_SCRIPTS}/mk_time_plots.sh
+${IG_SCRIPTS}/mk_time_plots.sh
 
-#${IG_SCRIPTS}/mk_bcoef_plots.sh
+${IG_SCRIPTS}/mk_bcoef_plots.sh
 
 ${IG_SCRIPTS}/mk_angle_plots.sh
 
@@ -328,17 +309,16 @@ fi
 #--------------------------------------------------------------------
 #  Update the last_plot_time file if found
 #--------------------------------------------------------------------
-#if [[ -e ${last_plot_time} ]]; then
-#   echo "update last_plot_time file"
-#   echo ${PDATE} > ${last_plot_time}
-#fi
+if [[ -e ${last_plot_time} ]]; then
+   echo "update last_plot_time file"
+   echo ${PDATE} > ${last_plot_time}
+fi
 
 
 #--------------------------------------------------------------------
 #  Remove all but the last 30 cycles worth of data image files.
 #--------------------------------------------------------------------
-#${IG_SCRIPTS}/rm_img_files.pl --dir ${TANKimg}/pngs --nfl 30
-
+${IG_SCRIPTS}/rm_img_files.pl --dir ${TANKimg}/pngs --nfl 30
 
 
 #----------------------------------------------------------------------
@@ -347,7 +327,6 @@ fi
 #	None:  The $run_time is a one-hour delay to the Transfer job
 #  	       to ensure the plots are all finished prior to transfer.
 #----------------------------------------------------------------------
-RUN_TRANSFER=0
 if [[ $RUN_TRANSFER -eq 1 ]]; then
 
    if [[ $MY_MACHINE = "wcoss2" ]]; then

@@ -19,7 +19,6 @@ echo "begin plot_bcor.sh"
 # Set environment variables.
 #
 word_count=`echo $PTYPE | wc -w`
-echo word_count = $word_count
 
 if [[ $word_count -le 1 ]]; then
    tmpdir=${PLOT_WORK_DIR}/plot_bcor_${RADMON_SUFFIX}_${SATYPE2}.$PDATE.${PVAR}.${PTYPE}
@@ -61,31 +60,12 @@ for type in ${SATYPE2}; do
    #
    while [[ $cdate -le $edate ]]; do
 
-      if [[ $REGIONAL_RR -eq 1 ]]; then
-         tdate=`$NDATE +6 $cdate`
-         day=`echo $tdate | cut -c1-8`
-         cyc=`echo $cdate | cut -c9-10`
-         . ${IG_SCRIPTS}/rr_set_tz.sh $cyc
-      else
-         day=`echo $cdate | cut -c1-8`
-         cyc=`echo $cdate | cut -c9-10`
-      fi
-
       #----------------------------------------------------
       #  Attempt to locate the parent directory for the
       #  extracted ieee data files.
       #
-      ieee_src=${TANKverf}/${RUN}.${day}/${cyc}/${MONITOR}
-      if [[ ! -d ${ieee_src} ]]; then
-         ieee_src=${TANKverf}/${RUN}.${day}/${MONITOR}
-      fi
-      if [[ ! -d ${ieee_src} ]]; then
-         ieee_src=${TANKverf}/${MONITOR}.${day}
-      fi
-      if [[ ! -d ${ieee_src} ]]; then
-         ieee_src=${TANKverf}/${RUN}.${day}
-      fi
-
+      ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${cdate} \
+	        --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
 
       #-----------------------------------------------------------
       #  Now locate this cycle's data files, first checking for 

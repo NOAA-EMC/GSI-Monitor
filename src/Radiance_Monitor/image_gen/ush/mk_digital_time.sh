@@ -20,7 +20,7 @@
 #
 #     3)  Move [sat].[n].times.txt to ~/imgn/[source]/pngs/time
 #------------------------------------------------------------------
-set -ax
+#set -ax
 
 SATYPE_LIST=$1
 
@@ -93,16 +93,22 @@ EOF
    #    data files where we're actually missing data files 
    #    so any outages are readily apparent.
    #
-   rm $times
-  
+   if [[ -e ${times} ]]; then
+      rm ${times}
+   fi
+
    ls -1 ${type}.*.ieee_d | gawk -F. '{print $2}' > $tmp 
    last_time=`cat $tmp | gawk 'NR==1{print $1}'`
    tac $tmp > $nu_tmp
    first_time=`cat $nu_tmp | gawk 'NR==1{print $1}'`
    echo "start_time, end_time = $start_time, $end_time"
 
-   rm $tmp
-   rm $nu_tmp
+   if [[ -e ${tmp} ]]; then
+      rm $tmp
+   fi
+   if [[ -e ${nu_tmp} ]]; then
+      rm $nu_tmp
+   fi
 
    echo $first_time > $times
    cdate=`$NDATE -${CYCLE_INTERVAL} $first_time` 
@@ -117,8 +123,10 @@ EOF
    #------------------------------
    #  build chan.txt using ctl file
    #
-   rm $chanf
-   grep iuse ${type}.ctl | gawk '{print $5 ", " $8 ", " $14 ", " $17}' > $chanf
+   if [[ -e ${chanf} ]]; then
+      rm $chanf
+   fi
+   grep iuse ${type}.ctl | gawk '{print $5 ", " $8 ", " $14 ", " $17}' > ${chanf}
 
 
    #------------------------------

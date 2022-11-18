@@ -8,11 +8,7 @@
 #  
 #-------------------------------------------------------------------
 
-date
-
-echo Start mk_time_plots.sh
-
-set -ax
+echo; echo Start mk_time_plots.sh
 
 imgndir=${IMGNDIR}/time
 tankdir=${TANKverf}/time
@@ -30,8 +26,10 @@ allmissing=1
 
 cycdy=$((24/$CYCLE_INTERVAL))		# number cycles per day
 ndays=$(($NUM_CYCLES/$cycdy))		# number days in plot period
+echo ndays = $ndays
 
 test_day=$PDATE
+rm_list=""
 
 #--------------------------------------------------------
 #  Verify there are control files available in $imgndir 
@@ -40,25 +38,19 @@ test_day=$PDATE
 for type in ${SATYPE}; do
    found=0
    test_day=$PDATE
-   ctr=$ndays
+
+   if [[ $ndays -gt 10 ]]; then
+      ctr=10
+   else
+      ctr=$ndays
+   fi
 
    while [[ ${found} -eq 0 && $ctr -gt 0 ]]; do
-
-      if [[ $REGIONAL_RR -eq 1 ]]; then		# REGIONAL_RR stores hrs 18-23 in next 
-         tdate=`$NDATE +6 ${test_day}`		# day's radmon.yyymmdd directory
-         pdy=`echo $tdate|cut -c1-8`
-         cyc=`echo $tdate|cut -c9-10`
-      else
-         pdy=`echo $test_day|cut -c1-8`
-         cyc=`echo $test_day|cut -c9-10`
-      fi
-
 
       #---------------------------------------------------
       #  Check to see if the *ctl* files are in $imgndir
       #
-      nctl=`ls ${imgndir}/${type}*ctl* -1 | wc -l`
-      if [[ ( $USE_ANL -eq 1 && $nctl -ge 2 ) || ( $USE_ANL -eq 0 && $nctl -ge 1 ) ]]; then
+      if compgen -G "${imgndir}${type}*ctl*" > /dev/null; then
          found=1
 
       else
@@ -66,67 +58,60 @@ for type in ${SATYPE}; do
          #-------------------------
          #  Locate $ieee_src 
          #
-         ieee_src=${TANKverf}/${RUN}.${pdy}/${cyc}/${MONITOR}
-         if [[ ! -d ${ieee_src} ]]; then
-            ieee_src=${TANKverf}/${RUN}.${pdy}/${MONITOR}
-         fi
-         if [[ ! -d ${ieee_src} ]]; then
-            ieee_src=${TANKverf}/${RUN}.${pdy}
-         fi
-         if [[ ! -d ${ieee_src} ]]; then
-            ieee_src=${TANKverf}/${MONITOR}.${pdy}
-         fi
+	 ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${test_day} \
+		   --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
 
          using_tar=0
-         #--------------------------------------------------
-         #  Determine if the time files are in a tar file.  If so
-         #  extract the ctl files for this $type.  If both a compressed
-         #  and uncompressed version of the radmon_time.tar file exist,
-         #  flag that as an error condition.
-         #
-         if [[ -e ${ieee_src}/radmon_time.tar && -e ${ieee_src}/radmon_time.tar.${Z} ]]; then
-            echo "Located both radmon_time.tar and radmon_time.tar.${Z} in ${ieee_src}.  Unable to plot."
-            exit 1
+	 if [[ -d ${ieee_src} ]]; then
+            #--------------------------------------------------
+            #  Determine if the time files are in a tar file.  If so
+            #  extract the ctl files for this $type.  If both a compressed
+            #  and uncompressed version of the radmon_time.tar file exist,
+            #  flag that as an error condition.
+            #
+            if [[ -e ${ieee_src}/radmon_time.tar && -e ${ieee_src}/radmon_time.tar.${Z} ]]; then
+               echo "Located both radmon_time.tar and radmon_time.tar.${Z} in ${ieee_src}.  Unable to plot."
+               exit 1
 
-         elif [[ -e ${ieee_src}/radmon_time.tar || -e ${ieee_src}/radmon_time.tar.${Z} ]]; then
-            using_tar=1
-            ctl_list=`tar -tf ${ieee_src}/radmon_time.tar* | grep $type | grep ctl`
-            if [[ ${ctl_list} != "" ]]; then
-               cwd=`pwd`
-               cd ${ieee_src}
-               ctl_list=`tar -tf ./radmon_time.tar* | grep $type | grep ctl`
-               tar -xf ${ieee_src}/radmon_time.tar* ${ctl_list}            
-               cd ${cwd}
+            elif [[ -e ${ieee_src}/radmon_time.tar || -e ${ieee_src}/radmon_time.tar.${Z} ]]; then
+               using_tar=1
+               ctl_list=`tar -tf ${ieee_src}/radmon_time.tar* | grep $type | grep ctl`
+               if [[ ${ctl_list} != "" ]]; then
+                  cwd=`pwd`
+                  cd ${ieee_src}
+                  ctl_list=`tar -tf ./radmon_time.tar* | grep $type | grep ctl`
+                  tar -xf ${ieee_src}/radmon_time.tar* ${ctl_list}            
+                  cd ${cwd}
+               fi
             fi
+
+            #--------------------------------------------------
+            #  Copy the *ctl* files to $imgndir, dropping
+            #  'time.' from the file name.
+            #
+            ctl_files=`ls $ieee_src/time.$type*.ctl* 2>/dev/null`
+
+            prefix='time.'
+            for file in $ctl_files; do
+               newfile=`basename $file | sed -e "s/^$prefix//"`
+               $NCP ${file} ${imgndir}/${newfile}
+               found=1
+            done
+
+            #------------------------------------------------------
+            #  If there's a radmon_time.tar archive in ${ieee_src} 
+            #  then delete the extracted *ctl* files.
+            if [[ $using_tar -eq 1 ]]; then
+               rm -f ${ieee_src}/time.${type}.ctl*
+               rm -f ${ieee_src}/time.${type}_anl.ctl*
+            fi 
+             
          fi
-
-         #--------------------------------------------------
-         #  Copy the *ctl* files to $imgndir, dropping
-         #  'time.' from the file name.
-         #
-         ctl_files=`ls $ieee_src/time.$type*.ctl*`
-         prefix='time.'
-         for file in $ctl_files; do
-            newfile=`basename $file | sed -e "s/^$prefix//"`
-            $NCP ${file} ${imgndir}/${newfile}
-            found=1
-         done
-
-         #------------------------------------------------------
-         #  If there's a radmon_time.tar archive in ${ieee_src} 
-         #  then delete the extracted *ctl* files.
-         if [[ $using_tar -eq 1 ]]; then
-            rm -f ${ieee_src}/time.${type}.ctl*
-            rm -f ${ieee_src}/time.${type}_anl.ctl*
-         fi 
-          
       fi
 
       if [[ ${found} -eq 0 ]]; then
-         if [[ $ctr -gt 0 ]]; then
-            test_day=`$NDATE -24 ${pdy}00`
-            ctr=$(($ctr-1))
-         fi
+         test_day=`$NDATE -24 ${test_day}`
+         ((ctr--))
       fi
    done
 
@@ -134,6 +119,8 @@ for type in ${SATYPE}; do
    if [[ -s ${imgndir}/${type}.ctl.${Z} || -s ${imgndir}/${type}.ctl ]]; then
       allmissing=0
       found=1
+   else
+      rm_list="${rm_list} ${type}"
    fi
 done
 
@@ -142,28 +129,38 @@ if [[ $allmissing = 1 ]]; then
    exit
 fi
 
+#---------------------------------------------------------------------
+#  Remove all items from SATYPE for which we haven't found a ctl file
+#
+for type in ${rm_list}; do
+   SATYPE=${SATYPE//$type/}
+done
 
-#-------------------------------------------------------------------
-#   Update the time definition (tdef) line in the time control
-#   files. 
+echo SATYPE = $SATYPE
+
+#---------------------------------------------------------------
+#  Sort out the bigSATLIST types using the number of channels.
 #
 for type in ${SATYPE}; do
+
    if [[ -s ${imgndir}/${type}.ctl.${Z} ]]; then
       ${UNCOMPRESS} ${imgndir}/${type}.ctl.${Z}
    fi
-   ${IG_SCRIPTS}/update_ctl_tdef.sh ${imgndir}/${type}.ctl ${START_DATE} ${NUM_CYCLES}
 
-   if [[ -s ${imgndir}/${type}_anl.ctl ]]; then
+   #-------------------------------------------------------------------
+   #   Update the time definition (tdef) line in the time control
+   #   files if we're plotting static images. 
+   #
+   if [[ ${PLOT_STATIC_IMGS} -eq 1 ]]; then
+      ${IG_SCRIPTS}/update_ctl_tdef.sh ${imgndir}/${type}.ctl ${START_DATE} ${NUM_CYCLES}
       ${IG_SCRIPTS}/update_ctl_tdef.sh ${imgndir}/${type}_anl.ctl ${START_DATE} ${NUM_CYCLES}
    fi
-done
 
-for sat in ${SATYPE}; do
-   nchanl=`cat ${imgndir}/${sat}.ctl | gawk '/title/{print $NF}'`
+   nchanl=`cat ${imgndir}/${type}.ctl | gawk '/title/{print $NF}'`
    if [[ $nchanl -ge 100 ]]; then
-      bigSATLIST=" $sat $bigSATLIST "
+      bigSATLIST=" $type $bigSATLIST "
    else
-      SATLIST=" $sat $SATLIST "
+      SATLIST=" $type $SATLIST "
    fi
 done
 
@@ -179,7 +176,9 @@ ${COMPRESS} ${imgndir}/*.ctl
 
 jobname=plot_${RADMON_SUFFIX}_sum
 logfile=${R_LOGDIR}/plot_summary.log
-rm ${logfile}
+if [[ -e ${logfile} ]]; then
+   rm ${logfile}
+fi
 
 if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" ]]; then
    ${SUB} --account ${ACCOUNT}  --ntasks=1 --mem=5g --time=1:00:00 -J ${jobname} \
@@ -195,7 +194,7 @@ elif [[ ${MY_MACHINE} = "jet" ]]; then
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
    $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_summary.err -V \
-          -l select=1:mem=1g -l walltime=10:00 -N ${jobname} ${IG_SCRIPTS}/plot_summary.sh
+          -l select=1:mem=1g -l walltime=30:00 -N ${jobname} ${IG_SCRIPTS}/plot_summary.sh
 fi
 
 
@@ -334,5 +333,5 @@ for sat in ${bigSATLIST}; do
 done
 
 
-echo End mk_time_plots.sh
+echo End mk_time_plots.sh; echo
 exit
