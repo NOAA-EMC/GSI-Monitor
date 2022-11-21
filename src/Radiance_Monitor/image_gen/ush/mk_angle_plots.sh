@@ -212,8 +212,8 @@ fi
 satarr=($satlist)
 
 ctr=0
+itemctr=0
 jobctr=1
-itemctr=1
 cmdfile=${PLOT_WORK_DIR}/cmdfile_pangle_${suffix}.${jobctr}
 
 satarr_len=${#satarr[@]}
@@ -238,7 +238,7 @@ while [[ $ctr -le ${satarr_len} ]]; do
    #-------------------------------------
    #  Submit plot job, 4 satypes per job
    #
-   if [[ $itemctr -gt 4 || $ctr -eq ${satarr_len} ]]; then
+   if [[ $itemctr -gt 3 || $ctr -eq ${satarr_len} ]]; then
    
       chmod 755 ${cmdfile}
 
@@ -246,12 +246,13 @@ while [[ $ctr -le ${satarr_len} ]]; do
       logfile=${R_LOGDIR}/plot_angle_${suffix}_${jobctr}.log
       errfile=${R_LOGDIR}/plot_angle_${suffix}_${jobctr}.err
 
+      echo "TASKS= $tasks"
       if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" || ${MY_MACHINE} = "orion" ]]; then
-         $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} --time=30:00 \
+         $SUB --account ${ACCOUNT} -n ${itemctr}  -o ${logfile} -D . -J ${jobname} --time=30:00 \
               --wrap "srun -l --multi-prog ${cmdfile}"
 
       elif [[ ${MY_MACHINE} = "jet" ]]; then
-         $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} --time=30:00 \
+         $SUB --account ${ACCOUNT} -n ${itemctr}  -o ${logfile} -D . -J ${jobname} --time=30:00 \
               -p ${SERVICE_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
 
       elif [[ $MY_MACHINE = "wcoss2" ]]; then
@@ -267,7 +268,7 @@ while [[ $ctr -le ${satarr_len} ]]; do
       ((jobctr++)) 
    
       cmdfile=${PLOT_WORK_DIR}/cmdfile_pangle_${suffix}.${jobctr}
-      itemctr=1
+      itemctr=0
 
    fi
 
@@ -315,7 +316,9 @@ for sat in ${big_satlist}; do
       ii=0
       logfile=${R_LOGDIR}/plot_angle_${sat}.log
       cmdfile=${PLOT_WORK_DIR}/cmdfile_pangle_${sat}
-      rm -f $cmdfile
+      if [[ -e ${cmdfile} ]]; then
+         rm -f $cmdfile
+      fi
 
       logfile=${R_LOGDIR}/plot_angle_${sat}.log
       jobname=plot_${RADMON_SUFFIX}_ang_${sat}
@@ -324,6 +327,7 @@ for sat in ${big_satlist}; do
          echo "${ii} ${IG_SCRIPTS}/plot_angle.sh $sat $sat ${list[$ii]}" >> $cmdfile
          (( ii=ii+1 ))
       done
+      echo "ii = $ii"
 
       if [[ $MY_MACHINE = "hera" ]]; then
          $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
