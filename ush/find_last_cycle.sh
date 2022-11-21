@@ -106,9 +106,9 @@ if [[ ${#path} -gt 0 ]]; then
       
       for hr in $hrs; do
 
-	 #-------------------------------------------------------------
+	 #----------------------------------------------------------------
 	 #  The workflow (wkfl) directory structure is a special case
-	 #    in that $monitor is the first directory in the $tankdir.  
+	 #    in that $monitor is the first subdirectory in the $tankdir.  
 	 #    To take that into account this check is added.
 	 #     
 	 wkfl_check=`echo ${path} | grep ${monitor}`

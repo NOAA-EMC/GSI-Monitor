@@ -74,9 +74,6 @@ for type in ${SATYPE2}; do
    #
    while [[ $cdate -le $edate ]]; do
 
-      day=`echo $cdate | cut -c1-8`
-      cyc=`echo $cdate | cut -c9-10`
-
       #-----------------------------------------------------------
       #  Locate the data files, first checking for a tar file,
       #  and copy them locally.
