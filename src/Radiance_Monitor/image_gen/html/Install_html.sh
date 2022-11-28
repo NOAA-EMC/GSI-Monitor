@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #--------------------------------------------------------------------
 #--------------------------------------------------------------------
@@ -10,25 +10,55 @@
 #--------------------------------------------------------------------
 #--------------------------------------------------------------------
 
+#--------------------------------------------------------------------
+#  usage
+#--------------------------------------------------------------------
 function usage {
-  echo "Usage:  Install_html.sh suffix area"
+  echo "Usage:  Install_html.sh suffix [-a|--area -t|--tank]"
   echo "            Suffix is data source identifier that matches data in "
-  echo "              the $TANKDIR/stats directory."
-  echo "            area is either 'glb' or 'rgn' (global or regional)"
+  echo "            -a | --area either 'glb' or 'rgn' (global or regional)"
+  echo "            -t | --tank parent directory to the adnmon data file location.  This"
+  echo "              will be extended by \$RADMON_SUFFIX, \$RUN, and \$PDATE to locate the"
+  echo "              extracted radmon data."
+  echo ""
 }
 
 echo "BEGIN Install_html.sh"
 echo ""
 
 nargs=$#
-if [[ $nargs -ne 2 ]]; then
+
+if [[ $nargs -lt 1 || $nargs -gt 5 ]]; then
    usage
    exit 2
 fi
 
-export RADMON_SUFFIX=$1
-echo RADMON_SUFFIX = $RADMON_SUFFIX
-export RAD_AREA=$2
+#-----------------------------------------------------------
+#  Set default values and process command line arguments.
+#
+#run=gdas
+tank=""
+area=""
+
+while [[ $# -ge 1 ]]; do
+   key="$1"
+
+   case $key in
+      -a|--area)
+         area="$2"
+	 shift # past argument
+         ;;
+      -t|--tank)
+         tank="$2"
+	 shift # past argument
+         ;;
+      *)
+         #any unspecified key is RADMON_SUFFIX
+	 export RADMON_SUFFIX=$key
+	 ;;
+   esac
+   shift
+done
 
 this_file=`basename $0`
 this_dir=`dirname $0`
@@ -60,14 +90,23 @@ if [[ $? -ne 0 ]]; then
    exit $?
 fi
 
+
+if [[ ${#tank} -le 0 ]]; then
+   tank=${TANKDIR}
+fi
+export R_TANKDIR=${tank}
+
+echo R_TANKDIR = $R_TANKDIR
+echo RADMON_IMAGE_GEN = $RADMON_IMAGE_GEN
+
 #--------------------------------------------------------------
 #  call the appropriate child script for glb or rgn
 #
-if [[ $RAD_AREA == "glb" ]]; then 
+#if [[ $RAD_AREA == "glb" ]]; then 
    ${RADMON_IMAGE_GEN}/html/install_glb.sh 
-else 
-   ${RADMON_IMAGE_GEN}/html/install_rgn.sh
-fi
+#else 
+#   ${RADMON_IMAGE_GEN}/html/install_rgn.sh
+#fi
 
 
 echo "END Install_html.sh"
