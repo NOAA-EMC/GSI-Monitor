@@ -14,6 +14,7 @@ INSTALL_PREFIX=${INSTALL_PREFIX:-"${DIR_ROOT}/install"}
 
 #==============================================================================#
 
+
 # Detect machine (sets MACHINE_ID)
 source $DIR_ROOT/ush/detect_machine.sh
 echo "MACHINE_ID = $MACHINE_ID"
