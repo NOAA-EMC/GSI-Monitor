@@ -79,7 +79,7 @@ if [[ ${#path} -gt 0 ]]; then
    #  options for ops, wkfl, and mon, halting when the first valid 
    #  output files are found.
    #
-   flist=`find "${path}" -maxdepth 1 -mindepth 1 -type d -name "${run}.*" -printf "%f\n" 2>/dev/null`
+   flist=`find -L "${path}" -maxdepth 1 -mindepth 1 -type d -name "${run}.*" -printf "%f\n" 2>/dev/null`
    sorted=`echo ${flist[@]} | awk 'BEGIN{RS=" ";} {print $1}' | sort -r`
 
    lcyc=""
@@ -87,9 +87,9 @@ if [[ ${#path} -gt 0 ]]; then
 
       for hr in $hrs; do
 
-         mon_test=`find "${path}/${file}/${hr}/${monitor}" -maxdepth 2 -mindepth 1 -name "*.ieee_d" -printf "%f\n" 2>/dev/null`
-         wkfl_test=`find "${path}/${file}/${hr}/" -maxdepth 2 -mindepth 1 -name "*.ieee_d" -printf "%f\n" 2>/dev/null`
-         ops_test=`find "${path}/${file}/${hr}/atmos/${monitor}" -maxdepth 2 -mindepth 1 -name "*.ieee_d" -printf "%f\n" 2>/dev/null`
+         mon_test=`find -L "${path}/${file}/${hr}/${monitor}" -maxdepth 2 -mindepth 1 -name "*.ieee_d" -printf "%f\n" 2>/dev/null`
+         wkfl_test=`find -L "${path}/${file}/${hr}/" -maxdepth 2 -mindepth 1 -name "*.ieee_d" -printf "%f\n" 2>/dev/null`
+         ops_test=`find -L "${path}/${file}/${hr}/atmos/${monitor}" -maxdepth 2 -mindepth 1 -name "*.ieee_d" -printf "%f\n" 2>/dev/null`
 
          if [[ ${#mon_test} -gt 0 || ${#ops_test} -gt 0 || ${#wkfl_test} -gt 0 ]]; then
             lcyc=`echo $file | gawk -F. '{print $2}'`

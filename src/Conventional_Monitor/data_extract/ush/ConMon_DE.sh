@@ -1,4 +1,4 @@
-#!/bin/sh -l
+#!/bin/bash
 
 #--------------------------------------------------------------------
 #
@@ -31,7 +31,7 @@ function usage {
 #--------------------------------------------------------------------
 #  ConMon_DE.sh begins here
 #--------------------------------------------------------------------
-set -ax
+
 echo "Begin ConMon_DE.sh"
 
 nargs=$#
@@ -46,6 +46,8 @@ fi
 #
 
 export RUN=gdas
+PDATE=""
+cnvstat_location=""
 
 while [[ $# -ge 1 ]]
 do
@@ -62,7 +64,7 @@ do
          shift # past argument
       ;;
       -c|--cnv)
-         export CNVSTAT_LOCATION="$2"
+         cnvstat_location="$2"
          shift # past argument
       ;;
       *)
@@ -79,14 +81,9 @@ this_file=`basename $0`
 this_dir=`dirname $0`
 
 
-#--------------------------------------------------------------------
-#  RUN_ENVIR:  can be "dev", "para", or "prod".
-#--------------------------------------------------------------------
-export RUN_ENVIR=${RUN_ENVIR:-"prod"}
-
+gfs_ver=v16.2
 
 echo CONMON_SUFFIX = $CONMON_SUFFIX
-echo RUN_ENVIR = $RUN_ENVIR
 export NET=${CONMON_SUFFIX}
 
 top_parm=${this_dir}/../../parm
@@ -109,6 +106,8 @@ jobname=ConMon_DE_${CONMON_SUFFIX}
 echo "C_TANKDIR = ${C_TANKDIR}"
 echo "C_LOGDIR  = ${C_LOGDIR}"
 echo "C_IMGNDIR = ${C_IMGNDIR}"
+echo "MON_USH   = $MON_USH"
+
 if [[ ! -d ${C_TANKDIR} ]]; then
    mkdir -p ${C_TANKDIR}
 fi
@@ -123,8 +122,8 @@ fi
 #--------------------------------------------------------------------
 # Get date of cycle to process and/or previous cycle processed.
 #
-if [[ $PDATE = "" ]]; then
-   GDATE=`${C_DE_SCRIPTS}/find_cycle.pl --cyc 1 --dir ${C_TANKDIR} --run $RUN `
+if [[ ${#PDATE} -le 0 ]]; then
+   GDATE=`${MON_USH}/find_last_cycle.sh --net ${CONMON_SUFFIX} --run ${RUN} --tank ${TANKDIR} --mon conmon`
    PDATE=`$NDATE +06 $GDATE`
 else
    GDATE=`$NDATE -06 $PDATE`
@@ -138,24 +137,23 @@ export CYC=`echo $PDATE|cut -c9-10`
 export GCYC=`echo $GDATE|cut -c9-10`
 export PDYm6h=`echo $GDATE|cut -c1-8`
 
-
-if [[ $MY_MACHINE == "hera" ]]; then
-   export CNVSTAT_LOCATION=${CNVSTAT_LOCATION:-/scratch1/NCEPDEV/da/Edward.Safford/noscrub/test_data}
-else
-   export CNVSTAT_LOCATION=${CNVSTAT_LOCATION:-${COMROOTp3}/gfs/${RUN_ENVIR}}
+if [[ ${#cnvstat_location} -le 0 ]]; then
+   export cnvstat_location=${COMROOT}/gfs/${gfs_ver}
 fi
+export CNVSTAT_LOCATION=${cnvstat_location} 
+echo "CNVSTAT_LOCATION = $CNVSTAT_LOCATION"
 
 export COMPONENT=${COMPONENT:-atmos}
 
-export C_DATDIR=${C_DATDIR:-${CNVSTAT_LOCATION}/${RUN}.${PDY}/${CYC}/${COMPONENT}}
-if [[ ! -d ${C_DATDIR} ]]; then
-   export C_DATDIR=${CNVSTAT_LOCATION}/${RUN}.${PDY}/${CYC}
-fi
+#
+#  Is there any difference in location from ops to wkfl?
+#
 
+export C_DATDIR=${C_DATDIR:-${CNVSTAT_LOCATION}/${RUN}.${PDY}/${CYC}/${COMPONENT}}
 export C_GDATDIR=${C_GDATDIR:-${CNVSTAT_LOCATION}/${RUN}.${PDYm6h}/${GCYC}/${COMPONENT}}
-if [[ ! -d ${C_GDATDIR} ]]; then
-   export C_GDATDIR=${CNVSTAT_LOCATION}/${RUN}.${PDYm6h}/${GCYC}
-fi
+
+echo "C_DATDIR  = $C_DATDIR"
+echo "C_GDATDIR = $C_GDATDIR"
 
 export C_COMIN=${C_DATDIR}
 export C_COMINm6h=${C_GDATDIR}
@@ -190,6 +188,11 @@ if [[ ! -s ${pgrbf06} ]]; then
    export pgrbf06="${C_GDATDIR}/gdas.t${GCYC}z.pgrb2.1p00.f006"
 fi
 
+echo "cnvstat = $cnvstat"
+echo "pgrbf00 = $pgrbf00"
+echo "pgrbf06 = $pgrbf06"
+
+exit
 
 #---------------------------------------------
 # override the default convinfo definition
