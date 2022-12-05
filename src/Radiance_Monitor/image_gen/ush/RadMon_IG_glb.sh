@@ -41,7 +41,7 @@ echo
 exit_value=0
 
 nargs=$#
-if [[ $nargs -lt 1 || $nargs -gt 7 ]]; then
+if [[ $nargs -lt 1 || $nargs -gt 9 ]]; then
    usage
    exit 1
 fi
