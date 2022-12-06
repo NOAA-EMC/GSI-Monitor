@@ -6,14 +6,11 @@
 #
 #------------------------------------------------------------------
 
-set -ax
-export list=$listvars
-
 SATYPE2=$1
 PVAR=$2
 PTYPE=$3
 
-echo "Starting plot_time.sh"
+echo; echo "Starting plot_time.sh"; echo
 
 #-----------------------------------------------
 # Make sure IMGNDIR/time directory exists and
@@ -33,8 +30,6 @@ echo plot_time_count = ${plot_time_count}
 plot_time_sep=plot_time_sep.${RAD_AREA}.gs
 echo plot_time_sep = ${plot_time_sep}
 
-
-echo PLOT_WORK_DIR = ${PLOT_WORK_DIR}
 echo tmpdir        = ${tmpdir}
 
 #------------------------------------------------------------------
@@ -64,46 +59,30 @@ for type in ${SATYPE2}; do
    cdate=$bdate
    while [[ $cdate -le $edate ]]; do
 
-      if [[ $REGIONAL_RR -eq 1 ]]; then
-         tdate=`$NDATE +6 $cdate`
-         day=`echo $tdate | cut -c1-8 `
-         cyc=`echo $cdate | cut -c9-10`
-         . ${IG_SCRIPTS}/rr_set_tz.sh $cyc
-      else 
-         day=`echo $cdate | cut -c1-8 `
-         cyc=`echo $cdate | cut -c9-10`
-      fi
-
-      ieee_src=${TANKverf}/${RUN}.${day}/${cyc}/${MONITOR}
-      if [[ ! -d ${ieee_src} ]]; then
-         ieee_src=${TANKverf}/${RUN}.${day}/${MONITOR}
-      fi
-      if [[ ! -d ${ieee_src} ]]; then
-         ieee_src=${TANKverf}/${MONITOR}.${day}
-      fi
-      if [[ ! -d ${ieee_src} ]]; then
-         ieee_src=${TANKverf}/${RUN}.${day}
-      fi
+      ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${cdate} \
+	        --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
 
       #-----------------------------------------------------------
       #  Locate the data files, first checking for a tar file,
       #  and copy them locally.
       #
-      if [[ -e ${ieee_src}/radmon_time.tar && -e ${ieee_src}/radmon_time.tar.${Z} ]]; then
-         echo "Located both radmon_time.tar and radmon_time.tar.${Z} in ${ieee_src}.  Unable to plot."
-         exit 24
+      if [[ -d ${ieee_src} ]]; then
+         if [[ -e ${ieee_src}/radmon_time.tar && -e ${ieee_src}/radmon_time.tar.${Z} ]]; then
+            echo "Located both radmon_time.tar and radmon_time.tar.${Z} in ${ieee_src}.  Unable to plot."
+            exit 24
 
-      elif [[ -e ${ieee_src}/radmon_time.tar || -e ${ieee_src}/radmon_time.tar.${Z} ]]; then
-         files=`tar -tf ${ieee_src}/radmon_time.tar* | grep ${type} | grep ieee_d`
-         if [[ ${files} != "" ]]; then
-            tar -xf ${ieee_src}/radmon_time.tar* ${files}
+         elif [[ -e ${ieee_src}/radmon_time.tar || -e ${ieee_src}/radmon_time.tar.${Z} ]]; then
+            files=`tar -tf ${ieee_src}/radmon_time.tar* | grep ${type} | grep ieee_d`
+            if [[ ${files} != "" ]]; then
+               tar -xf ${ieee_src}/radmon_time.tar* ${files}
+            fi
+
+         else
+            files=`ls ${ieee_src}/time.*${type}*ieee_d*`
+            for f in ${files}; do
+               $NCP ${f} .
+            done
          fi
-
-      else
-         files=`ls ${ieee_src}/time.*${type}*ieee_d*`
-         for f in ${files}; do
-            $NCP ${f} .
-         done
       fi
 
       adate=`$NDATE +${CYCLE_INTERVAL} $cdate`
@@ -116,7 +95,7 @@ for type in ${SATYPE2}; do
    #  Remove 'time.' from the *ieee_d file names.
    #
    prefix="time."
-   dfiles=`ls *.ieee_d`
+   dfiles=`ls *.ieee_d 2>/dev/null`
    if [[ $dfiles = "" ]]; then
       echo "NO DATA available for $type, aborting time plot"
       continue
@@ -162,7 +141,7 @@ EOF
    #    html/js web files for interactive chart generation.
    #
    $NCP ${IG_SCRIPTS}/mk_digital_time.sh  .
-   ./mk_digital_time.sh  ${type}
+   echo; ./mk_digital_time.sh  ${type}; echo
    rm -f mk_digital_time.sh 
 
 done

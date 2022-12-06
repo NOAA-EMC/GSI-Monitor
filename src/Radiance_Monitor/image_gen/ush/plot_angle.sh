@@ -13,6 +13,9 @@ PVAR=$2
 PTYPE=$3
 
 export PLOT_ALL_REGIONS=${PLOT_ALL_REGIONS:-1}
+echo SATYPE2 = $SATYPE2
+echo PVAR   = $PVAR
+echo PTYPE  = $PTYPE
 
 plot_angle_count=plot_angle_count.${RAD_AREA}.gs
 plot_angle_sep=plot_angle_sep.${RAD_AREA}.gs
@@ -22,17 +25,17 @@ plot_angle_sep=plot_angle_sep.${RAD_AREA}.gs
 # Create $wrkdir
 
 word_count=`echo $PTYPE | wc -w`
-echo word_count = $word_count
-
 if [[ $word_count -le 1 ]]; then
    wrkdir=${PLOT_WORK_DIR}/plot_angle_${RADMON_SUFFIX}_${SATYPE2}.$PDATE.${PVAR}.${PTYPE}
 else
    wrkdir=${PLOT_WORK_DIR}/plot_angle_${RADMON_SUFFIX}_${SATYPE2}.$PDATE.${PVAR}
 fi
-rm -rf $wrkdir
-mkdir -p $wrkdir
-cd $wrkdir
 
+if [[ -d ${wrkdir} ]]; then
+   rm -rf ${wrkdir}
+fi
+mkdir -p ${wrkdir}
+cd ${wrkdir}
 
 
 #------------------------------------------------------------------
@@ -71,49 +74,30 @@ for type in ${SATYPE2}; do
    #
    while [[ $cdate -le $edate ]]; do
 
-      if [[ $REGIONAL_RR -eq 1 ]]; then
-         tdate=`$NDATE +6 $cdate`
-         day=`echo $tdate | cut -c1-8`
-         cyc=`echo $cdate | cut -c9-10`
-         . ${IG_SCRIPTS}/rr_set_tz.sh $cyc
-      else
-         day=`echo $cdate | cut -c1-8`
-         cyc=`echo $cdate | cut -c9-10`
-      fi
-
-      #----------------------------------------------------
-      #  Attempt to locate the extracted ieee data files.
-      #
-      ieee_src=${TANKverf}/${RUN}.${day}/${cyc}/${MONITOR}
-      if [[ ! -d ${ieee_src} ]]; then
-         ieee_src=${TANKverf}/${RUN}.${day}/${MONITOR}
-      fi
-      if [[ ! -d ${ieee_src} ]]; then
-         ieee_src=${TANKverf}/${MONITOR}.${day}
-      fi
-      if [[ ! -d ${ieee_src} ]]; then
-         ieee_src=${TANKverf}/${RUN}.${day}
-      fi
-
       #-----------------------------------------------------------
       #  Locate the data files, first checking for a tar file,
       #  and copy them locally.
       #
-      if [[ -e ${ieee_src}/radmon_angle.tar && -e ${ieee_src}/radmon_angle.tar.${Z} ]]; then
-         echo "Located both radmon_angle.tar and radmon_angle.tar.${Z} in ${ieee_src}.  Unable to plot."
-         exit 20
+      ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${cdate} \
+	        --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
+    
+      if [[ -d ${ieee_src} ]]; then
+         if [[ -e ${ieee_src}/radmon_angle.tar && -e ${ieee_src}/radmon_angle.tar.${Z} ]]; then
+            echo "Located both radmon_angle.tar and radmon_angle.tar.${Z} in ${ieee_src}.  Unable to plot."
+            exit 20
 
-      elif [[ -e ${ieee_src}/radmon_angle.tar || -e ${ieee_src}/radmon_angle.tar.${Z} ]]; then
-         files=`tar -tf ${ieee_src}/radmon_angle.tar* | grep ${type} | grep ieee_d`
-         if [[ ${files} != "" ]]; then
-            tar -xf ${ieee_src}/radmon_angle.tar* ${files}
+         elif [[ -e ${ieee_src}/radmon_angle.tar || -e ${ieee_src}/radmon_angle.tar.${Z} ]]; then
+            files=`tar -tf ${ieee_src}/radmon_angle.tar* | grep ${type} | grep ieee_d`
+            if [[ ${files} != "" ]]; then
+               tar -xf ${ieee_src}/radmon_angle.tar* ${files}
+            fi
+
+         else				
+            files=`ls ${ieee_src}/angle.*${type}*ieee_d* 2>/dev/null`
+            for f in ${files}; do
+               $NCP ${f} .
+            done
          fi
-
-      else				
-         files=`ls ${ieee_src}/angle.*${type}*ieee_d*`
-         for f in ${files}; do
-            $NCP ${f} .
-         done
       fi
 
       adate=`$NDATE +${CYCLE_INTERVAL} ${cdate}`
@@ -129,7 +113,7 @@ for type in ${SATYPE2}; do
    prefix="angle."
    dfiles=`ls *.ieee_d`
    if [[ $dfiles = "" ]]; then
-      echo "NO DATA available for $type, aborting bcoef plot"
+      echo "NO DATA available for $type, aborting angle plot"
       continue
    fi
 
@@ -195,9 +179,9 @@ fi
 #--------------------------------------------------------------------
 # Clean $wrkdir 
 #
-echo Removing wrkdir = $wrkdir
-cd $wrkdir
+cd ${wrkdir}
 cd ../
-rm -rf $wrkdir
+rm -rf ${wrkdir}
+
 
 exit

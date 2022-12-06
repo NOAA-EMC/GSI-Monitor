@@ -63,11 +63,30 @@ do
    shift
 done
 
-
 #-----------------------------------------
 # Call get_stats_path to extend $tankdir
 #
 path=`${MON_USH}/get_stats_path.sh --net ${net} --run ${run} --tank ${tankdir} --mon ${monitor} --rpath base`
+
+
+#--------------------------------------------------
+# Set search string per monitor
+#
+# Note that for radmon we're looking for either
+#   radmon_angle.tar.gz or any angle*ieee_d* file.
+#
+case $monitor in
+   radmon)
+      search="*angle*"
+   ;;
+   minmon)
+      search="*gnorms.ieee_d*"
+   ;;
+   oznmon)
+      search="*ieee_d*"
+   ;;
+esac
+
 
 if [[ ${#path} -gt 0 ]]; then
 
@@ -84,12 +103,23 @@ if [[ ${#path} -gt 0 ]]; then
 
    lcyc=""
    for file in $sorted; do
-
+      
       for hr in $hrs; do
 
-         mon_test=`find "${path}/${file}/${hr}/${monitor}" -maxdepth 2 -mindepth 1 -name "*.ieee_d" -printf "%f\n" 2>/dev/null`
-         wkfl_test=`find "${path}/${file}/${hr}/" -maxdepth 2 -mindepth 1 -name "*.ieee_d" -printf "%f\n" 2>/dev/null`
-         ops_test=`find "${path}/${file}/${hr}/atmos/${monitor}" -maxdepth 2 -mindepth 1 -name "*.ieee_d" -printf "%f\n" 2>/dev/null`
+	 #----------------------------------------------------------------
+	 #  The workflow (wkfl) directory structure is a special case
+	 #    in that $monitor is the first subdirectory in the $tankdir.  
+	 #    To take that into account this check is added.
+	 #     
+	 wkfl_check=`echo ${path} | grep ${monitor}`
+	 if [[ ${#wkfl_check} -gt 0 ]]; then
+            wkfl_test=`find "${path}/${file}/${hr}/" -maxdepth 2 -mindepth 1 -name "${search}" -printf "%f\n" 2>/dev/null`
+	 else
+	     wkfl_test=""
+         fi
+
+         mon_test=`find "${path}/${file}/${hr}/${monitor}" -maxdepth 2 -mindepth 1 -name "${search}" -printf "%f\n" 2>/dev/null`
+         ops_test=`find "${path}/${file}/${hr}/atmos/${monitor}" -maxdepth 2 -mindepth 1 -name "${search}" -printf "%f\n" 2>/dev/null`
 
          if [[ ${#mon_test} -gt 0 || ${#ops_test} -gt 0 || ${#wkfl_test} -gt 0 ]]; then
             lcyc=`echo $file | gawk -F. '{print $2}'`
