@@ -35,8 +35,10 @@ for type in ${SATYPE}; do
    found=0
    test_day=$PDATE
 
-   if [[ $ndays -gt 10 ]]; then
+   if [[ ${ndays} -gt 10 ]]; then
       ctr=10
+   elif [[ ${ndays} -le 0 ]]; then
+      ctr=1
    else
       ctr=$ndays
    fi

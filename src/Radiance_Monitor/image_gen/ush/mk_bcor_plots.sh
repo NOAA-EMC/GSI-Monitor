@@ -33,7 +33,14 @@ rm_list=""
 for type in ${SATYPE}; do
    found=0
    test_day=$PDATE
-   ctr=$ndays
+  
+   if [[ ${ndays} -gt 10 ]]; then
+      ctr=10
+   elif [[ ${ndays} -le 0 ]]; then
+      ctr=1
+   else
+      ctr=$ndays
+   fi
 
    while [[ ${found} -eq 0 && $ctr -gt 0 ]]; do
 
