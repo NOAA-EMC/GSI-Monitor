@@ -73,15 +73,17 @@ cd $workdir
 
 #-----------------------------------------------------------
 #  Find the first date with data.  Start at today and work
-#  backwards.  If not found stop after 90 days and exit.
+#  backwards.  If not found stop after 5 days and exit.
 #
 
 RUN=gdas
+R_TANKDIR="/lfs/h2/emc/da/noscrub/edward.safford/nbns"
+echo R_TANKDIR = $R_TANKDIR
+echo RADMON_SUFFIX = $RADMON_SUFFIX
 PDATE=`${MON_USH}/find_last_cycle.sh --net ${RADMON_SUFFIX} \
          --run ${RUN} --mon radmon --tank ${R_TANKDIR}`
 echo PDATE=$PDATE
 
-#limit=`$NDATE -2160 $PDATE`		# 90 days
 limit=`$NDATE -120 $PDATE`		#  5 days
 
 #-----------------------------------------------------------
@@ -131,7 +133,7 @@ while [[ data_found -eq 0 && $PDATE -ge $limit ]]; do
 done
 
 if [[ $data_found -eq 0 ]]; then
-   echo Unable to locate any data files in the past 90 days for $SUFFIX 
+   echo Unable to locate any data files in the past 5 days for $SUFFIX 
    echo in $TANKverf/angle.
    exit
 fi
@@ -257,7 +259,6 @@ while read line; do
 done < "$SORTED_LIST"
 
 
-imgndir=`dirname ${IMGNDIR}`
 #--------------------------------------------------------------
 #  Edit the html files to add the platform table to each.
 #
@@ -359,7 +360,6 @@ fi
 rm ./${index_file}
 
 echo workdir = $workdir
-exit
 
 #--------------------------------------------------------------
 #  Make starting directory in $imgndir and copy over html, 
@@ -405,9 +405,9 @@ done
 #------------------------
 # clean up $workdir
 #
-cd $workdir
-cd ../
-rm -rf $workdir
+#cd $workdir
+#cd ../
+#rm -rf $workdir
 
 echo ""
 echo "END install_glb.sh"
