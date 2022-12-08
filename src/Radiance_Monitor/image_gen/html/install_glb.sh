@@ -69,19 +69,15 @@ cd $workdir
 #-------------------------------------------------------------
 #  Assemble the SATYPE list from available data files in 
 #  $TANKverf using angle.* files.
-#-------------------------------------------------------------
-
-#-----------------------------------------------------------
+#
 #  Find the first date with data.  Start at today and work
 #  backwards.  If not found stop after 5 days and exit.
 #
 
 RUN=gdas
-R_TANKDIR="/lfs/h2/emc/da/noscrub/edward.safford/nbns"
-echo R_TANKDIR = $R_TANKDIR
-echo RADMON_SUFFIX = $RADMON_SUFFIX
+
 PDATE=`${MON_USH}/find_last_cycle.sh --net ${RADMON_SUFFIX} \
-         --run ${RUN} --mon radmon --tank ${R_TANKDIR}`
+         --run ${RUN} --mon radmon --tank ${TANKDIR}`
 echo PDATE=$PDATE
 
 limit=`$NDATE -120 $PDATE`		#  5 days
@@ -90,17 +86,13 @@ limit=`$NDATE -120 $PDATE`		#  5 days
 #  Build test_list which will contain all data files for
 #  one cycle in $PDATE. 
 
-echo "R_TANKDIR = $R_TANKDIR"
-echo RUN = $RUN
-echo RADMON_SUFFIX = $RADMON_SUFFIX
-
 data_found=0
 while [[ data_found -eq 0 && $PDATE -ge $limit ]]; do
    PDY=`echo $PDATE|cut -c1-8`
    CYC=`echo $PDATE|cut -c9-10`
 
    ieee_src=`${MON_USH}/get_stats_path.sh --run $RUN --pdate ${PDATE} \
-                      --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
+                      --net ${RADMON_SUFFIX} --tank ${TANKDIR} --mon radmon`
    echo "ieee_src = $ieee_src"
 
    if [[ -d ${ieee_src} ]]; then
