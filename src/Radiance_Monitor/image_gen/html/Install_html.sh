@@ -14,9 +14,8 @@
 #  usage
 #--------------------------------------------------------------------
 function usage {
-  echo "Usage:  Install_html.sh suffix [-a|--area -t|--tank]"
+  echo "Usage:  Install_html.sh suffix [-t|--tank]"
   echo "            Suffix is data source identifier that matches data in "
-  echo "            -a | --area either 'glb' or 'rgn' (global or regional)"
   echo "            -t | --tank parent directory to the adnmon data file location.  This"
   echo "              will be extended by \$RADMON_SUFFIX, \$RUN, and \$PDATE to locate the"
   echo "              extracted radmon data."
@@ -28,7 +27,7 @@ echo ""
 
 nargs=$#
 
-if [[ $nargs -lt 1 || $nargs -gt 5 ]]; then
+if [[ $nargs -lt 1 || $nargs -gt 3 ]]; then
    usage
    exit 2
 fi
@@ -44,10 +43,6 @@ while [[ $# -ge 1 ]]; do
    key="$1"
 
    case $key in
-      -a|--area)
-         area="$2"
-	 shift # past argument
-         ;;
       -t|--tank)
          tank="$2"
 	 shift # past argument
@@ -95,18 +90,10 @@ if [[ ${#tank} -le 0 ]]; then
    tank=${TANKDIR}
 fi
 export R_TANKDIR=${tank}
-
 echo R_TANKDIR = $R_TANKDIR
-echo RADMON_IMAGE_GEN = $RADMON_IMAGE_GEN
 
-#--------------------------------------------------------------
-#  call the appropriate child script for glb or rgn
-#
-#if [[ $RAD_AREA == "glb" ]]; then 
-   ${RADMON_IMAGE_GEN}/html/install_glb.sh 
-#else 
-#   ${RADMON_IMAGE_GEN}/html/install_rgn.sh
-#fi
+
+${RADMON_IMAGE_GEN}/html/install_glb.sh 
 
 
 echo "END Install_html.sh"

@@ -405,9 +405,9 @@ done
 #------------------------
 # clean up $workdir
 #
-#cd $workdir
-#cd ../
-#rm -rf $workdir
+cd $workdir
+cd ../
+rm -rf $workdir
 
 echo ""
 echo "END install_glb.sh"

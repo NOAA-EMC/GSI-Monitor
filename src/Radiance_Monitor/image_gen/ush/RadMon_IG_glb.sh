@@ -352,7 +352,7 @@ if [[ $RUN_TRANSFER -eq 1 ]]; then
       jobname=transfer_${RADMON_SUFFIX}
       job="${IG_SCRIPTS}/Transfer.sh --nosrc ${RADMON_SUFFIX}"
 
-      export WEBDIR=${WEBDIR}/${RADMON_SUFFIX}/${RUN}/pngs
+      export WEBDIR=${WEBDIR}/${RADMON_SUFFIX}/pngs
 
       cmdfile="${PLOT_WORK_DIR}/transfer_cmd"
       echo "${IG_SCRIPTS}/Transfer.sh --nosrc ${RADMON_SUFFIX}" >$cmdfile
