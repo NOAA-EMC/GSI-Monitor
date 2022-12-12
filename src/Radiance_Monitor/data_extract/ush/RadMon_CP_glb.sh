@@ -53,6 +53,8 @@ export RAD_AREA=glb
 #  Set default values and process command line arguments.
 #
 run=gdas
+pdate=""
+data_file_loc=""
 
 while [[ $# -ge 1 ]]
 do
@@ -145,7 +147,8 @@ fi
 # $TANKverf and increment 6 hours.
 #---------------------------------------------------------------
 if [[ $pdate = "" ]]; then
-   ldate=`${DE_SCRIPTS}/nu_find_cycle.pl --run $RUN --cyc 1 --dir ${TANKverf}`
+   ldate=`${MON_USH}/find_last_cycle.sh --net ${RADMON_SUFFIX} \
+	                               --run ${RUN} --mon radmon --tank ${TANKDIR}`
    pdate=`${NDATE} +06 ${ldate}`
 fi
 echo "pdate = $pdate"
