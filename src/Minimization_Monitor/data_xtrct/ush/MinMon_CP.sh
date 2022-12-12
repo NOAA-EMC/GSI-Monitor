@@ -39,6 +39,8 @@ fi
 #  Process command line arguments
 #
 pdate=""
+run=""
+
 while [[ $# -ge 1 ]]
 do
    key="$1"
@@ -123,7 +125,7 @@ cyc=`echo $pdate|cut -c9-10`
 #  Verify the data files are available for this cycle
 #
 data_dir=""
-data_dir=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${pdate} --net ${MINMON_SUFFIX} --tank ${data} --mon minmon`
+data_dir=`$MON_USH/get_stats_path.sh --run $run --pdate ${pdate} --net ${MINMON_SUFFIX} --tank ${data} --mon minmon`
 echo data_dir = $data_dir
 
 if [[ ! -d ${data_dir} ]]; then
