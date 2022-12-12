@@ -17,7 +17,6 @@
 #
 #     3)  Move [sat].[n].times.txt to ~/imgn/[source]/pngs/time
 #------------------------------------------------------------------
-set -ax
 
 SATYPE_LIST=$1
 
@@ -69,7 +68,9 @@ EOF
    #    manipulate a ls -l of the available data files
    #    sorted newest to oldest
    #
-   rm $times
+   if [[ -e ${times} ]]; then
+      rm $times
+   fi
 
    ls -1 ${type}.*.ieee_d | gawk -F. '{print $2}' > $tmp 
    tac $tmp > $times
@@ -78,8 +79,10 @@ EOF
    #------------------------------
    #  build chan.txt using ctl file
    #
-   rm $chanf
-   grep iuse ${type}.ctl | gawk '{print $5 ", " $8 ", " $14 ", " $17}' > $chanf
+   if [[ -e ${chanf} ]]; then
+      rm ${chanf}
+   fi 
+   grep iuse ${type}.ctl | gawk '{print $5 ", " $8 ", " $14 ", " $17}' > ${chanf}
 
 
    #------------------------------
@@ -96,6 +99,6 @@ EOF
 done
 
 
-echo "Exiting mk_digital_bcoef"
+echo "Exiting mk_digital_bcoef"; echo
 exit
 

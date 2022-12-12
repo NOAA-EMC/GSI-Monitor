@@ -61,9 +61,15 @@ fi
 #  'drop out' plots.
 # 
 nfile_src=`ls -l ${DATA_LOCATION}/*${PDATE}*ieee_d* | egrep -c '^-'`
+if [[ ${nfile_src} -le 0 ]]; then
+   nfile_src=`ls -l ${DATA_LOCATION}/radmon_*tar* | egrep -c '^-'`
+fi
 echo "nfile_src = ${nfile_src}"
 
 nfile_thirty=`find ${DATA_LOCATION}/*${PDATE}*ieee_d* -maxdepth 0 -mmin -30`
+if [[ ${nfile_thirty} -le 0 ]]; then
+   nfile_thirty=`find ${DATA_LOCATION}/*radmon_*tar* -maxdepth 0 -mmin -30`
+fi
 echo "nfile_thirty = ${nfile_thirty}"
 
 if [[ ${nfile_src} -le 0 ]]; then
@@ -82,7 +88,7 @@ if [[ ${exit_value} -eq 0 ]]; then
 
    for type in ${type_list}; do 
 
-      file_list=`ls ${DATA_LOCATION}/${type}.*${PDATE}*ieee_d* ${DATA_LOCATION}/${type}*tar* `
+      file_list=`ls ${DATA_LOCATION}/${type}.*${PDATE}*ieee_d* ${DATA_LOCATION}/radmon_${type}*tar* `
 
       for file in ${file_list}; do
          bfile=`basename ${file}`
@@ -188,7 +194,7 @@ if [[ $exit_value == 0 ]]; then
 
 	 ${DE_SCRIPTS}/radmon_diag_ck.sh --rad ${radstat} --sat ${satype_file} --out ${diag_out}
          if [[ -e ${diag_out} ]]; then
-            $NCP ./${diag_out} ${TANKverf}/${RUN}.${day}/${cyc}/radmon/.
+            $NCP ./${diag_out} ${TANKverf}/${RUN}.${PDY}/${CYC}/radmon/.
          fi
       fi
 

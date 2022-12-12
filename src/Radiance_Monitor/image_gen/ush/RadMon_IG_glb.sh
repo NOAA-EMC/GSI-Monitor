@@ -26,6 +26,10 @@ function usage {
   echo "            -n|--ncyc is the number of cycles to be used in time series plots.  If"
   echo "              not specified the default value in parm/RadMon_user_settins will be used"
   echo ""
+  echo "            -t | --tank parent directory to the adnmon data file location.  This"
+  echo "              will be extended by \$RADMON_SUFFIX, \$RUN, and \$PDATE to locate the"
+  echo "              extracted radmon data."
+  echo ""
 }
 
 echo start RadMon_IG_glb.sh
@@ -37,7 +41,7 @@ echo
 exit_value=0
 
 nargs=$#
-if [[ $nargs -lt 1 || $nargs -gt 7 ]]; then
+if [[ $nargs -lt 1 || $nargs -gt 9 ]]; then
    usage
    exit 1
 fi
@@ -48,6 +52,7 @@ fi
 run=gdas
 pdate=""
 num_cycles=""
+tank=""
 
 while [[ $# -ge 1 ]]
 do
@@ -64,6 +69,10 @@ do
       ;;
       -n|--ncyc)
          num_cycles="$2"
+         shift # past argument
+      ;;
+      -t|--tank)
+         tank="$2"
          shift # past argument
       ;;
       *)
@@ -90,8 +99,6 @@ fi
 # Run config files to load environment variables, 
 # set default plot conditions
 #--------------------------------------------------------------------
-rad_area=glb
-
 this_dir=`dirname $0`
 top_parm=${this_dir}/../../parm
 
@@ -120,6 +127,10 @@ if [[ $? -ne 0 ]]; then
    exit $?
 fi
 
+if [[ ${#tank} -le 0 ]]; then
+   tank=${TANKDIR}
+fi
+export R_TANKDIR=${tank}
 
 if [[ ! -d ${IMGNDIR} ]]; then
    mkdir -p ${IMGNDIR}
@@ -142,12 +153,8 @@ fi
 #--------------------------------------------------------------------
 last_plot_time=${TANKimg}/last_plot_time
 
-latest_data=`${IG_SCRIPTS}/nu_find_cycle.pl --cyc 1 \
-                           --dir ${TANKverf} --run ${RUN}`
-if [[ ${latest_data} = "" ]]; then
-   latest_data=`${IG_SCRIPTS}/find_cycle.pl --cyc 1 \
-                           --dir ${TANKverf} --run ${RUN}`
-fi
+latest_data=`${MON_USH}/find_last_cycle.sh --net ${RADMON_SUFFIX} \
+	                    --run ${RUN} --mon radmon --tank ${R_TANKDIR}`
 
 if [[ ${pdate} = "" ]]; then
    if [[ -e ${last_plot_time} ]]; then
@@ -155,21 +162,20 @@ if [[ ${pdate} = "" ]]; then
       last_plot=`cat ${last_plot_time}`
       pdate=`$NDATE +6 ${last_plot}`
    else
-      echo " USING nu_find_cycle file"
+      echo " USING find_last_cycle file"
       pdate=${latest_data}
    fi
 fi
 
 
 if [[ ${pdate} -gt ${latest_data} ]]; then
-  echo " Unable to plot, pdate is > latest_data, ${pdate}, ${latest_data}"
+  echo "Unable to plot, pdate is > latest_data, ${pdate}, ${latest_data}"
   exit 5 
 else
-  echo " OK to plot"
+  echo "OK to plot"
 fi
 
 export PDATE=${pdate}
-echo "PDATE = ${PDATE}"
 
 #--------------------------------------------------------------------
 #  Make sure $R_LOGDIR exists
@@ -194,15 +200,7 @@ export PDY=`echo $PDATE|cut -c1-8`
 #--------------------------------------------------------------------
 #  Locate ieee_src in $TANKverf and verify data files are present
 #
-ieee_src=${TANKverf}/${RUN}.${PDY}/${CYC}/${MONITOR}
-
-if [[ ! -d ${ieee_src} ]]; then
-   ieee_src=${TANKverf}/${RUN}.${PDY}/${MONITOR}
-
-   if [[ ! -d ${ieee_src} ]]; then
-      ieee_src=${TANKverf}/${RUN}.${PDY}
-   fi
-fi
+ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${pdate} --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
 
 if [[ ! -d ${ieee_src} ]]; then
    echo "Unable to set ieee_src, aborting plot"
@@ -217,7 +215,7 @@ fi
 
 test_list=`find ${ieee_src} -name "angle.*${PDATE}.ieee_d*" -exec basename {} \;`
 
-if [[ $test_list = "" ]]; then
+if [[ ${#test_list} -le 0 ]]; then
    if [[ -e ${ieee_src}/radmon_angle.tar && -e ${ieee_src}/radmon_angle.tar.${Z} ]]; then
       echo "Located both radmon_angle.tar and radmon_angle.tar.${Z} in ${ieee_src}.  Unable to plot."
       exit 7
@@ -227,7 +225,7 @@ if [[ $test_list = "" ]]; then
    fi
 fi
 
-if [[ $test_list = "" ]]; then
+if [[ ${#test_list} -le 0 ]]; then
    echo " Missing ieee_src files, nfile_src = ${nfile_src}, aborting plot"
    exit 8
 fi
@@ -241,7 +239,6 @@ fi
 mkdir -p $PLOT_WORK_DIR
 cd $PLOT_WORK_DIR
 
-
 #-------------------------------------------------------------
 #  Locate the satype file or set SATYPE by assembling a list 
 #  from available data files in $TANKverf/angle. 
@@ -251,7 +248,6 @@ satype_file=${satype_file:-${tankdir_info}/gdas_radmon_satype.txt}
 if [[ ! -e $satype_file ]]; then
    satype_file=${HOMEgdas}/fix/gdas_radmon_satype.txt
 fi
-echo "using satype_file: ${satype_file}"
 
 if [[ -s ${satype_file} ]]; then
    satype=`cat ${satype_file}`
@@ -282,7 +278,7 @@ for test in "${list_array[@]}"; do
 done
 
 export SATYPE=${satype}
-echo $SATYPE
+echo; echo "SATYPE:  $SATYPE"; echo
 
 #------------------------------------------------------------------
 #   Start plot scripts.
@@ -325,7 +321,6 @@ fi
 ${IG_SCRIPTS}/rm_img_files.pl --dir ${TANKimg}/pngs --nfl 30
 
 
-
 #----------------------------------------------------------------------
 #  Conditionally queue transfer to run
 # 
@@ -357,7 +352,7 @@ if [[ $RUN_TRANSFER -eq 1 ]]; then
       jobname=transfer_${RADMON_SUFFIX}
       job="${IG_SCRIPTS}/Transfer.sh --nosrc ${RADMON_SUFFIX}"
 
-      export WEBDIR=${WEBDIR}/${RADMON_SUFFIX}/${RUN}/pngs
+      export WEBDIR=${WEBDIR}/${RADMON_SUFFIX}/pngs
 
       cmdfile="${PLOT_WORK_DIR}/transfer_cmd"
       echo "${IG_SCRIPTS}/Transfer.sh --nosrc ${RADMON_SUFFIX}" >$cmdfile

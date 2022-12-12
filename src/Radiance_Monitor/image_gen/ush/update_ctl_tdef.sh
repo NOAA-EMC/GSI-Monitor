@@ -17,7 +17,6 @@ function usage {
 #-------------------------------------------------------------
 # check for correct usage and assign cmd line vars
 #
-  echo "enter update_ctl_tdef.sh"
 
   if [[ $# -lt 2 && $# -gt 3 ]]; then
     usage
@@ -34,11 +33,6 @@ function usage {
   imm=`echo $datestr | cut -c5-6`
   idd=`echo $datestr | cut -c7-8`
   ihh=`echo $datestr | cut -c9-10`
-
-  echo year = $iyy
-  echo month= $imm
-  echo day  = $idd
-  echo hour = $ihh
 
 #-------------------------------------------------------------
 # validate ctr_file
@@ -57,7 +51,6 @@ function usage {
   ctl_dir=`dirname ${ctl_file}`
 
   tmp_file="${ctl_dir}/tmp_${ctl_base}"
-  echo "tmp_file = ${tmp_file}"
 
   if [[ -s $tmp_file ]]; then
      rm -f $tmp_file
@@ -104,8 +97,6 @@ function usage {
      exit -3
   fi
 
-  echo string month = $smon
-
   found_tdef=0
   while read line; do
 
@@ -137,5 +128,4 @@ function usage {
      echo "ERROR  tdef not found, no update to $ctl_base done"
   fi
 
-  echo "exit update_ctl_tdef.sh"
 exit

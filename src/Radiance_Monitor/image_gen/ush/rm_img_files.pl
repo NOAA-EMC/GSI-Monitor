@@ -22,7 +22,7 @@ use Scalar::Util qw(looks_like_number);
 #  Main begins here 
 #--------------------
 
-print "--> rm_img_files.pl";
+print "--> rm_img_files.pl\n";
 
 #--------------------------------
 #  load command line argument(s)
@@ -98,4 +98,4 @@ if( $#unique >= $nfl ) {
    }
 }
 
-print "<-- rm_img_files.pl";
+print "<-- rm_img_files.pl\n";

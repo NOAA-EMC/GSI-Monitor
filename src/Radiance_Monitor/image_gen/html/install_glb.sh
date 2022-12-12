@@ -69,14 +69,18 @@ cd $workdir
 #-------------------------------------------------------------
 #  Assemble the SATYPE list from available data files in 
 #  $TANKverf using angle.* files.
-#-------------------------------------------------------------
-
-#-----------------------------------------------------------
-#  Find the first date with data.  Start at today and work
-#  backwards.  If not found stop after 90 days and exit.
 #
-PDATE=`${IG_SCRIPTS}/nu_find_cycle.pl --dir ${TANKverf} --cyc 1`
-limit=`$NDATE -2160 $PDATE`		# 90 days
+#  Find the first date with data.  Start at today and work
+#  backwards.  If not found stop after 5 days and exit.
+#
+
+RUN=gdas
+
+PDATE=`${MON_USH}/find_last_cycle.sh --net ${RADMON_SUFFIX} \
+         --run ${RUN} --mon radmon --tank ${TANKDIR}`
+echo PDATE=$PDATE
+
+limit=`$NDATE -120 $PDATE`		#  5 days
 
 #-----------------------------------------------------------
 #  Build test_list which will contain all data files for
@@ -87,39 +91,32 @@ while [[ data_found -eq 0 && $PDATE -ge $limit ]]; do
    PDY=`echo $PDATE|cut -c1-8`
    CYC=`echo $PDATE|cut -c9-10`
 
-   test_dir=${TANKverf}/${RUN}.${PDY}/${CYC}/${MONITOR}
-   if [[ ! -d ${test_dir} ]]; then
-      test_dir=${TANKverf}/${RUN}.${PDY}/${MONITOR}
-   fi
-   if [[ ! -d ${test_dir} ]]; then
-      test_dir=${TANKverf}/${RUN}.${PDY}
-   fi
-   
-   if [[ -d ${test_dir} ]]; then
-      echo " test_dir is GO "
+   ieee_src=`${MON_USH}/get_stats_path.sh --run $RUN --pdate ${PDATE} \
+                      --net ${RADMON_SUFFIX} --tank ${TANKDIR} --mon radmon`
+   echo "ieee_src = $ieee_src"
 
-      if [[ -e ${test_dir}/radmon_angle.tar || -e ${test_dir}/radmon_angle.tar.gz ]]; then
-         gzipped=0
-         if [[ -e ${test_dir}/radmon_angle.tar.gz ]]; then
-            gunzip ${test_dir}/radmon_angle.tar.gz
-            gzipped=1
+   if [[ -d ${ieee_src} ]]; then
+      using_tar=0
+      echo " ieee_src is GO "
+
+      if [[ -e ${ieee_src}/radmon_angle.tar || -e ${ieee_src}/radmon_angle.tar.gz ]]; then
+         if [[ -e ${ieee_src}/radmon_angle.tar.gz ]]; then
+            test_list=`tar -tf ${ieee_src}/radmon_angle.tar.gz`
+         else
+            test_list=`tar -tf ${ieee_src}/radmon_angle.tar`
          fi 
 
-         test_list=`tar -tf ${test_dir}/radmon_angle.tar`
 	 data_found=1 
 
-         if [[ $gzipped -eq 1 ]]; then
-            gzip ${test_dir}/radmon_angle.tar
-         fi
       else
-         test=`ls ${test_dir}/angle.*${PDATE}*.ieee_d* | wc -l`
+         test=`ls ${ieee_src}/angle.*${PDATE}*.ieee_d* | wc -l`
          if [[ $test -gt 0 ]]; then
-            test_list=`ls ${test_dir}/angle.*${PDATE}*.ieee_d*`
+            test_list=`ls ${ieee_src}/angle.*${PDATE}*.ieee_d*`
             data_found=1
 	 fi
       fi
    else
-      echo "test_dir is NOGO"
+      echo "ieee_src is NOGO"
    fi
 
    if [[ data_found -eq 0 ]]; then
@@ -127,9 +124,8 @@ while [[ data_found -eq 0 && $PDATE -ge $limit ]]; do
    fi
 done
 
-
 if [[ $data_found -eq 0 ]]; then
-   echo Unable to locate any data files in the past 90 days for $SUFFIX 
+   echo Unable to locate any data files in the past 5 days for $SUFFIX 
    echo in $TANKverf/angle.
    exit
 fi
@@ -173,6 +169,7 @@ UNSORTED_LIST=./unsorted.txt
 export SORTED_LIST=./sorted.txt
 >$SORTED_LIST
 
+echo "SATYPE = $SATYPE"
 
 for satype in $SATYPE; do
    ins=${satype%_*}
@@ -224,6 +221,7 @@ done
 #  Sort the list by Satellite 
 #
 `sort -d -u $UNSORTED_LIST > $SORTED_LIST`
+echo SORTED_LIST = $SORTED_LIST
 
 #--------------------------------------------------------------
 #  Read the sorted list and create the platform table
@@ -253,7 +251,6 @@ while read line; do
 done < "$SORTED_LIST"
 
 
-imgndir=`dirname ${IMGNDIR}`
 #--------------------------------------------------------------
 #  Edit the html files to add the platform table to each.
 #
@@ -354,6 +351,7 @@ fi
 
 rm ./${index_file}
 
+echo workdir = $workdir
 
 #--------------------------------------------------------------
 #  Make starting directory in $imgndir and copy over html, 

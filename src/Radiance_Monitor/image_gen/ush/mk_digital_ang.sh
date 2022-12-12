@@ -40,7 +40,7 @@
 function large_mv () {
    while read imgf; do
       if [[ -s $imgf ]]; then
-         mv $imgf ${IMGNDIR}/$1/.
+         mv -f $imgf ${IMGNDIR}/$1/.
       fi
    done
 }
@@ -126,7 +126,9 @@ EOF
    #  build times.txt
    #    manipulate a ls -l of the available data files
    #
-   rm $times
+   if [[ -e $times ]]; then
+      rm $times
+   fi
 
    ls -1 ${type}.*.ieee_d | gawk -F. '{print $2}' > $tmp 
    tac $tmp > $times
@@ -135,7 +137,9 @@ EOF
    #------------------------------
    #  build chan.txt using ctl file
    #
-   rm $chanf
+   if [[ -e ${chanf} ]]; then
+      rm $chanf
+   fi
    grep iuse ${type}.ctl | gawk '{print $5 ", " $8 ", " $14 ", " $17}' > $chanf
 
 
@@ -165,6 +169,6 @@ EOF
 done
 
 
-echo "Exiting mk_digital_ang.sh"
+echo "Exiting mk_digital_ang.sh"; echo
 exit
 
