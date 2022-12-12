@@ -101,7 +101,7 @@ echo "IMGNDIR = ${IMGNDIR}"
 echo "WEBDIR  = ${WEBDIR}"
 
 if [[ ${IMGNDIR} != "/" ]]; then
-   if [[ $MY_MACHINE = "wcoss_d" || $MY_MACHINE = "wcoss_c" || $MY_MACHINE = "wcoss2" ]]; then
+   if [[ $MY_MACHINE = "wcoss2" ]]; then
       /usr/bin/rsync -ave ssh --exclude *.ctl.${Z} \
          --exclude 'horiz' --exclude *.png --delete-during ${IMGNDIR}/ \
          ${WEBUSER}@${WEBSVR}.ncep.noaa.gov:${WEBDIR}/
