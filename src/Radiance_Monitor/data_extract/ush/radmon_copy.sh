@@ -60,11 +60,8 @@ fi
 #  incomplete results which can result in false
 #  'drop out' plots.
 # 
-echo "DATA_LOCATION = $DATA_LOCATION"
 nfile_src=`ls -l ${DATA_LOCATION}/*${PDATE}*ieee_d* | egrep -c '^-'`
-echo "first try, nfile_src = $nfile_src"
 if [[ ${nfile_src} -le 0 ]]; then
-   echo "trying tar files"
    nfile_src=`ls -l ${DATA_LOCATION}/radmon_*tar* | egrep -c '^-'`
 fi
 echo "nfile_src = ${nfile_src}"
