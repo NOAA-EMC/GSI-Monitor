@@ -1,5 +1,4 @@
-#!/bin/sh
-set -ax
+#!/bin/bash
 
 #----------------------------------------------------------------------
 #  plot_time_ps.sh
@@ -13,11 +12,12 @@ set -ax
    echo "NDATE       = $NDATE"
 
    workdir=${C_PLOT_WORKDIR}/plottime_ps
-   rm -rf $workdir
-   mkdir -p $workdir
-   cd $workdir
+   if [[ -d ${workdir} ]]; then
+      rm -rf ${workdir}
+   fi
+   mkdir -p ${workdir}
+   cd ${workdir}
 
-   rc=0
    pdy=`echo $PDATE|cut -c1-8`
    cyc=`echo $PDATE|cut -c9-10`
    tv_tankdir=${C_TANKDIR}/${RUN}.${pdy}/${cyc}/conmon/time_vert
@@ -29,9 +29,9 @@ set -ax
    #  plot surface pressure time series counts
    #---------------------------------------------------
 
-   cp -f ${C_IG_GSCRIPTS}/plotstas_time_count_ps.gs . 
-   cp -f ${C_IG_GSCRIPTS}/plotstas_time_bias_ps.gs  . 
-#   cp -f ${C_IG_GSCRIPTS}/plotstas_time_bias2_ps.gs . 
+   ${NCP} ${C_IG_GSCRIPTS}/plotstas_time_count_ps.gs . 
+   ${NCP} ${C_IG_GSCRIPTS}/plotstas_time_bias_ps.gs  . 
+#   ${NCP} ${C_IG_GSCRIPTS}/plotstas_time_bias2_ps.gs . 
 
    #---------------------------------------------------
    #  Link in the data files.
@@ -98,31 +98,27 @@ set -ax
    #-------------------------
 
    grads -bpc "run ./plotstas_time_count_ps.gs"
-#   mv -f *.png ${outdir}/.
  
    grads -bpc "run ./plotstas_time_bias_ps.gs"
-#   mv -f *.png ${outdir}/.
 
 #   grads -bpc "run ./plotstas_time_bias2_ps.gs"
 
    img_files=`ls *.png`
-   for imgf in $img_files; do
-      newf=`echo $imgf | sed -e "s/\./.${PDATE}./g"`
-      cp $imgf $newf
-      mv $newf ${C_IMGNDIR}/pngs/time/.
+   for imgf in ${img_files}; do
+      newf=`echo ${imgf} | sed -e "s/\./.${PDATE}./g"`
+      cp ${imgf} ${newf}
+      mv ${newf} ${C_IMGNDIR}/pngs/time/.
    done
 
-   if [[ $CONMON_SUFFIX != "v16rt2" ]]; then
-      mv -f *.png ${outdir}/.
-   fi
+   mv -f *.png ${outdir}/.
 
 
 
 
    if [[ ${C_IG_SAVE_WORK} -eq 0 ]]; then
-      cd $workdir
+      cd ${workdir}
       cd ..
-      rm -rf $workdir
+      rm -rf ${workdir}
    fi
 
    echo "<--- plot_time_ps.sh"

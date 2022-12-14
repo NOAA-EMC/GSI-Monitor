@@ -1,5 +1,4 @@
-#!/bin/sh
-set -ax
+#!/bin/bash
 
    #------------------------------------------------------------
    #  Function getField returns the corresponding value for
@@ -8,7 +7,6 @@ set -ax
   
    getField () {
       field='default'
-      echo "getField $1 $2"
       file=$1
       field=$2
   
@@ -55,29 +53,32 @@ set -ax
 #  plot scater image histographs
 #
 #---------------------------------------------------
-
    echo "---> plot_hist.sh"
-
-   export workdir=${C_PLOT_WORKDIR}/plothist
-
 
    export xsize=800	# add standard plot sizes to parms file?
    export ysize=600
  
-   export PDY=`echo $PDATE|cut -c1-8`
-   export CYC=`echo $PDATE|cut -c9-10`
+   export PDY=`echo ${PDATE}|cut -c1-8`
+   export CYC=`echo ${PDATE}|cut -c9-10`
 
+   workdir=${C_PLOT_WORKDIR}/plothist
+   if [[ -d ${workdir} ]]; then
+      rm -rf ${workdir}
+   fi
+   mkdir -p ${workdir}
+   cd ${workdir}
 
-   rm -rf $workdir
-   mkdir -p $workdir
-   cd $workdir
-
-   echo "C_TANKDIR = $C_TANKDIR"
-   hh_tankdir=${C_TANKDIR}/${RUN}.${PDY}/${CYC}/conmon/horz_hist
+   hh_tankdir=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${PDATE} \
+	                       --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
+   hh_tankdir=${hh_tankdir}/horz_hist
 
    $UNCOMPRESS ${hh_tankdir}/anl/*.scater.*${Z}
    $UNCOMPRESS ${hh_tankdir}/ges/*.scater.*${Z}
 
+   outdir=${C_IMGNDIR}/pngs/hist/
+   if [[ ! -d ${outdir} ]]; then
+      mkdir -p ${outdir}
+   fi
 
    for type in ps q t uv; do  
   
@@ -85,17 +86,12 @@ set -ax
       eval nreal=\${nreal_${type}} 
       exec=conmon_read_${type}_IG.x
 
-      echo "stype, nreal, exec = $stype, $nreal, $exec"
-
-
       for dtype in ${stype}; do
 
          mtype=`echo ${dtype} | cut -f1 -d_`
          subtype=`echo ${dtype} | cut -f2 -d_`
          rm -f ./fileout
  
-         tankdir=${C_TANKDIR}/${RUN}.${PDY}/${CYC}/conmon
-
 
          #------------------------------------------
          #  The GrADS plot scripts for horiz plots
@@ -113,10 +109,10 @@ set -ax
                # Read scatter data and create a GrADS 
                # data file for histogram generation. 
                #
-               /bin/sh  ${C_IG_SCRIPTS}/read_scatter.sh $CONMON_SUFFIX \
+               /bin/bash  ${C_IG_SCRIPTS}/read_scatter.sh $CONMON_SUFFIX \
    		  $dtype $mtype $subtype $PDATE ${HOMEgdas_conmon}/fix \
   		  ${nreal} ${exec} ${type} ${cycle} \
-  		  ${hh_tankdir}/${cycle} ${C_IG_EXEC} 
+  		  ${hh_tankdir}/${cycle} ${EXECconmon} 
               
 
                #------------------------------------------
@@ -126,7 +122,6 @@ set -ax
 
                nlev_str=`cat grads_info_${dtype}_${cycle}.${PDATE} | grep nlev`
                nlev=`echo $nlev_str | gawk '{print $3}'`
-               echo "DEBUG:  nlev = $nlev"
   
                sdir=" dset ^out_${dtype}_${cycle}.${PDATE}"
                title="title  ${dtype}  ${cycle}"
@@ -194,11 +189,6 @@ set -ax
                    -e "s/PLOTFILE/$dtype/" \
                    -e "s/SDATE/$PDATE/" \
                plot_hist.gs >plothist_${dtype}.gs
-
-               if [[ ! -d ${C_IMGNDIR}/pngs/hist/${CYC} ]]; then
-                  mkdir -p ${C_IMGNDIR}/pngs/hist/${CYC}
-               fi
-
 
 
                if [ "${type}" = 'uv' ]; then
@@ -303,21 +293,15 @@ set -ax
          echo 'quit' | grads -blc " run plothist_${dtype}.gs" 
          rm fileout
     
-         img_files=`ls *hist*.png`
-         for imgf in $img_files; do
-            newf=`echo $imgf | sed -e "s/\./.${PDATE}./g"`
-            echo $newf
-            cp $imgf $newf
-            mv $newf ${C_IMGNDIR}/pngs/hist/. 
-         done
-
-#         if [[ $CONMON_SUFFIX != "v16rt2" ]]; then
-#            mv -f *hist*.png ${C_IMGNDIR}/pngs/hist/${CYC}/.
-#         fi
-
       done      ### dtype loop 
 
    done      ### type loop
+
+   img_files=`ls *hist*.png`
+   for imgf in $img_files; do
+      newf=`echo $imgf | sed -e "s/\./.${PDATE}./g"`
+      mv $imgf ${outdir}/$newf
+   done
 
 
    $COMPRESS ${hh_tankdir}/anl/*.scater.*

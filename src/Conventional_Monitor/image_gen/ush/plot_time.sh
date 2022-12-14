@@ -1,5 +1,4 @@
-#!/bin/sh
-set -ax
+#!/bin/bash
 
 #----------------------------------------------------------
 #
@@ -24,16 +23,15 @@ function large_mv () {
 }
 
 
-   type=${TYPE}
+   echo "--> plot_time.sh, type=${TYPE}"
 
-   echo "--> plot_time.sh, type=${type}"
+   workdir=${C_PLOT_WORKDIR}/plottime_${TYPE}
+   if [[ -d ${workdir} ]]; then
+      rm -rf ${workdir}
+   fi
+   mkdir -p ${workdir}
+   cd ${workdir}
 
-   workdir=${C_PLOT_WORKDIR}/plottime_${type}
-   rm -rf $workdir
-   mkdir -p $workdir
-   cd $workdir
-
-   rc=0
    pdy=`echo $PDATE|cut -c1-8`
    cyc=`echo $PDATE|cut -c9-10`
    tv_tankdir=${C_TANKDIR}/${RUN}.${pdy}/${cyc}/conmon/time_vert
@@ -57,7 +55,7 @@ function large_mv () {
       if [[ -d ${C_TANKDIR}/${RUN}.${day}/${dcyc}/conmon ]]; then
 
          for cycle in ges anl; do
-            data_file=${cycle}_${type}_stas.${cdate}
+            data_file=${cycle}_${TYPE}_stas.${cdate}
             data_fp=${C_TANKDIR}/${RUN}.${day}/${dcyc}/conmon/time_vert/${data_file}
             if [[ -e ${data_fp}.${Z} ]]; then
                cp -f ${data_fp}.${Z} ./${data_file}.${Z}
@@ -79,7 +77,7 @@ function large_mv () {
    #---------------------------------------------------
    for cycle in ges anl; do
 
-      ctl_file=${tv_tankdir}/${cycle}_${type}_stas.ctl
+      ctl_file=${tv_tankdir}/${cycle}_${TYPE}_stas.ctl
       if [[ -e ${ctl_file}.${Z} ]]; then
         cp -f ${ctl_file}.${Z} tmp.ctl.${Z}
         ${UNCOMPRESS} tmp.ctl.${Z}
@@ -87,13 +85,13 @@ function large_mv () {
         cp -f ${ctl_file} tmp.ctl
       fi
 
-      new_dset="dset ${cycle}_${type}_stas.%y4%m2%d2%h2"
+      new_dset="dset ${cycle}_${TYPE}_stas.%y4%m2%d2%h2"
 
       tdef=`${C_IG_SCRIPTS}/make_tdef.sh ${START_DATE} ${NUM_CYCLES} 06`
       echo "tdef = $tdef"
 
       sed -e "s/^dset*/${new_dset}/" tmp.ctl >tmp2.ctl
-      sed -e "s/^tdef.*/${tdef}/" tmp2.ctl >${cycle}_${type}_stas.ctl
+      sed -e "s/^tdef.*/${tdef}/" tmp2.ctl >${cycle}_${TYPE}_stas.ctl
       rm -f tmp.ctl
       rm -f tmp2.ctl
    done
@@ -112,7 +110,7 @@ function large_mv () {
    #---------------------------------------------------
 
    for script in plotstas_time_count.gs plotstas_time_bias.gs ;do
-      if [[ ${type} = 'gps' && ${script} = 'plotstas_time_bias.gs' ]]; then
+      if [[ ${TYPE} = 'gps' && ${script} = 'plotstas_time_bias.gs' ]]; then
          continue
       fi
 
@@ -121,17 +119,16 @@ function large_mv () {
       if [[ -s  ${plot_script} ]]; then
          cp -f ${plot_script} .
       else
-         rc=9
          echo "unable to find ${plot_script}, exiting"
-         exit ${rc} 
+         exit 9
       fi
 
       #--------------------------------
-      #  modify plot script for type
+      #  modify plot script for TYPE
       #--------------------------------
       base_name=`echo "${script}" | awk -F. '{print $1}'`
-      local_plot_script=${base_name}_${type}.gs
-      sed -e "s/DTYPE/$type/" \
+      local_plot_script=${base_name}_${TYPE}.gs
+      sed -e "s/DTYPE/$TYPE/" \
          ${script} > ${local_plot_script}
 
       #-------------------------
@@ -151,12 +148,12 @@ function large_mv () {
 
 
    if [[ ${C_IG_SAVE_WORK} -eq 0 ]]; then
-      cd $workdir
+      cd ${workdir}
       cd ..
-      rm -rf $workdir
+      rm -rf ${workdir}
    fi
 
 
-   echo "<-- plot_time.sh, type=${type}"
+   echo "<-- plot_time.sh"
 exit
 

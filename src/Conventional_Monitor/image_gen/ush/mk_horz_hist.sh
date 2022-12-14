@@ -1,17 +1,12 @@
-#!/bin/sh
+#!/bin/bash
 
 #------------------------------------------------------------------
 #
 #  mk_horz_hist.sh
 #
 #------------------------------------------------------------------
-set -ax
-
-
    echo "--> mk_horz_hist.sh"
 
-   rc=0
-  
    echo "CONMON_SUFFIX = $CONMON_SUFFIX"
    echo "C_TANKDIR   = $C_TANKDIR"
 
@@ -42,19 +37,20 @@ set -ax
    #------------------------------
    # submit the plot_hist job
    #------------------------------
-
    jobname="${JOBNAME}_hist"
    plot_hist="${C_IG_SCRIPTS}/plot_hist.sh"
+
    logfile="${C_LOGDIR}/plothist_${CONMON_SUFFIX}.${PDY}.${CYC}.log"
+   if [[ -e ${logfile} ]]; then 
+      rm -f ${logfile}
+   fi
+
    errfile="${C_LOGDIR}/plothist_${CONMON_SUFFIX}.${PDY}.${CYC}.err"
-   rm -f $logfile
-   rm -f $errfile
+   if [[ -e ${errfile} ]]; then
+      rm -f ${errfile}
+   fi
 
-   if [[ ${MY_MACHINE} = "wcoss_d" || ${MY_MACHINE} = "wcoss_c" ]]; then
-      ${SUB} -q ${JOB_QUEUE} -P ${PROJECT} -o ${logfile} -M 100 \
-   	   -R affinity[core] -W 0:20 -J ${jobname} -cwd ${PWD} ${plot_hist}
-
-   elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" || $MY_MACHINE = "jet" ]]; then
+   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" || $MY_MACHINE = "jet" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_hist}
 
@@ -67,19 +63,20 @@ set -ax
    #------------------------------
    # submit the plot_horz job
    #------------------------------
-
    jobname="${JOBNAME}_horz"
    plot_horz="${C_IG_SCRIPTS}/plot_horz.sh"
+
    logfile="${C_LOGDIR}/plothorz_${CONMON_SUFFIX}.${PDY}.${CYC}.log"
+   if [[ -e ${logfile} ]]; then
+      rm -f ${logfile}
+   fi
+
    errfile="${C_LOGDIR}/plothorz_${CONMON_SUFFIX}.${PDY}.${CYC}.err"
-   rm -f $logfile
-   rm -f $errfile
+   if [[ -e ${errfile} ]]; then
+      rm -f ${errfile}
+   fi
 
-   if [[ $MY_MACHINE = "wcoss_d" || ${MY_MACHINE} = "wcoss_c" ]]; then
-      $SUB -q $JOB_QUEUE -P $PROJECT -o ${logfile} -M 300 \
-   	   -R affinity[core] -W 0:20 -J ${jobname} -cwd ${PWD} ${plot_horz}
-
-   elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" || $MY_MACHINE = "jet" ]]; then
+   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" || $MY_MACHINE = "jet" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_horz}
 
@@ -92,19 +89,20 @@ set -ax
    #------------------------------
    # submit the plot_horz_uv job
    #------------------------------
-
    jobname="${JOBNAME}_horz_uv"
    plot_horz_uv="${C_IG_SCRIPTS}/plot_horz_uv.sh"
+
    logfile="${C_LOGDIR}/plothorz_uv_${CONMON_SUFFIX}.${PDY}.${CYC}.log"
+   if [[ -e ${logfile} ]]; then
+      rm -f ${logfile}
+   fi
+
    errfile="${C_LOGDIR}/plothorz_uv_${CONMON_SUFFIX}.${PDY}.${CYC}.err"
-   rm -f $logfile
-   rm -f $errfile
+   if [[ -e ${errfile} ]]; then
+      rm -f ${errfile}
+   fi
 
-   if [[ $MY_MACHINE = "wcoss_d" || $MY_MACHINE = "wcoss_c" ]]; then
-      $SUB -q $JOB_QUEUE -P $PROJECT -o ${logfile} -M 300 \
-	   -R affinity[core] -W 1:00 -J ${jobname} ${plot_horz_uv}
-
-   elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" || $MY_MACHINE = "jet" ]]; then
+   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" || $MY_MACHINE = "jet" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=01:30:00 \
 	     -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_horz_uv}
 
@@ -115,5 +113,5 @@ set -ax
 
 
 echo "<-- mk_horz_hist.sh"
-exit ${rc}
+exit 
 

@@ -1,27 +1,23 @@
-#!/bin/sh
+#!/bin/bash
 
 #----------------------------------------------------------------------------------------
 #  plot_horz.sh
 #
 #    This produces the horizontal temperature images.
 #----------------------------------------------------------------------------------------
-
-   set -ax
-   date
-
    echo "--> plot_horz.sh"
 
-
-   rc=0
    hh_tankdir=${C_TANKDIR}/${RUN}.${PDY}/${CYC}/conmon/horz_hist
 
    export xsize=x800
    export ysize=y600
 
-   export tmpdir_plothorz=${C_PLOT_WORKDIR}/plothorz
-   rm -rf $tmpdir_plothorz
-   mkdir -p $tmpdir_plothorz
-   cd $tmpdir_plothorz
+   workdir=${C_PLOT_WORKDIR}/plothorz
+   if [[ -d ${workdir} ]]; then
+      rm -rf ${workdir}
+   fi
+   mkdir -p ${workdir}
+   cd ${workdir}
 
 
    #----------------------------------------------------------------------
@@ -35,23 +31,12 @@
 
 
    #----------------------------------------------------------------------
-   #  create the idx and ctl files for ges|anl grib|grib2 files
+   #  create the idx and ctl files for ges|anl grib2 files
    #----------------------------------------------------------------------
-   echo "grib2 = $grib2"
-
-   if [[ $grib2 -eq 0 ]]; then		# grib files
-      echo "handling grib files"
-      ${C_IG_SCRIPTS}/grib2ctl.pl anal.${PDATE} > anal.ctl
-      gribmap -i anal.ctl -0
-      ${C_IG_SCRIPTS}/grib2ctl.pl -verf guess.${PDATE} > guess.ctl
-      gribmap -i guess.ctl
-   else					# grib2
-      echo "handling grib2 files"
-      ${C_IG_SCRIPTS}/g2ctl.pl -0 anal.$PDATE > anal.ctl
-      gribmap -0 -i anal.ctl
-      ${C_IG_SCRIPTS}/g2ctl.pl guess.$PDATE > guess.ctl
-      gribmap -i guess.ctl
-   fi
+   ${C_IG_SCRIPTS}/g2ctl.pl -0 anal.$PDATE > anal.ctl
+   gribmap -0 -i anal.ctl
+   ${C_IG_SCRIPTS}/g2ctl.pl guess.$PDATE > guess.ctl
+   gribmap -i guess.ctl
 
 
    #----------------------------------------------------------------------
@@ -69,7 +54,6 @@
 
       eval stype=\${${type}_TYPE} 
       eval nreal=\${nreal_${type}} 
-
 
       for dtype in ${stype}; do
          mtype=`echo ${dtype} | cut -f1 -d_`
@@ -186,10 +170,10 @@
          mkdir -p ${outdir}
 
          img_files=`ls *.png`
-         for imgf in $img_files; do
+         for imgf in ${img_files}; do
             newf=`echo $imgf | sed -e "s/\./.${PDATE}./g"`
-            cp $imgf $newf
-            mv $newf ${outdir}/.
+            cp ${imgf} ${newf}
+            mv ${newf} ${outdir}/.
          done
 
       done      ### dtype loop 
@@ -198,13 +182,13 @@
 
 
    if [[ ${C_IG_SAVE_WORK} -eq 0 ]]; then
-      cd $workdir
+      cd ${workdir}
       cd ..
-      rm -rf $workdir
+      rm -rf ${workdir}
    fi
 
 
    echo "<-- plot_horz.sh"
 
-exit $rc
+exit 
 

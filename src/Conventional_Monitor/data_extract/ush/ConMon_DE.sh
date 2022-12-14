@@ -81,7 +81,7 @@ this_file=`basename $0`
 this_dir=`dirname $0`
 
 
-gfs_ver=v16.2
+gfs_ver=v16.3
 
 echo CONMON_SUFFIX = $CONMON_SUFFIX
 export NET=${CONMON_SUFFIX}
@@ -129,7 +129,7 @@ else
    GDATE=`$NDATE -06 $PDATE`
 fi
 
-echo GDATE = $GDATE
+echo GDATE, PDATE = $GDATE, $PDATE
 
 export PDY=`echo $PDATE|cut -c1-8`
 export CYC=`echo $PDATE|cut -c9-10`
@@ -192,7 +192,6 @@ echo "cnvstat = $cnvstat"
 echo "pgrbf00 = $pgrbf00"
 echo "pgrbf06 = $pgrbf06"
 
-exit
 
 #---------------------------------------------
 # override the default convinfo definition
