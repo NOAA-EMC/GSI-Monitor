@@ -32,7 +32,7 @@ echo "--> mk_time_vert.sh"
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:15:00 \
                 -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${pltfile}
 
-   elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
+   elif [[ ${MY_MACHINE} == "wcoss2" ]]; then
       $SUB -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=50:00 -N ${jobname} \
                 -l select=1:mem=200M ${pltfile}
    fi
@@ -66,7 +66,7 @@ echo "--> mk_time_vert.sh"
          ${SUB} -A ${ACCOUNT} --ntasks=1 --time=${walltime} \
                 -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${pltfile}
 
-      elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
+      elif [[ ${MY_MACHINE} == "wcoss2" ]]; then
          if [[ ${type} == "uv" || ${type} == "u" || ${type} == "v" ]]; then
             walltime="02:00:00"
          else

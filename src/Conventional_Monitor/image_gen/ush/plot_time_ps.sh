@@ -6,11 +6,6 @@
 
    echo "---> plot_time_ps.sh"
 
-   echo "START_DATE  = $START_DATE"
-   echo "NUM_CYCLES  = $NUM_CYCLES"
-   echo "PDATE       = $PDATE"
-   echo "NDATE       = $NDATE"
-
    workdir=${C_PLOT_WORKDIR}/plottime_ps
    if [[ -d ${workdir} ]]; then
       rm -rf ${workdir}
@@ -31,7 +26,6 @@
 
    ${NCP} ${C_IG_GSCRIPTS}/plotstas_time_count_ps.gs . 
    ${NCP} ${C_IG_GSCRIPTS}/plotstas_time_bias_ps.gs  . 
-#   ${NCP} ${C_IG_GSCRIPTS}/plotstas_time_bias2_ps.gs . 
 
    #---------------------------------------------------
    #  Link in the data files.
