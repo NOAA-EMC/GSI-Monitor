@@ -33,7 +33,6 @@ echo "--> mk_time_vert.sh"
                 -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${pltfile}
 
    elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
-      echo "submitting $jobname"
       $SUB -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=50:00 -N ${jobname} \
                 -l select=1:mem=200M ${pltfile}
    fi
@@ -57,7 +56,7 @@ echo "--> mk_time_vert.sh"
       fi
 
       if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} == "s4" || \
-            ${MY_MACHINE} == "jet" || ${MY_MACHINE} = "orion" ]]; then
+            ${MY_MACHINE} == "jet" || ${MY_MACHINE} == "orion" ]]; then
          if [[ ${type} == "uv" || ${type} == "u" || ${type} == "v" ]]; then
             walltime="02:30:00"
          else
@@ -69,11 +68,10 @@ echo "--> mk_time_vert.sh"
 
       elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
          if [[ ${type} == "uv" || ${type} == "u" || ${type} == "v" ]]; then
-            walltime="01:30:00"
+            walltime="02:00:00"
          else
             walltime="50:00"
          fi
-        echo "submitting $jobname"
 
         $SUB -V -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${logfile} -l walltime=${walltime}\
 	       	-N ${jobname} -l select=1:mem=200M ${pltfile}
@@ -113,7 +111,6 @@ echo "--> mk_time_vert.sh"
                 -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${pltfile}
      
       elif [[ ${MY_MACHINE} == "wcoss2" ]]; then
-	echo "submitting $jobname"
         ${SUB} -V -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${logfile} -l walltime=50:00 \
 	       	-N ${jobname} -l select=1:mem=500M ${pltfile}
 

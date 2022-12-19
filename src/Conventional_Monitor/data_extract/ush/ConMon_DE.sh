@@ -145,15 +145,8 @@ echo "CNVSTAT_LOCATION = $CNVSTAT_LOCATION"
 
 export COMPONENT=${COMPONENT:-atmos}
 
-#
-#  Is there any difference in location from ops to wkfl?
-#
-
 export C_DATDIR=${C_DATDIR:-${CNVSTAT_LOCATION}/${RUN}.${PDY}/${CYC}/${COMPONENT}}
 export C_GDATDIR=${C_GDATDIR:-${CNVSTAT_LOCATION}/${RUN}.${PDYm6h}/${GCYC}/${COMPONENT}}
-
-echo "C_DATDIR  = $C_DATDIR"
-echo "C_GDATDIR = $C_GDATDIR"
 
 export C_COMIN=${C_DATDIR}
 export C_COMINm6h=${C_GDATDIR}

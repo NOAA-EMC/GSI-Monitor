@@ -80,14 +80,14 @@ export jobname=transfer_${CONMON_SUFFIX}_conmon
 #  and leave it to the user to manually transfer files to
 #  the server.
 #
-if [[ $MY_MACHINE = "wcoss2" ]]; then
+if [[ ${MY_MACHINE} = "wcoss2" ]]; then
 
-   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${errfile} \
+   ${SUB} -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${errfile} \
         -V -l select=1:mem=500M -l walltime=45:00 -N ${jobname} \
         ${C_IG_SCRIPTS}/transfer_imgs.sh
 
 else
-   echo "Unable to transfer files from $MY_MACHINE to $WEBSVR."
+   echo "Unable to transfer files from ${MY_MACHINE} to ${WEBSVR}."
    echo "Manual intervention is required."
 
 fi

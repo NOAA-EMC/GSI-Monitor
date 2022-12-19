@@ -20,7 +20,7 @@ function usage {
   echo "            Suffix is the indentifier for this data source."
   echo " "
   echo "            -p | --pdate yyyymmddcc to specify the cycle to be plotted."
-  echo "                 If not specified pdate will be set using the "
+  echo "                 If not specified, pdate will be set using the "
   echo "                 C_IMGNDIR/last_plot_time file, and if that doesn't"
   echo "                 exist, then the last available date will be plotted."
   echo " "             
@@ -137,9 +137,8 @@ fi
 echo "C_IG_SCRIPTS = ${C_IG_SCRIPTS}"
 echo "C_TANKDIR = ${C_TANKDIR}"
 
-last_cycle=`${C_IG_SCRIPTS}/find_cycle.pl \
-		--cyc 1 --dir ${C_TANKDIR} --run ${RUN}`
-
+last_cycle=`${MON_USH}/find_last_cycle.sh --net ${CONMON_SUFFIX} \
+              --run ${RUN} --tank ${TANKDIR} --mon conmon`
 
 if [[ ${PDATE} = "" ]]; then
 
@@ -191,9 +190,7 @@ if [[ $PDATE -le ${last_cycle} ]]; then
    #--------------------------------------------------------------------
    #  Update the last_plot_time file if found
    #--------------------------------------------------------------------
-   echo C_IMGNDIR = $C_IMGNDIR
    if [[ -e ${C_IMGNDIR}/last_plot_time ]]; then
-      echo "update last_plot_time file"  
       echo ${PDATE} > ${C_IMGNDIR}/last_plot_time
    fi
 

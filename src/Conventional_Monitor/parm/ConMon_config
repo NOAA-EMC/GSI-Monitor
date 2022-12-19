@@ -23,9 +23,6 @@ export WEBDIR=${WEBDIR:-/home/people/emc/www/htdocs/gmb/gdas/es_conv}
 #  TANKDIR is the location for the extracted data files and
 #  the control files used for image plotting.
 #
-#export CONMON_TANKDIR=/u/Edward.Safford/nbns
-#export C_TANKverf=${C_TANKverf:-${CONMON_TANKDIR}}
-
 export C_TANKDIR=${TANKDIR}/stats/${CONMON_SUFFIX}
 export C_IMGNDIR=${TANKDIR}/imgn/${CONMON_SUFFIX}/${RUN}/conmon
 
@@ -88,28 +85,16 @@ export C_STMP_USER=${C_STMP_USER:-${MON_STMP}/${LOGNAME}}
 export C_PTMP_USER=${C_PTMP_USER:-${MON_PTMP}/${LOGNAME}}
 
 export C_LOGDIR=${MON_LOGDIR}/${CONMON_SUFFIX}/${RUN}/conmon
-#export WORK_conmon=${WORK_conmon:-${C_STMP_USER}/${CONMON_SUFFIX}/${RUN}/ConMon}
+export CONMON_IMAGE_GEN=${CONMON_IMAGE_GEN:-${MY_CONMON}/image_gen}
 
-#   export CONMON_DATA_EXTRACT=${CONMON_DATA_EXTRACT:-${MY_CONMON}/data_extract}
-#   export C_DE_EXEC=${C_DE_EXEC:-${CONMON_DATA_EXTRACT}/exec}
-#   export C_DE_PARM=${C_DE_PARM:-${CONMON_DATA_EXTRACT}/parm}
-#   export C_DE_SCRIPTS=${C_DE_SCRIPTS:-${CONMON_DATA_EXTRACT}/ush}
-#
-   export CONMON_IMAGE_GEN=${CONMON_IMAGE_GEN:-${MY_CONMON}/image_gen}
-#   export C_IG_EXEC=${C_IG_EXEC:-${CONMON_IMAGE_GEN}/exec}
-   export C_IG_GSCRIPTS=${C_IG_GSCRIPTS:-${CONMON_IMAGE_GEN}/gscripts}
-#   export C_IG_PARM=${C_IG_PARM:-${CONMON_IMAGE_GEN}/parm}
-   export C_IG_SCRIPTS=${C_IG_SCRIPTS:-${CONMON_IMAGE_GEN}/ush}
-   export C_IG_FIX=${C_IG_FIX:-${CONMON_IMAGE_GEN}/fix}
-#   export C_IG_HTML=${C_IG_HTML:-${CONMON_IMAGE_GEN}/html}
-#   export C_IG_SAVE_WORK=${C_IG_SAVE_WORK:-1}		# switch to save plot work directories
-#
-#   export CONMON_PARM=${CONMON_PARM:-${MY_CONMON}/parm}
+export C_IG_GSCRIPTS=${C_IG_GSCRIPTS:-${CONMON_IMAGE_GEN}/gscripts}
+export C_IG_SCRIPTS=${C_IG_SCRIPTS:-${CONMON_IMAGE_GEN}/ush}
+export C_IG_FIX=${C_IG_FIX:-${CONMON_IMAGE_GEN}/fix}
 
-   export HOMEconmon_shared=${HOMEconmon_shared:-${MY_CONMON}/nwprod/conmon_shared}
-   export HOMEgdas_conmon=${HOMEgdas_conmon:-${MY_CONMON}/nwprod/gdas_conmon}
-   export HOMEgfs_conmon=$HOMEgdas_conmon
+export HOMEconmon_shared=${HOMEconmon_shared:-${MY_CONMON}/nwprod/conmon_shared}
+export HOMEgdas_conmon=${HOMEgdas_conmon:-${MY_CONMON}/nwprod/gdas_conmon}
+export HOMEgfs_conmon=$HOMEgdas_conmon
 
-   export USHconmon=${USHconmon:-${HOMEconmon_shared}/ush}
-   export EXECconmon=${EXECconmon:-${GSI_MON_BIN}}
+export USHconmon=${USHconmon:-${HOMEconmon_shared}/ush}
+export EXECconmon=${EXECconmon:-${GSI_MON_BIN}}
 
