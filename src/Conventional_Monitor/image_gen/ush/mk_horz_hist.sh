@@ -50,7 +50,7 @@
       rm -f ${errfile}
    fi
 
-   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" || $MY_MACHINE = "jet" ]]; then
+   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" || $MY_MACHINE = "jet" || $MY_MACHINE = "orion" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_hist}
 
@@ -76,7 +76,7 @@
       rm -f ${errfile}
    fi
 
-   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" || $MY_MACHINE = "jet" ]]; then
+   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" || $MY_MACHINE = "jet" || $MY_MACHINE = "orion" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_horz}
 
@@ -102,12 +102,14 @@
       rm -f ${errfile}
    fi
 
-   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" || $MY_MACHINE = "jet" ]]; then
+   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" || \
+         ${MY_MACHINE} = "jet" || ${MY_MACHINE} = "orion" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=01:30:00 \
 	     -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_horz_uv}
 
-   elif [[ $MY_MACHINE = "wcoss2" ]]; then
-        $SUB -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=30:00 -N ${jobname} \
+   elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
+        $SUB -V -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${logfile} \
+                -l walltime=30:00 -N ${jobname} \
                 -l select=1:mem=500M ${plot_horz_uv}
    fi
 
