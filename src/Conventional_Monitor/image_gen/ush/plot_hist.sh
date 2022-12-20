@@ -68,12 +68,12 @@
    mkdir -p ${workdir}
    cd ${workdir}
 
-   hh_tankdir=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${PDATE} \
-	                       --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
+   hh_tankdir=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${PDATE} \
+                   --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
    hh_tankdir=${hh_tankdir}/horz_hist
 
-   $UNCOMPRESS ${hh_tankdir}/anl/*.scater.*${Z}
-   $UNCOMPRESS ${hh_tankdir}/ges/*.scater.*${Z}
+   $UNCOMPRESS ${hh_tankdir}/anl/*.scater.*.gz
+   $UNCOMPRESS ${hh_tankdir}/ges/*.scater.*.gz
 
    outdir=${C_IMGNDIR}/pngs/hist/
    if [[ ! -d ${outdir} ]]; then
@@ -259,22 +259,23 @@
                         cp ${C_IG_GSCRIPTS}/setvpage.gs ./setvpage.gs
                      fi
 
-                     cat fileout.ges.${dtype}_${uvtype} >  fileout
-                     cat fileout.anl.${dtype}_${uvtype} >> fileout
-                     cp fileout fileout_all.${dtype}_${uvtype}
- 
-                     sed -e "s/XSIZE/$xsize/" \
-                         -e "s/YSIZE/$ysize/" \
-                         -e "s/PLOTFILE/${dtype}_${uvtype}/" \
-                         -e "s/SDATE/$PDATE/" \
-                     plot_hist.gs > plothist_${dtype}_${uvtype}.gs
+		     if [[ -e fileout.ges.${dtype} && -e fileout.anl.${dtype} ]]; then
+                        cat fileout.ges.${dtype}_${uvtype} >  fileout
+                        cat fileout.anl.${dtype}_${uvtype} >> fileout
+                        cp fileout fileout_all.${dtype}_${uvtype}
 
+                        sed -e "s/XSIZE/$xsize/" \
+                            -e "s/YSIZE/$ysize/" \
+                            -e "s/PLOTFILE/${dtype}_${uvtype}/" \
+                            -e "s/SDATE/$PDATE/" \
+                        plot_hist.gs > plothist_${dtype}_${uvtype}.gs
 
-                     #-------------------------------------
-                     #  run the GrADS plot script
-                     #
-                     echo 'quit' | grads -blc " run plothist_${dtype}_${uvtype}.gs"
-
+   
+                        #-------------------------------------
+                        #  run the GrADS plot script
+                        #
+                        echo 'quit' | grads -blc " run plothist_${dtype}_${uvtype}.gs"
+                     fi
 
                   done      ### uvtype loop
                fi
@@ -286,13 +287,20 @@
          #-------------------------------------
          #  run the GrADS plot script
          #
-         cat fileout.ges.${dtype} >  fileout
-         cat fileout.anl.${dtype} >> fileout
-         cp fileout fileout_all.${dtype}
+	 if [[ -e fileout.ges.${dtype} && -e fileout.anl.${dtype} ]]; then 
+            echo "Plotting ${dtype}"; echo
+
+            cat fileout.ges.${dtype} >  fileout
+            cat fileout.anl.${dtype} >> fileout
+            cp fileout fileout_all.${dtype}
  
-         echo 'quit' | grads -blc " run plothist_${dtype}.gs" 
-         rm fileout
-    
+            echo 'quit' | grads -blc " run plothist_${dtype}.gs" 
+            rm fileout
+
+	 else
+            echo "No data for ${dtype}, skipping"; echo
+         fi
+
       done      ### dtype loop 
 
    done      ### type loop

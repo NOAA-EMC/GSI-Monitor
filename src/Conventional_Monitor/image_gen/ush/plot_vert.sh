@@ -70,7 +70,6 @@
       num_cycles=${NUM_CYCLES}
 
       tdef=`${C_IG_SCRIPTS}/make_tdef.sh ${START_DATE} ${num_cycles} 06`
-      echo "tdef = $tdef"
 
       sed -e "s/^dset*/${new_dset}/" tmp.ctl >tmp2.ctl
       sed -e "s/^tdef.*/${tdef}/" tmp2.ctl >${cycle}_${TYPE}_stas.ctl
@@ -81,7 +80,7 @@
    #------------------------------------------
    #  ensure the imgn destination dir exists
    #------------------------------------------
-   outdir=${C_IMGNDIR}/pngs/vert/${cyc}
+   outdir=${C_IMGNDIR}/pngs/vert
    if [[ ! -d ${outdir} ]]; then
       mkdir -p ${outdir}
    fi
@@ -125,14 +124,12 @@
    done
 
    img_files=`ls *vert*.png`
-   for imgf in $img_files; do
+   for imgf in ${img_files}; do
       newf=`echo $imgf | sed -e "s/\./.${PDATE}./g"`
-      cp $imgf $newf
-      mv $newf ${C_IMGNDIR}/pngs/vert/.
+      mv ${imgf} ${outdir}/${newf}
+
    done
 
-   mv -f *.png ${outdir}/.
-  
    if [[ ${C_IG_SAVE_WORK} -eq 0 ]]; then
       cd ${workdir}
       cd ..

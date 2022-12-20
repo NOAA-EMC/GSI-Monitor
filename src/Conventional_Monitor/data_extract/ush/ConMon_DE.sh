@@ -106,7 +106,6 @@ jobname=ConMon_DE_${CONMON_SUFFIX}
 echo "C_TANKDIR = ${C_TANKDIR}"
 echo "C_LOGDIR  = ${C_LOGDIR}"
 echo "C_IMGNDIR = ${C_IMGNDIR}"
-echo "MON_USH   = $MON_USH"
 
 if [[ ! -d ${C_TANKDIR} ]]; then
    mkdir -p ${C_TANKDIR}
@@ -141,8 +140,6 @@ if [[ ${#cnvstat_location} -le 0 ]]; then
    export cnvstat_location=${COMROOT}/gfs/${gfs_ver}
 fi
 export CNVSTAT_LOCATION=${cnvstat_location} 
-echo "CNVSTAT_LOCATION = $CNVSTAT_LOCATION"
-
 export COMPONENT=${COMPONENT:-atmos}
 
 export C_DATDIR=${C_DATDIR:-${CNVSTAT_LOCATION}/${RUN}.${PDY}/${CYC}/${COMPONENT}}
@@ -180,10 +177,6 @@ export pgrbf06="${C_GDATDIR}/gdas.t${GCYC}z.pgrb2.0p25.f006"
 if [[ ! -s ${pgrbf06} ]]; then
    export pgrbf06="${C_GDATDIR}/gdas.t${GCYC}z.pgrb2.1p00.f006"
 fi
-
-echo "cnvstat = $cnvstat"
-echo "pgrbf00 = $pgrbf00"
-echo "pgrbf06 = $pgrbf06"
 
 
 #---------------------------------------------

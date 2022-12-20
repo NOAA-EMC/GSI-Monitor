@@ -109,6 +109,7 @@ else
    exit 3
 fi
 
+module list
 
 #--------------------------------------------------------------------
 #  Create LOGdir as needed
@@ -175,7 +176,7 @@ if [[ $PDATE -le ${last_cycle} ]]; then
    #--------------------------------------------------------------------
    #  Create workdir and cd to it
    #--------------------------------------------------------------------
-   export C_PLOT_WORKDIR=${C_PLOT_WORKDIR:-${C_STMP_USER}/${CONMON_SUFFIX}/${RUN}/conmon}
+   export C_PLOT_WORKDIR=${C_PLOT_WORKDIR:-${MON_STMP}/${CONMON_SUFFIX}/${RUN}/conmon}
    rm -rf $C_PLOT_WORKDIR
    mkdir -p $C_PLOT_WORKDIR
    cd $C_PLOT_WORKDIR

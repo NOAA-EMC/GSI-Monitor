@@ -81,8 +81,8 @@ export STNMAP=`which stnmap`
 #
 export MY_CONMON=${MY_GSI_MONITOR}/src/Conventional_Monitor
 
-export C_STMP_USER=${C_STMP_USER:-${MON_STMP}/${LOGNAME}}
-export C_PTMP_USER=${C_PTMP_USER:-${MON_PTMP}/${LOGNAME}}
+export C_STMP_USER=${C_STMP_USER:-${MON_STMP}}
+export C_PTMP_USER=${C_PTMP_USER:-${MON_PTMP}}
 
 export C_LOGDIR=${MON_LOGDIR}/${CONMON_SUFFIX}/${RUN}/conmon
 export CONMON_IMAGE_GEN=${CONMON_IMAGE_GEN:-${MY_CONMON}/image_gen}

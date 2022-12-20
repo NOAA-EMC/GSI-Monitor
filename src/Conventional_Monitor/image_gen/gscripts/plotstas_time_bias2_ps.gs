@@ -14,7 +14,6 @@ function time_bias2_ps (args)
    'q time'
    dmy=sublin(result,1)
    ti=subwrd(dmy,5)
-   say ti
    hh=substr(ti,1,2)
    dd=substr(ti,4,2)
 
@@ -22,13 +21,10 @@ function time_bias2_ps (args)
    size=sublin(result,5)
    ixc=subwrd(size,3)
    iyc=subwrd(size,6)
-   say ixc
-   say 'iyc=' iyc
 
    '!echo $CONMON_RESTRICT_PLOT_AREAS > rest.txt'
    rest=read(rest.txt)
    restrict=subwrd(rest,2)
-   say 'restrict=' restrict
 
    iy=1
    while(iy <=iyc)
@@ -41,7 +37,6 @@ function time_bias2_ps (args)
          endif
       endif
 
-      say 'iy=' iy
       '!rm -f area.txt'
       '!cat ges_ps_stas.ctl |grep "region= 'iy' " > area.txt'
       result=read(area.txt)
@@ -88,16 +83,12 @@ function plottime(ix,iy,stype,hh,dd,area,stype,subtype,iuse,debug)
    nfield=4
    field.1.1=bias2.1
    field.1.2=bias2.2
-   field.1.3=bias2.3
    field.2.1=rms2.1
    field.2.2=rms2.2
-   field.2.3=rms2.3
    field.3.1=bias3.1
    field.3.2=bias3.2
-   field.3.3=bias3.3
    field.4.1=rms3.1
    field.4.2=rms3.2
-   field.4.3=rms3.3
 
    title.1="o-g for rej. by GC"
    title.2="rms for rej. by GC"
@@ -114,9 +105,6 @@ function plottime(ix,iy,stype,hh,dd,area,stype,subtype,iuse,debug)
       y1=10.6-(nf-1)*2.5
       y2=y1-1.8
       ystring=y1+0.1
-      say ' y1='y1
-      say ' y2='y2
-      say ' ystring='ystring
       'set t 1 last'
       'query time'
       'set y 'iy
@@ -140,14 +128,10 @@ function plottime(ix,iy,stype,hh,dd,area,stype,subtype,iuse,debug)
          maxvar=maxvar1
       endif
 
-      say ' 'minvar
-      say ' 'maxvar
       yrange=maxvar-minvar
       dy=0.1*yrange
       minvar=minvar-dy
       maxvar=maxvar+dy
-      say ' 'minvar
-      say ' 'maxvar
       'set parea 1.0 8.0 'y2' 'y1
       'set gxout line'
       'set t 1 last'

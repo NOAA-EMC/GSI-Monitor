@@ -7,7 +7,9 @@
    #---------------------------------------------------------------------
    echo "--> plot_horz_uv.sh"
 
-   hh_tankdir=${C_TANKDIR}/${RUN}.${PDY}/${CYC}/conmon/horz_hist
+   hh_tankdir=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${PDATE} \
+                --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
+   hh_tankdir=${hh_tankdir}/horz_hist
 
    workdir=${C_PLOT_WORKDIR}/plothorz_uv
    if [[ -d ${workdir} ]]; then
@@ -22,11 +24,18 @@
    #----------------------------------------------------------------------
    #  Link in the analysis and guess data files
    #----------------------------------------------------------------------
-   ${UNCOMPRESS} ${hh_tankdir}/anl/anal.${PDATE}.gz
-   ${UNCOMPRESS} ${hh_tankdir}/ges/guess.${PDATE}.gz
+   anl_file=${hh_tankdir}/anl/anal.${PDATE}
+   ges_file=${hh_tankdir}/ges/guess.${PDATE}
 
-   ln -s ${hh_tankdir}/anl/anal.${PDATE}  anal.${PDATE}
-   ln -s ${hh_tankdir}/ges/guess.${PDATE} guess.${PDATE}
+   if [[ -e ${anl_file}.gz ]]; then
+      ${UNCOMPRESS} ${anl_file}.gz
+   fi
+   if [[ -e ${ges_file}.gz ]]; then
+      ${UNCOMPRESS} ${ges_file}.gz
+   fi
+
+   ln -s ${anl_file} anal.${PDATE}
+   ln -s ${ges_file} guess.${PDATE}
 
 
    #----------------------------------------------------------------------
@@ -77,35 +86,31 @@
                ${NCP} ${C_IG_FIX}/uvsig.ctl ./${dtype}.ctl
                ${NCP} ${C_IG_GSCRIPTS}/plot_uvallev_horz.gs ./plot_${dtype}.gs
 
-            elif  [ "$mtype" = 'uv221' -o "$mtype" = 'uv230' -o "$mtype" = 'uv231' -o "$mtype" = 'uv232' -o "$mtype" = 'uv233' -o "$mtype" = 'uv234' -o "$mtype" = 'uv235' ]; then
+            elif  [ "$mtype" = 'uv221' -o "$mtype" = 'uv230' -o "$mtype" = 'uv231' -o\
+		    "$mtype" = 'uv232' -o "$mtype" = 'uv233' -o "$mtype" = 'uv234' -o "$mtype" = 'uv235' ]; then
 
                ${NCP} ${C_IG_FIX}/uvallev.ctl  ./${dtype}.ctl
                ${NCP} ${C_IG_GSCRIPTS}/plot_uvallev_horz.gs ./plot_${dtype}.gs
 
-            elif [ "$mtype" = 'uv242' -o "$mtype" = 'uv243'  -o "$mtype" = 'uv245' -o "$mtype" = 'uv246' -o "$mtype" = 'uv247' -o "$mtype" = 'uv248' -o "$mtype" = 'uv249' -o "$mtype" = 'uv250' -o "$mtype" = 'uv251' -o "$mtype" = 'uv252' -o "$mtype" = 'uv253' -o "$mtype" = 'uv254' -o "$mtype" = 'uv255' -o "$mtype" = 'uv256' -o "$mtype" = 'uv257' -o "$mtype" = 'uv258' ]; then
+            elif [ "$mtype" = 'uv242' -o "$mtype" = 'uv243' -o "$mtype" = 'uv245' -o \
+		   "$mtype" = 'uv246' -o "$mtype" = 'uv247' -o "$mtype" = 'uv248' -o \
+		   "$mtype" = 'uv249' -o "$mtype" = 'uv250' -o "$mtype" = 'uv251' -o \
+		   "$mtype" = 'uv252' -o "$mtype" = 'uv253' -o "$mtype" = 'uv254' -o \
+		   "$mtype" = 'uv255' -o "$mtype" = 'uv256' -o "$mtype" = 'uv257' -o "$mtype" = 'uv258' ]; then
 
                ${NCP} ${C_IG_FIX}/uvallev.ctl ./${dtype}.ctl
                ${NCP} ${C_IG_GSCRIPTS}/plot_uvsatwind_horz.gs ./plot_${dtype}.gs
 
-            elif [ "$mtype" = 'uv280' -o "$mtype" = 'uv281' -o "$mtype" = 'uv282' -o "$mtype" = 'uv284'  -o "$mtype" = 'uv287' ]; then
+            elif [ "$mtype" = 'uv280' -o "$mtype" = 'uv281' -o "$mtype" = 'uv282' -o \
+		   "$mtype" = 'uv284' -o "$mtype" = 'uv287' ]; then
 
                ${NCP} ${C_IG_FIX}/uvsfc11.ctl ./${dtype}.ctl
                ${NCP} ${C_IG_GSCRIPTS}/plot_uvsfc_horz.gs ./plot_${dtype}.gs
-               if [ -s ${hh_tankdir}/${cycle}/nt_${dtype}.${PDATE} ]; then
-                  echo "LOCATED nt file"
-                  nt=`cat ${hh_tankdir}/${cycle}/nt_${dtype}.${PDATE}`
-                  echo "nt set to $nt"
-               fi
 
             elif [ "$mtype" = 'uv229' ]; then
 
                ${NCP} ${C_IG_FIX}/uvsfc7.ctl ./${dtype}.ctl
                ${NCP} ${C_IG_GSCRIPTS}/plot_uvsfc_horz.gs ./plot_${dtype}.gs
-               if [ -s ${hh_tankdir}/${cycle}/nt_${dtype}.${PDATE} ]; then
-                  echo "LOCATED nt file"
-                  nt=`cat ${hh_tankdir}/${cycle}/nt_${dtype}.${PDATE}`
-                  echo "nt set to $nt"
-               fi
             fi
 
 
@@ -131,44 +136,46 @@
                ln -s ${grads_file} ${dtype}.grads.${cycle}.${PDATE}
    
             else
-               echo "WARNING:  unable to locate ${grads_file}"
                continue
             fi
 
             stnmap -1 -i ${dtype}.grads.${cycle}.ctl
 
          done         ## done with cycle
-   
-         if [  ! -s ${hh_tankdir}/$cycle/${dtype}.grads.${cycle}.${PDATE} ]; then
-            continue
-         fi
+  
+         if [[ -e ${dtype}.grads.ges.${PDATE} && -e ${dtype}.grads.anl.${PDATE} ]]; then
+	    echo "OK to plot ${dtype}" 
 
-         #----------------------------------------
-         # set plot variables in GrADS script
-         #----------------------------------------
-         sed -e "s/XSIZE/$xsize/" \
-             -e "s/YSIZE/$ysize/" \
-             -e "s/PLOTFILE/$mtype/" \
-             -e "s/PLOT2/$dtype/" \
-             -e "s/RDATE/$PDATE/" \
-             -e "s/HINT/${hint}/" \
-             -e "s/NT/$nt/" \
-             -e "s/DINDEX/$dindex/" \
-         plot_${dtype}.gs >plothorz_${dtype}.gs
+            #----------------------------------------
+            # set plot variables in GrADS script
+            #----------------------------------------
+            sed -e "s/XSIZE/$xsize/" \
+                -e "s/YSIZE/$ysize/" \
+                -e "s/PLOTFILE/$mtype/" \
+                -e "s/PLOT2/$dtype/" \
+                -e "s/RDATE/$PDATE/" \
+                -e "s/HINT/${hint}/" \
+                -e "s/NT/$nt/" \
+                -e "s/DINDEX/$dindex/" \
+            plot_${dtype}.gs >plothorz_${dtype}.gs
 
-         ${GRADS} -blc "run plothorz_${dtype}.gs"
+            ${GRADS} -blc "run plothorz_${dtype}.gs"
 
 
-         outdir=${C_IMGNDIR}/pngs/horz
-	 if [[ ! -d ${outdir} ]]; then
-            mkdir -p ${outdir}
-         fi
+            outdir=${C_IMGNDIR}/pngs/horz
+      	    if [[ ! -d ${outdir} ]]; then
+               mkdir -p ${outdir}
+            fi
 
-         img_files=`ls *.png`
-         for imgf in $img_files; do
-            newf=`echo ${imgf} | sed -e "s/\./.${PDATE}./g"`
-	    cp ${imgf} ${C_IMGNDIR}/pngs/horz/${newf}
-         done
+            img_files=`ls *.png`
+            for imgf in $img_files; do
+               newf=`echo ${imgf} | sed -e "s/\./.${PDATE}./g"`
+   	    mv ${imgf} ${C_IMGNDIR}/pngs/horz/${newf}
+            done
+
+         else
+            echo "No data for ${dtype}, skipping plot"; echo
+	 fi
 
       done      ### dtype loop 
    done      ### type loop
@@ -181,6 +188,7 @@
       cd ..
       rm -rf ${workdir}
    fi
+
 
    echo "<-- plot_horz_uv.sh"
 

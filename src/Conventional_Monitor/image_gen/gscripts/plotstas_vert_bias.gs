@@ -20,7 +20,6 @@ function vert_bias (args)
    'q time'
    ti=sublin(result,1)
    dmy=subwrd(ti,3)
-   say dmy
    hh=substr(dmy,1,2)
    dd=substr(dmy,4,2)
 
@@ -34,7 +33,6 @@ function vert_bias (args)
    '!echo $CONMON_RESTRICT_PLOT_AREAS > rest.txt'
    rest=read(rest.txt)
    restrict=subwrd(rest,2)
-   say 'rs=' restrict
 
    iy=1
    while(iy <=nyc)
@@ -67,7 +65,6 @@ function vert_bias (args)
          else
             datause='used'
          endif
-
          plot_vert(ix,iy,nzc,dmy,dtype,stype,subtype,datause,iuse,debug)
 
          ix=ix+1
@@ -110,7 +107,6 @@ function plot_vert(ix,iy,nzc,dmy,dtype,stype,subtype,datause,iuse,debug)
    yp=2
    while(nf <=nfield)
 
-      say 'nf='nf
       'run setvpage  'xp' 'yp' 2  2 0.9'
       'set annot 98'
       'set line 98'
@@ -122,29 +118,24 @@ function plot_vert(ix,iy,nzc,dmy,dtype,stype,subtype,datause,iuse,debug)
       'set t last'
 
       'set x 'ix
-      say 'x='ix
       'set y 'iy
       'set z 1'
       'define vmax=max('field.nf.1',z=2,z='nzc')'
       'define vmin=min('field.nf.1',z=2,z='nzc')'
       'd vmax'
 
-      say result
       cmax=subwrd(result,4)
       if(cmax=0); cmax=0.1;endif
       'd vmin'
-      say result
 
       cmin=subwrd(result,4)
       if(cmin=0);cmin=-0.1;endif
       yrange=cmax-cmin
-      say 'cmax='cmax
 
       dy=0.1*yrange
       cmax=cmax+dy
       cmin=cmin-dy
 
-      say 'cmax='cmax
       'set z 2 'nzc
       'set vrange 'cmin' 'cmax
       'set ccolor 98'
@@ -163,7 +154,7 @@ function plot_vert(ix,iy,nzc,dmy,dtype,stype,subtype,datause,iuse,debug)
 
    outfile=dtype''stype'-'subtype'_bias_vert_region'iy'.png'
 
-   'printim 'outfile' x800 y650 white'
+   'printim 'outfile' x800 y650'
    if(debug=1)
       say 'enter'
       pull

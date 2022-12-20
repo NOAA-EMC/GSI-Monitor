@@ -32,10 +32,6 @@ function large_mv () {
    mkdir -p ${workdir}
    cd ${workdir}
 
-   pdy=`echo $PDATE|cut -c1-8`
-   cyc=`echo $PDATE|cut -c9-10`
-   tv_tankdir=${C_TANKDIR}/${RUN}.${pdy}/${cyc}/conmon/time_vert
-
 
    export xsize=x800
    export ysize=y600
@@ -51,12 +47,15 @@ function large_mv () {
    while [[ $cdate -le $edate ]] ; do
       day=`echo $cdate | cut -c1-8 `
       dcyc=`echo $cdate |cut -c9-10`
+      test_dir=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${cdate} \
+               --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
 
-      if [[ -d ${C_TANKDIR}/${RUN}.${day}/${dcyc}/conmon ]]; then
+      if [[ -d ${test_dir} ]]; then
 
          for cycle in ges anl; do
             data_file=${cycle}_${TYPE}_stas.${cdate}
-            data_fp=${C_TANKDIR}/${RUN}.${day}/${dcyc}/conmon/time_vert/${data_file}
+            data_fp=${test_dir}/time_vert/${data_file}
+
             if [[ -e ${data_fp}.${Z} ]]; then
                cp -f ${data_fp}.${Z} ./${data_file}.${Z}
                $UNCOMPRESS ${data_file}.${Z}
@@ -77,7 +76,11 @@ function large_mv () {
    #---------------------------------------------------
    for cycle in ges anl; do
 
-      ctl_file=${tv_tankdir}/${cycle}_${TYPE}_stas.ctl
+      test_dir=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${PDATE} \
+               --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
+
+      ctl_file=${test_dir}/time_vert/${cycle}_${TYPE}_stas.ctl
+
       if [[ -e ${ctl_file}.${Z} ]]; then
         cp -f ${ctl_file}.${Z} tmp.ctl.${Z}
         ${UNCOMPRESS} tmp.ctl.${Z}
@@ -109,8 +112,8 @@ function large_mv () {
    #  copy plots scripts locally, modify, and run
    #---------------------------------------------------
 
-   for script in plotstas_time_count.gs plotstas_time_bias.gs ;do
-      if [[ ${TYPE} = 'gps' && ${script} = 'plotstas_time_bias.gs' ]]; then
+   for script in plotstas_time_count.gs plotstas_time_bias.gs plotstas_time_bias2.gs ;do
+      if [[ ${TYPE} = 'gps' && ${script} != 'plotstas_time_count.gs' ]]; then
          continue
       fi
 
@@ -147,6 +150,7 @@ function large_mv () {
    done
 
 
+   C_IG_SAVE_WORK=1
    if [[ ${C_IG_SAVE_WORK} -eq 0 ]]; then
       cd ${workdir}
       cd ..
