@@ -323,8 +323,8 @@ program bcor
         if (data_chan(j)%errinv > 1.e-6) then
            pen              =  (data_chan(j)%errinv*(data_chan(j)%omgbc))**2
            cor_total(1)     =  (data_chan(j)%omgnbc - data_chan(j)%omgbc)
-           cor_fixang(1)    =  0.0
-           if (.not.netcdf) cor_fixang(1) = data_chan(j)%bifix(angord+1)
+           cor_fixang(1)    =  data_chan(j)%bifix(1) + data_chan(j)%bifix(2) + &
+                               data_chan(j)%bifix(3) + data_chan(j)%bifix(4)
            cor_lapse(1)     =  data_chan(j)%bilap
            cor_lapse2(1)    =  data_chan(j)%bilap2
            cor_const(1)     =  data_chan(j)%bicons
@@ -347,7 +347,8 @@ program bcor
 
            cor_total(2)     =  (data_chan(j)%omgnbc - data_chan(j)%omgbc)**2
            cor_fixang(2)    =  0.0
-           if (.not.netcdf) cor_fixang(2) = (data_chan(j)%bifix(angord+1))**2
+           cor_fixang(2)    = (data_chan(j)%bifix(1) + data_chan(j)%bifix(2) + &
+                               data_chan(j)%bifix(3) + data_chan(j)%bifix(4))**2
            cor_lapse(2)     =  (data_chan(j)%bilap)**2
            cor_lapse2(2)    =  (data_chan(j)%bilap2)**2
            cor_const(2)     =  (data_chan(j)%bicons)**2

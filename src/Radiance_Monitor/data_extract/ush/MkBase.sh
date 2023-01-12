@@ -107,10 +107,10 @@ sdate=`echo $edate|cut -c1-8`
 edate=${sdate}00
 bdate=`$NDATE -1080 $edate`
 
-tmpdir=${MON_STMP}/base_${RADMON_SUFFIX}
-rm -rf $tmpdir
-mkdir -p $tmpdir
-cd $tmpdir
+wrkdir=${MON_STMP}/base_${RADMON_SUFFIX}
+rm -rf $wrkdir
+mkdir -p $wrkdir
+cd $wrkdir
 
 
 #-------------------------------------------------------------------
@@ -156,11 +156,11 @@ fi
 for type in ${SATYPE}; do
 
    #-------------------------------------------------------------------
-   #  Create $tmpdir
+   #  Create $typdir
    #-------------------------------------------------------------------
-   workdir=${tmpdir}/${type}.$edate
-   mkdir -p $workdir
-   cd $workdir
+   typdir=${wrkdir}/${type}.$edate
+   mkdir -p $typdir
+   cd $typdir
 
    #-------------------------------------------------------------------
    #  Create the cycle_hrs.txt file
@@ -175,7 +175,7 @@ for type in ${SATYPE}; do
    done
 
    #-------------------------------------------------------------------
-   #  Copy the data files and ctl file to workdir
+   #  Copy the data files and ctl file to typdir
    #-------------------------------------------------------------------
    have_ctl=0
    cdate=$bdate
@@ -263,11 +263,11 @@ EOF
    ./make_base < input > stdout.${type}.base
 
    #-------------------------------------------------------------------
-   #  Copy base file back to $tmpdir 
+   #  Copy base file back to $wrkdir 
    #-------------------------------------------------------------------
-   $NCP $out_file ${tmpdir}/.
+   $NCP $out_file ${wrkdir}/.
 
-   cd $tmpdir
+   cd $wrkdir
 
 done
 
@@ -282,40 +282,23 @@ if [[ ! -d ${TANKverf}/info ]]; then
    mkdir -p ${TANKverf}/info
 fi
 
+cd $wrkdir
 basefile=gdas_radmon_base.tar
 
-newbase=$tmpdir/newbase
-mkdir $newbase
-cd $newbase
-
 if [[ $single_sat -eq 0 ]]; then
-   ${NCP} ${tmpdir}/*.base .
+   tar -cvf ${basefile} *.base
 else
    
-   #---------------------------------------------
-   #  copy over existing $basefile and expand it
-   #---------------------------------------------
-   if [[ -e ${TANKverf}/info/${basefile} || -e ${TANKverf}/info/${basefile}.${Z} ]]; then
+   if [[ -e ${TANKverf}/info/${basefile} ]]; then
       $NCP ${TANKverf}/info/${basefile}* .
    else
       ${NCP} ${FIXgdas}/${basefile} .
    fi
 
-   if [[ -e ${basefile}.gz ]]; then
-      $UNCOMPRESS ${basefile}.gz
-   fi
-   tar -xf ${basefile}
-
-   #-----------------------
-   # copy new ${type}.base
-   #-----------------------
-   ${NCP} ${tmpdir}/${type}.base .
+   new_base=$(ls *.base)
+   tar --delete -f $basefile  ${new_base}
+   tar -rf ${basefile} ${new_base}
 fi
-
-#----------------------
-#  Create new basefile
-#----------------------
-tar -cf ${basefile} *.base
 
 #--------------------
 #  Replace $basefile
@@ -329,9 +312,9 @@ fi
 $NCP ${basefile} ${TANKverf}/info/.
 
 #-------------------------------------------------------------------
-#  Clean up $tmpdir
+#  Clean up $wrkdir
 #-------------------------------------------------------------------
-cd $tmpdir/..
-rm -rf $tmpdir
+cd $wrkdir/..
+rm -rf $wrkdir
 
 exit
