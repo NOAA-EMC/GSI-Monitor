@@ -1,5 +1,4 @@
-#!/bin/sh
-set -xa
+#!/bin/bash
 
 #--------------------------------------------------
 #
@@ -9,37 +8,32 @@ set -xa
 
 echo "--> mk_time_vert.sh"
 
-   export nregion=10
-
-   echo "CONMON_SUFFIX = $CONMON_SUFFIX"
-   echo "C_TANKDIR   = $C_TANKDIR"
-   echo "PDATE       = $PDATE"
-
    export PDY=`echo ${PDATE}|cut -c1-8`
    export CYC=`echo ${PDATE}|cut -c9-10`
-
-
 
    #--------------------------------------------
    #  submit time ps plots
    #--------------------------------------------
    jobname="${JOBNAME}_time_ps"
-   logfile="${C_LOGDIR}/plot_time_ps_${CONMON_SUFFIX}.${PDY}.${CYC}.log"
-   errfile="${C_LOGDIR}/plot_time_ps_${CONMON_SUFFIX}.${PDY}.${CYC}.err"
    pltfile="${C_IG_SCRIPTS}/plot_time_ps.sh"
-   rm -f $logfile
-   rm -f $errfile
 
-   if [[ $MY_MACHINE == "wcoss_d" || ${MY_MACHINE} = "wcoss_c" ]]; then
-      $SUB -q ${JOB_QUEUE} -P ${PROJECT} -o ${logfile} -R affinity[core] \
-		-M 100 -W 0:50 -J ${jobname} -cwd ${PWD} ${pltfile}
+   logfile="${C_LOGDIR}/plot_time_ps_${CONMON_SUFFIX}.${PDY}.${CYC}.log"
+   if [[ -e ${logfile} ]]; then 
+      rm -f $logfile
+   fi
 
-   elif [[ $MY_MACHINE == "hera" || $MY_MACHINE == "s4" || $MY_MACHINE == "jet" ]]; then
+   errfile="${C_LOGDIR}/plot_time_ps_${CONMON_SUFFIX}.${PDY}.${CYC}.err"
+   if [[ -e ${errfile} ]]; then
+      rm -f $errfile
+   fi
+
+   if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} == "s4" || \
+         ${MY_MACHINE} == "jet" || ${MY_MACHINE} == "orion" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:15:00 \
                 -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${pltfile}
 
-   elif [[ $MY_MACHINE = "wcoss2" ]]; then
-        $SUB -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=50:00 -N ${jobname} \
+   elif [[ ${MY_MACHINE} == "wcoss2" ]]; then
+      $SUB -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=50:00 -N ${jobname} \
                 -l select=1:mem=200M ${pltfile}
    fi
 
@@ -48,25 +42,21 @@ echo "--> mk_time_vert.sh"
    #--------------------------------------------
    for type in gps q t uv; do
       jobname="${JOBNAME}_time_${type}"
-      logfile="${C_LOGDIR}/plot_time_${type}_${CONMON_SUFFIX}.${PDY}.${CYC}.log"
-      errfile="${C_LOGDIR}/plot_time_${type}_${CONMON_SUFFIX}.${PDY}.${CYC}.err"
-      pltfile="${C_IG_SCRIPTS}/plot_time.sh "
       export TYPE=${type}
-      rm -f $logfile
-      rm -f $errfile
+      pltfile="${C_IG_SCRIPTS}/plot_time.sh "
 
-      if [[ $MY_MACHINE == "wcoss_d" || ${MY_MACHINE} = "wcoss_c" ]]; then
+      logfile="${C_LOGDIR}/plot_time_${type}_${CONMON_SUFFIX}.${PDY}.${CYC}.log"
+      if [[ -e ${logfile} ]]; then
+         rm -f $logfile
+      fi
 
-         if [[ ${type} == "uv" || ${type} == "u" || ${type} == "v" ]]; then
-            walltime="02:30"
-         else
-            walltime="00:50"
-         fi
+      errfile="${C_LOGDIR}/plot_time_${type}_${CONMON_SUFFIX}.${PDY}.${CYC}.err"
+      if [[ -e ${errfile} ]]; then
+         rm -f $errfile
+      fi
 
-         $SUB -q ${JOB_QUEUE} -P ${PROJECT} -o ${logfile} -R affinity[core] \
-		-M 100 -W ${walltime} -J ${jobname} -cwd ${PWD} ${pltfile}
-
-      elif [[ $MY_MACHINE == "hera" || $MY_MACHINE == "s4" || $MY_MACHINE == "jet" ]]; then
+      if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} == "s4" || \
+            ${MY_MACHINE} == "jet" || ${MY_MACHINE} == "orion" ]]; then
          if [[ ${type} == "uv" || ${type} == "u" || ${type} == "v" ]]; then
             walltime="02:30:00"
          else
@@ -76,16 +66,15 @@ echo "--> mk_time_vert.sh"
          ${SUB} -A ${ACCOUNT} --ntasks=1 --time=${walltime} \
                 -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${pltfile}
 
-      elif [[ $MY_MACHINE = "wcoss2" ]]; then
-
+      elif [[ ${MY_MACHINE} == "wcoss2" ]]; then
          if [[ ${type} == "uv" || ${type} == "u" || ${type} == "v" ]]; then
-            walltime="01:30:00"
+            walltime="02:30:00"
          else
             walltime="50:00"
          fi
 
-        $SUB -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=${walltime}\
-	       	-N ${jobname} -l select=1:mem=200M ${pltfile}
+        $SUB -V -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${logfile} -l walltime=${walltime}\
+	       	-N ${jobname} -l select=1:mem=1G ${pltfile}
       fi
 
    done
@@ -96,19 +85,22 @@ echo "--> mk_time_vert.sh"
    #--------------------------------------------
    for type in q t uv u v; do
 
-      jobname="${JOBNAME}_vert_${type}"
-      logfile="${C_LOGDIR}/plot_vert_${type}_${CONMON_SUFFIX}.${PDY}.${CYC}.log"
-      errfile="${C_LOGDIR}/plot_vert_${type}_${CONMON_SUFFIX}.${PDY}.${CYC}.err"
-      pltfile="${C_IG_SCRIPTS}/plot_vert.sh "
       export TYPE=${type}
-      rm -f $logfile
-      rm -f $errfile
+      jobname="${JOBNAME}_vert_${type}"
+      pltfile="${C_IG_SCRIPTS}/plot_vert.sh "
 
-      if [[ $MY_MACHINE == "wcoss_d" || ${MY_MACHINE} = "wcoss_c" ]]; then
-         $SUB -q ${JOB_QUEUE} -P ${PROJECT} -o ${logfile} -R affinity[core] \
-	      -M 100 -W 1:30 -J ${jobname} -cwd ${PWD} ${pltfile}
+      logfile="${C_LOGDIR}/plot_vert_${type}_${CONMON_SUFFIX}.${PDY}.${CYC}.log"
+      if [[ -e ${logfile} ]]; then
+         rm -f $logfile
+      fi
 
-      elif [[ $MY_MACHINE == "hera" || $MY_MACHINE == "s4" || $MY_MACHINE == "jet" ]]; then
+      errfile="${C_LOGDIR}/plot_vert_${type}_${CONMON_SUFFIX}.${PDY}.${CYC}.err"
+      if [[ -e ${errfile} ]]; then
+         rm -f $errfile
+      fi
+
+      if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} == "s4" || \
+            ${MY_MACHINE} == "jet" || ${MY_MACHINE} = "orion" ]]; then
          if [[ ${type} == "uv" || ${type} == "u" || ${type} == "v" ]]; then
             walltime="00:50:00"
          else
@@ -118,9 +110,9 @@ echo "--> mk_time_vert.sh"
          ${SUB} -A ${ACCOUNT} --ntasks=1 --time=${walltime} \
                 -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${pltfile}
      
-      elif [[ $MY_MACHINE == "wcoss2" ]]; then
-        $SUB -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=50:00 \
-	       	-N ${jobname} -l select=1:mem=500M ${pltfile}
+      elif [[ ${MY_MACHINE} == "wcoss2" ]]; then
+        ${SUB} -V -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${logfile} -l walltime=50:00 \
+         	-N ${jobname} -l select=1:mem=500M ${pltfile}
 
       fi
    done

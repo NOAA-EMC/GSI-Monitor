@@ -13,10 +13,9 @@ function colorbar (args)
 *
 *  Check shading information
 *
-  say '--> colorbar.gs'
+
   'query shades'
   shdinfo = result
-  say 'shdinfo = 'shdinfo
 
   if (subwrd(shdinfo,1)='None') 
     say 'Cannot plot color bar: No shading information'
@@ -74,14 +73,10 @@ function colorbar (args)
 *
   'set strsiz 0.12 0.13'
   num = 0
-  say 'cnum = 'cnum
   while (num<cnum) 
     rec = sublin(shdinfo,num+2)
-    say 'rec = 'rec
     col = subwrd(rec,1)
-    say 'col = 'col
     hi = subwrd(rec,3)
-    say 'hi  = 'hi
 
     'set line 'col
     if (vert) 
@@ -94,10 +89,6 @@ function colorbar (args)
       if (vert) 
         'draw string '%(xr+0.05)%' 'yt' 'hi
       else
-        say 'drawing string for horiz bar'
-        say 'xr = 'xr
-        say 'yb - 'yb
-        say 'hi - 'hi
         'draw string 'xr' '%(yb-0.05)%' 'hi
       endif
     endif
@@ -106,7 +97,6 @@ function colorbar (args)
     else; xl = xr; endif;
   endwhile
 
-  say '<-- colorbar.gs'
 
 return
 endfile

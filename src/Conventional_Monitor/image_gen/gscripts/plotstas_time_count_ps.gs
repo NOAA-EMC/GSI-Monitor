@@ -6,10 +6,8 @@
 
 function ps_time_count (args)
 
-*   'reinit'
    'open ges_ps_stas.ctl'
    'open anl_ps_stas.ctl'
-*   'open ps_stas_int.ctl'
    'set grads off'
    debug=0
 
@@ -17,7 +15,6 @@ function ps_time_count (args)
    'q time'
    dmy=sublin(result,1)
    ti=subwrd(dmy,5)
-   say ti
    hh=substr(ti,1,2)
    dd=substr(ti,4,2)
 
@@ -25,13 +22,10 @@ function ps_time_count (args)
    size=sublin(result,5)
    ixc=subwrd(size,3)
    iyc=subwrd(size,6)
-   say ixc
-   say 'iyc=' iyc
 
    '!echo $CONMON_RESTRICT_PLOT_AREAS > rest.txt'
    rest=read(rest.txt)
    restrict=subwrd(rest,2)
-   say 'restrict=' restrict
 
    iy=1
    while(iy <=iyc)
@@ -44,7 +38,6 @@ function ps_time_count (args)
          endif
       endif
 
-      say 'iy=' iy
       '!rm -f area.txt'
 
       if( iy <10)
@@ -60,7 +53,6 @@ function ps_time_count (args)
          area=substr(info,14,25)
       endif
       result=close(area.txt)
-      say 'area = 'area
       ix=1
    
       while(ix <=ixc)
@@ -70,8 +62,6 @@ function ps_time_count (args)
          result=read(info.txt)
          rc=sublin(result,1)
          iuse=0
-         say 'dtype= 'dtype
-         say 'rc   = 'rc
 
          if (rc = 0)
             info=sublin(result,2)
@@ -79,9 +69,6 @@ function ps_time_count (args)
             subtype=subwrd(info,8)
             iuse=subwrd(info,10)
          endif
-         say 'stype   = 'stype
-         say 'subtype = 'subtype
-         say 'iuse    = 'iuse
          result=close(info.txt)
          
          plottime(ix,iy,stype,hh,dd,area,stype,subtype,iuse,debug)
@@ -106,19 +93,15 @@ function plottime(ix,iy,stype,hh,dd,area,stype,subtype,iuse,debug)
    nfield=4
    field.1.1=count1.1
    field.1.2=count1.2
-*   field.1.3=count1.3
 
    field.2.1=count_vqc1.1
    field.2.2=count_vqc1.2
-*   field.2.3=count_vqc1.3
 
    field.3.1=count2.1
    field.3.2=count2.2
-*   field.3.3=count2.3
 
    field.4.1=count3.1
    field.4.2=count3.2
-*   field.4.3=count3.3
 
    title.1="ass. no."
    title.2="no. rej. by VQC"
@@ -135,9 +118,6 @@ function plottime(ix,iy,stype,hh,dd,area,stype,subtype,iuse,debug)
       y1=10.6-(nf-1)*2.5
       y2=y1-1.8
       ystring=y1+0.1
-      say ' y1='y1
-      say ' y2='y2
-      say ' ystring='ystring
       'set t 1 last'
       'query time'
       dmy=sublin(result,1)
@@ -165,14 +145,11 @@ function plottime(ix,iy,stype,hh,dd,area,stype,subtype,iuse,debug)
          maxvar=maxvar1
       endif
 
-      say ' 'minvar
-      say ' 'maxvar
       yrange=maxvar-minvar
       dy=0.1*yrange
       minvar=minvar-dy
       maxvar=maxvar+dy
-      say ' 'minvar
-      say ' 'maxvar
+
       'set parea 1.0 8.0 'y2' 'y1
       'set gxout line'
       'set t 1 last'
@@ -183,8 +160,6 @@ function plottime(ix,iy,stype,hh,dd,area,stype,subtype,iuse,debug)
       'set x 'ix
       'set z 1'
 
-*      'set axlim 'minvar' 'maxvar
-*      'set yaxis 'minvar' 'maxvar' 'dy
       'set vrange 'minvar' 'maxvar
 
       'set ccolor 1'
@@ -194,11 +169,6 @@ function plottime(ix,iy,stype,hh,dd,area,stype,subtype,iuse,debug)
       'set ccolor 2'
       'set cmark 1'
       'd  'field.nf.2
-
-*      'set ccolor 3'
-*      'set cmark 2'
-*      'd  'field.nf.3
-*      if(iuse = 1);datause='assimilated';endif
 
       if(iuse = -1)
          datause='mon.'
@@ -213,8 +183,6 @@ function plottime(ix,iy,stype,hh,dd,area,stype,subtype,iuse,debug)
       'set line 2 1'
       'draw line 3.1 0.6 3.4 0.6'
       'draw string 3.5 0.55  final outloop'
-*      'set line 3 1'
-*      'draw line 5.1 0.6 5.4 0.6'
       'draw string 5.5 0.55    'fti'-'ti
       nf=nf+1
    endwhile
