@@ -85,6 +85,9 @@ case $monitor in
    oznmon)
       search="*ieee_d*"
    ;;
+   conmon)
+      search="time_vert"
+   ;;
 esac
 
 

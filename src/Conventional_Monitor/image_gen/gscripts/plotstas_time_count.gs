@@ -15,7 +15,6 @@ function time_cnt_ps (args)
    'q time'
    dmy=sublin(result,1)
    ti=subwrd(dmy,5)
-   say ti
    hh=substr(ti,1,2)
    dd=substr(ti,4,2)
   
@@ -24,13 +23,10 @@ function time_cnt_ps (args)
    ixc=subwrd(size,3)
    iyc=subwrd(size,6)
    izc=subwrd(size,9)
-   say ixc
-   say 'iyc=' iyc
 
    '!echo $CONMON_RESTRICT_PLOT_AREAS > rest.txt'
    rest=read(rest.txt)
    restrict=subwrd(rest,2)
-   say 'restrict=' restrict
      
 
    ix=1
@@ -48,6 +44,17 @@ function time_cnt_ps (args)
          iuse=subwrd(info,10)
       endif
       result=close(info.txt)
+
+*     Avoid plotting uv235 and all stypes.  Stype all is included in the ctl file (from
+*     which the stypes are taken) but the web site has never included stype all, so 
+*     eliminating plotting them is a space/time savings.  Stype 235 (uv only) produces 
+*     missing data errors on half the plots -- the upper half.  This will be
+*     investigated in a separate fix.
+      if ( stype = 235 | stype = all ) 
+         ix=ix+1
+         continue
+      endif
+
  
       iy=1
       while(iy <=iyc)
@@ -60,7 +67,6 @@ function time_cnt_ps (args)
             endif
          endif
 
-         say 'iy=' iy
          '!rm -f area.txt'
 
          if ( iy <10)
@@ -70,14 +76,13 @@ function time_cnt_ps (args)
          endif
          result=read(area.txt)
          rc=sublin(result,1)
-         area="uknown"
+         area="unknown"
 
          if (rc = 0)
             info=sublin(result,2)
             area=substr(info,14,25)
          endif
          result=close(area.txt)
-         say 'area = 'area
          iz=1
 
          while(iz <=izc)
@@ -158,16 +163,12 @@ function plottime(ix,iy,iz,dtype,hh,dd,area,stype,subtype,iuse,levz,debug)
 nfield=4
 field.1.1=count1.1
 field.1.2=count1.2
-field.1.3=count1.3
 field.2.1=count_vqc1.1
 field.2.2=count_vqc1.2
-field.2.3=count_vqc1.3
 field.3.1=count2.1
 field.3.2=count2.2
-field.3.3=count2.3
 field.4.1=count3.1
 field.4.2=count3.2
-field.4.3=count3.3
 
 title.1="assi. no."
 title.2="no. rej. by VQC"
@@ -179,9 +180,6 @@ while(nf <=nfield)
 y1=10.6-(nf-1)*2.5
 y2=y1-1.8
 ystring=y1+0.1
-say ' y1='y1
-say ' y2='y2
-say ' ystring='ystring
 
 'set t 1'
 'query time'
@@ -211,14 +209,10 @@ ti=subwrd(dmy,5)
    if(maxvar1 > maxvar)
     maxvar=maxvar1
    endif
-   say ' 'minvar
-   say ' 'maxvar
    yrange=maxvar-minvar
    dy=0.1*yrange
    minvar=minvar-dy
    maxvar=maxvar+dy
-   say ' 'minvar
-   say ' 'maxvar
 'set parea 1.0 8.0 'y2' 'y1
 'set gxout line'
 'set t 1 last'
@@ -228,8 +222,6 @@ ti=subwrd(dmy,5)
 'set y 'iy
 'set x 'ix
 'set z 'iz
-*'set axlim 'minvar' 'maxvar
-*'set yaxis 'minvar' 'maxvar' 'dy
 'set vrange 'minvar' 'maxvar
   'set ccolor 1'
   'set cmark 0'
@@ -237,10 +229,6 @@ ti=subwrd(dmy,5)
    'set ccolor 2'
   'set cmark 1'
   'd  'field.nf.2
-*   'set ccolor 3'
-*  'set cmark 2'
-*  'd  'field.nf.3
-*  if(iuse = 1);datause='used';endif
   if(iuse = -1)
    datause='mon.'
   else
@@ -255,8 +243,6 @@ ti=subwrd(dmy,5)
 'set line 2 1'
 'draw line 3.1 0.6 3.4 0.6'
 'draw string 3.5 0.55  final outloop'
-*'set line 3 1'
-*'draw line 5.1 0.6 5.4 0.6'
 'draw string 5.5 0.55   'fti'-'ti
 nf=nf+1
 endwhile

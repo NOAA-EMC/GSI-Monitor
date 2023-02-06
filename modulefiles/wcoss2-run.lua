@@ -11,6 +11,7 @@ load ("GrADS/2.2.2")
 
 prepend_path("MODULEPATH", "/apps/ops/para/nco/modulefiles/core/")
 load ("prod_util/2.0.13")
+load ("prod_envir/2.0.6")
 
 load("common-run")
 

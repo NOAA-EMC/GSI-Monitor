@@ -22,7 +22,7 @@ use Scalar::Util qw(looks_like_number);
 #  Main begins here 
 #--------------------
 
-print "--> rm_img_files.pl";
+print "--> rm_img_files.pl\n";
 
 #--------------------------------
 #  load command line argument(s)
@@ -70,13 +70,7 @@ if( $#unique >= $nfl ) {
    my $ii = $nfl;
    my $end = $#unique;
 
-   foreach my $time ( @unique ) {
-#      print "$time\n";
-   }
-
-   print " ii, end = $ii, $end\n";
    do {
-#      print "RM $ii, $unique[$ii]\n";
       push( @del_list, $unique[$ii] );
       $ii++;
    } while $ii <= $end; 
@@ -99,4 +93,4 @@ if( $#unique >= $nfl ) {
    }
 }
 
-print "<-- rm_img_files.pl";
+print "<-- rm_img_files.pl\n";

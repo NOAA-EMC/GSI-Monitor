@@ -28,8 +28,6 @@ debug=0
 lin1=sublin(result,1)
 dtype=subwrd(lin1,4)
 cycle=subwrd(lin1,5)
-say 'dtype=' dtype
-say 'cycle='cycle 
 histplot(dtype,cycle,plotfile,xsize,ysize,cdate)
 if (debug = 1)
     say 'hit enter to continue'

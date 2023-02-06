@@ -49,7 +49,7 @@ dbug=0
 setmap(plotfile,he)
 'set gxout shaded'
 'defint.gs  0.5 0'
-'d 10*(RH2m.1-RH2m.2)/RHprs.1'
+'d 10*(RHprs.1-RHprs.2)/RHprs.1'
 'colorbar.gs'
 'set ccolor 6'
 'set digsiz 0.12'
@@ -63,7 +63,7 @@ setmap(plotfile,he)
 setmap(plotfile,he)
 'set gxout shaded'
 'defint.gs  0.5 0'
-'d 10*(RH2m.1-RH2m.2)/RHprs.1'
+'d 10*(RHprs.1-RHprs.2)/RHprs.1'
 'colorbar.gs'
 'set ccolor 6'
 'set digsiz 0.12'
@@ -77,7 +77,7 @@ setmap(plotfile,he)
 setmap(plotfile,he)
 'set gxout shaded'
 'defint.gs  0.5 0'
-'d 10*(RH2m.1-RH2m.2)/RHprs.1'
+'d 10*(RHprs.1-RHprs.2)/RHprs.1'
 'colorbar.gs'
 'set ccolor 98'
 'draw title Humidity INCT*10/Anal at 'rdate'z' 
@@ -86,7 +86,7 @@ setmap(plotfile,he)
 setmap(plotfile,he)
 'set gxout shaded'
 'defint 10 50'
-'d RH2m.1'
+'d RHprs.1'
 'colorbar.gs'
 'draw title Surface Humidity Analysis(RH,%) at 'rdate'z'
 if(dbug=1)

@@ -88,8 +88,6 @@ function plot_horz(plotfile,plotfile2,xsize,ysize,he,rdate,levx,levx1,hint,var)
    'set digsiz 0.12'
    levy=levx-hint
    ley1=levx+hint+1
-   say 'levy='levy
-   say 'ley1='ley1
    'set lev 'levy
    'set dfile 4'
    'set lev 'levy

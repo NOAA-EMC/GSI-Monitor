@@ -16,16 +16,17 @@ function usage {
   echo " "
   echo " "
   echo "Usage:  ConMon_IG.sh suffix [-p|--pdate pdate -r|--run gdas|gfs -n|--ncyc]"
+  echo " "
   echo "            Suffix is the indentifier for this data source."
   echo " "
   echo "            -p | --pdate yyyymmddcc to specify the cycle to be plotted."
-  echo "                 If unspecified pdate will be set using the "
+  echo "                 If not specified, pdate will be set using the "
   echo "                 C_IMGNDIR/last_plot_time file, and if that doesn't"
   echo "                 exist, then the last available date will be plotted."
   echo " "             
   echo "            -r | --run   the gdas|gfs run to be processed."
-  echo "                 Use only if data in TANKdir stores both runs, gdas"
-  echo "                 gdas is the default value."
+  echo "                 Use only if data in TANKdir stores both runs."
+  echo "                 Default value is gdas"
   echo " "
   echo "            -n | --ncyc is the number of cycles to be used in time series plots.  If"
   echo "              not specified the default value in parm/RadMon_user_settins will be used"
@@ -50,6 +51,7 @@ fi
 #
 export RUN=gdas
 num_cycles=""
+PDATE=""
 
 while [[ $# -ge 1 ]]
 do
@@ -66,7 +68,7 @@ do
          shift # past argument
       ;;
       -n|--ncyc)
-         export num_cycles="$2"
+         num_cycles="$2"
          shift # past argument
       ;;
       *)
@@ -90,9 +92,7 @@ if [[ ${#num_cycles} -gt 0 ]]; then
 fi
 
 
-export JOBNAME=${JOBNAME:-ConMon_plt_${CONMON_SUFFIX}}
-export grib2=${grib2:-1}				# 1 = grib2 (true), 0 = grib
-							# should this move to config?
+export JOBNAME=${JOBNAME:-CM_IG_${CONMON_SUFFIX}}
 
 #--------------------------------------------------------------------
 # Run config files to load environment variables,
@@ -109,6 +109,7 @@ else
    exit 3
 fi
 
+module list
 
 #--------------------------------------------------------------------
 #  Create LOGdir as needed
@@ -137,9 +138,8 @@ fi
 echo "C_IG_SCRIPTS = ${C_IG_SCRIPTS}"
 echo "C_TANKDIR = ${C_TANKDIR}"
 
-last_cycle=`${C_IG_SCRIPTS}/find_cycle.pl \
-		--cyc 1 --dir ${C_TANKDIR} --run ${RUN}`
-
+last_cycle=`${MON_USH}/find_last_cycle.sh --net ${CONMON_SUFFIX} \
+              --run ${RUN} --tank ${TANKDIR} --mon conmon`
 
 if [[ ${PDATE} = "" ]]; then
 
@@ -157,9 +157,7 @@ fi
 # Set the START_DATE for the plot
 #--------------------------------------------------------------------
 ncycles=`expr $NUM_CYCLES - 1`
-
 hrs=`expr $ncycles \\* -6`
-echo "hrs = $hrs"
 
 export START_DATE=`$NDATE ${hrs} $PDATE`
 echo "START_DATE, last_cycle, PDATE = $START_DATE $last_cycle  $PDATE"
@@ -178,13 +176,13 @@ if [[ $PDATE -le ${last_cycle} ]]; then
    #--------------------------------------------------------------------
    #  Create workdir and cd to it
    #--------------------------------------------------------------------
-   export C_PLOT_WORKDIR=${C_PLOT_WORKDIR:-${C_STMP_USER}/${CONMON_SUFFIX}/${RUN}/conmon}
+   export C_PLOT_WORKDIR=${C_PLOT_WORKDIR:-${MON_STMP}/${CONMON_SUFFIX}/${RUN}/conmon}
    rm -rf $C_PLOT_WORKDIR
    mkdir -p $C_PLOT_WORKDIR
    cd $C_PLOT_WORKDIR
 
    #--------------------------------------------------------------------
-   #  Run the two setup scripts
+   #  Run the two plot setup scripts
    #--------------------------------------------------------------------
    ${C_IG_SCRIPTS}/mk_horz_hist.sh
 
@@ -194,7 +192,6 @@ if [[ $PDATE -le ${last_cycle} ]]; then
    #  Update the last_plot_time file if found
    #--------------------------------------------------------------------
    if [[ -e ${C_IMGNDIR}/last_plot_time ]]; then
-      echo "update last_plot_time file"  
       echo ${PDATE} > ${C_IMGNDIR}/last_plot_time
    fi
 

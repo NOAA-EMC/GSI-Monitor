@@ -14,7 +14,6 @@ function time_bias (args)
    'q time'
    dmy=sublin(result,1)
    ti=subwrd(dmy,5)
-   say ti
    hh=substr(ti,1,2)
    dd=substr(ti,4,2)
 
@@ -23,13 +22,10 @@ function time_bias (args)
    ixc=subwrd(size,3)
    iyc=subwrd(size,6)
    izc=subwrd(size,9)
-   say ixc
-   say 'iyc=' iyc
 
    '!echo $CONMON_RESTRICT_PLOT_AREAS > rest.txt'
    rest=read(rest.txt)
    restrict=subwrd(rest,2)
-   say 'restrict=' restrict
 
    ix=1
    while(ix <=ixc)
@@ -46,6 +42,16 @@ function time_bias (args)
       endif
       result=close(info.txt)
 
+*     Avoid plotting stypes "uv235" and "all".  Stype all is included in the ctl file (from
+*     which the stypes are taken) but the web site has never included all stypes, so
+*     eliminating plotting them is a space/time savings.  Stype 235 (uv only) produces
+*     missing data errors on half the plots -- the upper half.  This will be
+*     investigated in a separate fix.
+      if ( stype = 235 | stype = all )
+         ix=ix+1
+         continue
+      endif
+
       iy=1
       while(iy <=iyc)
 
@@ -57,7 +63,6 @@ function time_bias (args)
             endif
          endif
 
-         say 'iy=' iy
          '!rm -f area.txt'
 
          if ( iy <10)
@@ -74,7 +79,6 @@ function time_bias (args)
             area=substr(info,14,25)
          endif
          result=close(area.txt)
-         say 'area = 'area
          iz=1
 
          while(iz <=izc)
@@ -130,22 +134,17 @@ endfile
 
 function plottime(ix,iy,iz,dtype,hh,dd,area,stype,subtype,iuse,dtype,levz,debug)
 
-   'page'
    'clear'
 
    nfield=4
    field.1.1=bias1.1
    field.1.2=bias1.2
-   field.1.3=bias1.3
    field.2.1=rms1.1
    field.2.2=rms1.2
-   field.2.3=rms1.3
    field.3.1=bias3.1
    field.3.2=bias3.2
-   field.3.3=bias3.3
    field.4.1=rms3.1
    field.4.2=rms3.2
-   field.4.3=rms3.3
 
    title.1="o-g(used)"
    title.2="rms(used)"
@@ -162,9 +161,6 @@ function plottime(ix,iy,iz,dtype,hh,dd,area,stype,subtype,iuse,dtype,levz,debug)
       y1=10.6-(nf-1)*2.5
       y2=y1-1.8
       ystring=y1+0.1
-      say ' y1='y1
-      say ' y2='y2
-      say ' ystring='ystring
       'set t 1 last'
       'query time'
       dmy=sublin(result,1)
@@ -188,14 +184,10 @@ function plottime(ix,iy,iz,dtype,hh,dd,area,stype,subtype,iuse,dtype,levz,debug)
       if(maxvar1 > maxvar)
          maxvar=maxvar1
       endif
-      say ' 'minvar
-      say ' 'maxvar
       yrange=maxvar-minvar
       dy=0.1*yrange
       minvar=minvar-dy
       maxvar=maxvar+dy
-      say ' 'minvar
-      say ' 'maxvar
       'set parea 1.0 8.0 'y2' 'y1
       'set gxout line'
       'set t 1 last'
@@ -205,8 +197,6 @@ function plottime(ix,iy,iz,dtype,hh,dd,area,stype,subtype,iuse,dtype,levz,debug)
       'set y 'iy
       'set x 'ix
       'set z 'iz
-*      'set axlim 'minvar' 'maxvar
-*      'set yaxis 'minvar' 'maxvar' 'dy
       'set vrange 'minvar' 'maxvar
       'set ccolor 1'
       'set cmark 0'
@@ -215,9 +205,6 @@ function plottime(ix,iy,iz,dtype,hh,dd,area,stype,subtype,iuse,dtype,levz,debug)
       'set cmark 1'
       'd  'field.nf.2
       'set ccolor 3'
-*      'set cmark 2'
-*      'd  'field.nf.3
-*      if(iuse = 1);datause='assimilated';endif
       if(iuse = -1)
          datause='mon.'
       else
@@ -231,8 +218,6 @@ function plottime(ix,iy,iz,dtype,hh,dd,area,stype,subtype,iuse,dtype,levz,debug)
       'set line 2 1'
       'draw line 3.1 0.6 3.4 0.6'
       'draw string 3.5 0.55  final outloop'
-*      'set line 3 1'
-*      'draw line 5.1 0.6 5.4 0.6'
       'draw string 5.5 0.55   'fti'-'ti
       nf=nf+1
    endwhile
