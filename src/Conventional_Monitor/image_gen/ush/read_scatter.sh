@@ -1,5 +1,5 @@
-#!/bin/sh
-set -xa
+#!/bin/bash
+
 #-----------------------------------------------------------------------------------
 #
 #  read_scatter.sh
@@ -8,34 +8,18 @@ set -xa
 #    and generate an out_${mtype) data file and 
 #    control file for GrADS.
 #-----------------------------------------------------------------------------------
-
-echo "---> read_scatter.sh"
-echo " CONMON_SUFFIX = $CONMON_SUFFIX"
-
 exp=$1
-echo "exp set to $exp"
 dtype=$2
-echo "dtype set to $dtype"
 mtype=$3
-echo "mtype set to $mtype"
 subtype=$4
-echo "subtype set to $subtype"
 rdate=$5
-echo "rdate set to $rdate"
 fixdir=$6
-echo "fixdir set to $fixdir"
 nreal=$7
-echo "nreal set to $nreal"
 exec=$8
-echo "exec set to $exec"
 type=$9
-echo "type set to $type"
 cycle=${10}
-echo "cycle set to $cycle"
 datadir=${11}
-echo "datadir set to $datadir"
 sorcdir=${12}
-echo "sorcdir set to $sorcdir"
 
 ## set up the directory with excutable files
 
@@ -69,9 +53,6 @@ cp $sorcdir/$exec ./$exec
 
 ./$exec <input  > stdout_${dtype}_${cycle}.${rdate}  2>&1
 
-#rm -f $exec
-#rm -f input
-
 
 if [ "${type}" = 'uv' ]; then
    mv out_u out_${dtype}_u_${cycle}.${rdate}
@@ -85,5 +66,4 @@ if [ "${type}" = 'uv' ]; then
 fi
 
 
-echo "<--- read_scatter.sh"
 exit

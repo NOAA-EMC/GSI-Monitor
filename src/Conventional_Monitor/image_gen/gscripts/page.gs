@@ -61,7 +61,6 @@ if (nx >= 1 & nx <= 9 & ny >= 1 & ny <= 9)
   y0 = ylo + (yhi - ylo) * (iy - 1) / ny
   y1 = ylo + (yhi - ylo) * (iy    ) / ny
   'set vpage ' x0 ' ' x1 ' ' y0 ' ' y1
-  say 'set vpage ' x0 ' ' x1 ' ' y0 ' ' y1
 endif
 
 'set grads off'
