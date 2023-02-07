@@ -214,7 +214,7 @@ elif [[ $MY_MACHINE = "orion" ]]; then
 
 elif [[ $MY_MACHINE = "jet" ]]; then
    $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} \
-        -p ${SERVICE_PARTITION} --time=2:00:00 --wrap "srun -l --multi-prog ${cmdfile}"
+        -p ${BATCH_PARTITION} --time=2:00:00 --wrap "srun -l --multi-prog ${cmdfile}"
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
    $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_bcor_${suffix}.err \
@@ -271,7 +271,7 @@ for sat in ${bigSATLIST}; do
 
    elif [[ $MY_MACHINE = "jet" ]]; then
       $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} \
-           -p ${RADMON_PARTITION} --time=1:00:00 --wrap "srun -l --multi-prog ${cmdfile}"
+           -p ${BATCH_PARTITION} --time=1:00:00 --wrap "srun -l --multi-prog ${cmdfile}"
 
    elif [[ $MY_MACHINE = "wcoss2" ]]; then
       $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_bcor_${suffix}.err \

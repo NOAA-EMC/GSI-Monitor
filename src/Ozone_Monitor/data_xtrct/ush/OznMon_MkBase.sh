@@ -96,7 +96,7 @@ fi
 #-------------------------------------------------------------------
 #  Set dates
 #    BDATE is beginning date for the 45 day range
-#    EDATE is ending date for 30/60 day range (always use 00 cycle) 
+#    EDATE is ending date for 45 day range (always use 00 cycle) 
 #-------------------------------------------------------------------
 EDATE=`${MON_USH}/find_last_cycle.sh --net ${OZNMON_SUFFIX} \
         --run ${RUN} --mon oznmon --tank ${TANKDIR}`
@@ -146,7 +146,7 @@ for type in ${SATYPE}; do
     
    while [[ $cdate -le $EDATE ]]; do
 
-      test_dir=$(${MON_USH}/get_stats_path.sh --run $RUN --pdate ${cdate} \
+      test_dir=$(${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${cdate} \
 	      --net ${OZNMON_SUFFIX} --tank ${TANKDIR} --mon oznmon)
       test_dir=${test_dir}/time
 
@@ -177,8 +177,8 @@ for type in ${SATYPE}; do
       cdate=$($NDATE +${CYCLE_INTERVAL} $cdate)
    done
 
-   if compgen -G "*.gz" > /dev/null; then
-      ${UNCOMPRESS} *.gz
+   if compgen -G "*.${Z}" > /dev/null; then
+      ${UNCOMPRESS} *.${Z}
    fi
 
    #----------------------------------------

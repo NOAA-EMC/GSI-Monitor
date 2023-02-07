@@ -60,7 +60,7 @@ case $MY_MACHINE in
       tankdir="/lfs1/NESDIS/nesdis-rdo2/$USER/monitor"
       ptmp="/lfs1/NESDIS/nesdis-rdo2/$USER/para/ptmp"
       stmp="/lfs1/NESDIS/nesdis-rdo2/$USER/para/stmp"
-      BATCH_PARTITION="xjet"
+      export BATCH_PARTITION="xjet"
 
       export PARTITION_OZNMON=${PARTITION_OZNMON:-${BATCH_PARTITION}}
 
