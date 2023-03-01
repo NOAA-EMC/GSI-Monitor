@@ -350,12 +350,12 @@ if [[ $RUN_TRANSFER -eq 1 ]]; then
       transfer_queue=dev_transfer
 
       jobname=transfer_${RADMON_SUFFIX}
-      job="${IG_SCRIPTS}/Transfer.sh --nosrc ${RADMON_SUFFIX}"
+      job="${IG_SCRIPTS}/transfer.sh --nosrc ${RADMON_SUFFIX}"
 
       export WEBDIR=${WEBDIR}/${RADMON_SUFFIX}/pngs
 
       cmdfile="${PLOT_WORK_DIR}/transfer_cmd"
-      echo "${IG_SCRIPTS}/Transfer.sh --nosrc ${RADMON_SUFFIX}" >$cmdfile
+      echo "${IG_SCRIPTS}/transfer.sh" >$cmdfile
       chmod 755 $cmdfile
 
       run_time="$rhr$cmin"	# HHMM format for qsub
