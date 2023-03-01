@@ -255,7 +255,7 @@ while [[ $ctr -le ${satarr_len} ]]; do
 
       elif [[ ${MY_MACHINE} = "jet" ]]; then
          $SUB --account ${ACCOUNT} -n ${itemctr}  -o ${logfile} -D . -J ${jobname} --time=30:00 \
-              -p ${SERVICE_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
+              -p ${BATCH_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
 
       elif [[ $MY_MACHINE = "wcoss2" ]]; then
 	 if [[ $NUM_CYCLES -gt 140 ]]; then
@@ -342,6 +342,10 @@ for sat in ${big_satlist}; do
       elif [[ $MY_MACHINE = "s4" ]]; then
          $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
               --wrap "srun -l --multi-prog ${cmdfile}"
+
+      elif [[ $MY_MACHINE = "jet" ]]; then
+         $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
+              -p ${BATCH_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
 
       else
          $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \

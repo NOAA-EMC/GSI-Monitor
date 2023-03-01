@@ -1,4 +1,4 @@
-#!/bin/sh -l
+#!/bin/bash
 
 #--------------------------------------------------------------------
 #
@@ -31,7 +31,7 @@ function usage {
 #--------------------------------------------------------------------
 #  ConMon_DE.sh begins here
 #--------------------------------------------------------------------
-set -ax
+
 echo "Begin ConMon_DE.sh"
 
 nargs=$#
@@ -46,6 +46,8 @@ fi
 #
 
 export RUN=gdas
+PDATE=""
+cnvstat_location=""
 
 while [[ $# -ge 1 ]]
 do
@@ -62,7 +64,7 @@ do
          shift # past argument
       ;;
       -c|--cnv)
-         export CNVSTAT_LOCATION="$2"
+         cnvstat_location="$2"
          shift # past argument
       ;;
       *)
@@ -79,14 +81,9 @@ this_file=`basename $0`
 this_dir=`dirname $0`
 
 
-#--------------------------------------------------------------------
-#  RUN_ENVIR:  can be "dev", "para", or "prod".
-#--------------------------------------------------------------------
-export RUN_ENVIR=${RUN_ENVIR:-"prod"}
-
+gfs_ver=v16.3
 
 echo CONMON_SUFFIX = $CONMON_SUFFIX
-echo RUN_ENVIR = $RUN_ENVIR
 export NET=${CONMON_SUFFIX}
 
 top_parm=${this_dir}/../../parm
@@ -109,6 +106,7 @@ jobname=ConMon_DE_${CONMON_SUFFIX}
 echo "C_TANKDIR = ${C_TANKDIR}"
 echo "C_LOGDIR  = ${C_LOGDIR}"
 echo "C_IMGNDIR = ${C_IMGNDIR}"
+
 if [[ ! -d ${C_TANKDIR} ]]; then
    mkdir -p ${C_TANKDIR}
 fi
@@ -123,40 +121,29 @@ fi
 #--------------------------------------------------------------------
 # Get date of cycle to process and/or previous cycle processed.
 #
-if [[ $PDATE = "" ]]; then
-   GDATE=`${C_DE_SCRIPTS}/find_cycle.pl --cyc 1 --dir ${C_TANKDIR} --run $RUN `
+if [[ ${#PDATE} -le 0 ]]; then
+   GDATE=`${MON_USH}/find_last_cycle.sh --net ${CONMON_SUFFIX} --run ${RUN} --tank ${TANKDIR} --mon conmon`
    PDATE=`$NDATE +06 $GDATE`
 else
    GDATE=`$NDATE -06 $PDATE`
 fi
 
-echo GDATE = $GDATE
+echo GDATE, PDATE = $GDATE, $PDATE
 
-PDY=`echo $PDATE|cut -c1-8`
+export PDY=`echo $PDATE|cut -c1-8`
 export CYC=`echo $PDATE|cut -c9-10`
 
 export GCYC=`echo $GDATE|cut -c9-10`
 export PDYm6h=`echo $GDATE|cut -c1-8`
-echo PDYm6h = $PDYm6h
 
-
-if [[ $MY_MACHINE == "hera" ]]; then
-   export CNVSTAT_LOCATION=${CNVSTAT_LOCATION:-/scratch1/NCEPDEV/da/Edward.Safford/noscrub/test_data}
-else
-   export CNVSTAT_LOCATION=${CNVSTAT_LOCATION:-${COMROOTp3}/gfs/${RUN_ENVIR}}
+if [[ ${#cnvstat_location} -le 0 ]]; then
+   export cnvstat_location=${COMROOT}/gfs/${gfs_ver}
 fi
-
+export CNVSTAT_LOCATION=${cnvstat_location} 
 export COMPONENT=${COMPONENT:-atmos}
 
 export C_DATDIR=${C_DATDIR:-${CNVSTAT_LOCATION}/${RUN}.${PDY}/${CYC}/${COMPONENT}}
-if [[ ! -d ${C_DATDIR} ]]; then
-   export C_DATDIR=${CNVSTAT_LOCATION}/${RUN}.${PDY}/${CYC}
-fi
-
 export C_GDATDIR=${C_GDATDIR:-${CNVSTAT_LOCATION}/${RUN}.${PDYm6h}/${GCYC}/${COMPONENT}}
-if [[ ! -d ${C_GDATDIR} ]]; then
-   export C_GDATDIR=${CNVSTAT_LOCATION}/${RUN}.${PDYm6h}/${GCYC}
-fi
 
 export C_COMIN=${C_DATDIR}
 export C_COMINm6h=${C_GDATDIR}
@@ -190,6 +177,7 @@ export pgrbf06="${C_GDATDIR}/gdas.t${GCYC}z.pgrb2.0p25.f006"
 if [[ ! -s ${pgrbf06} ]]; then
    export pgrbf06="${C_GDATDIR}/gdas.t${GCYC}z.pgrb2.1p00.f006"
 fi
+
 
 #---------------------------------------------
 # override the default convinfo definition
@@ -228,12 +216,7 @@ if [ -s $cnvstat  -a -s $pgrbf00 -a -s $pgrbf06 ]; then
          rm -f ${logfile}
       fi
 
-      if [[ $MY_MACHINE = "wcoss_d" || $MY_MACHINE = "wcoss_c" ]]; then
-        $SUB -q $JOB_QUEUE -P $PROJECT -o ${logfile} -M 1500 \
-		-R affinity[core] -W 0:50 -J ${jobname} \
-		-cwd $PWD ${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON
-
-      elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
+      if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" || $MY_MACHINE = "orion" ]]; then
          $SUB -A $ACCOUNT --ntasks=1 --time=00:30:00 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o $C_LOGDIR/DE.${PDY}.${CYC}.log \
 		${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON

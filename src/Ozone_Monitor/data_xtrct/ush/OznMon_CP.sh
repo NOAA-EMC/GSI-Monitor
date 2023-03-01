@@ -142,7 +142,7 @@ fi
 # $OZN_TANKDIR_STATS and increment 6 hours.
 #---------------------------------------------------------------
 if [[ $pdate = "" ]]; then
-   ldate=`${MON_USH}/find_last_cycle.sh --net ${OZNMON_SUFFIX} --run ${RUN} --tank ${OZN_TANKDIR_STATS} --mon oznmon`
+   ldate=`${OZN_DE_SCRIPTS}/find_cycle.pl --run $RUN --cyc 1 --dir ${OZN_TANKDIR_STATS}`
    pdate=`${NDATE} +06 ${ldate}`
    echo "PDATE set to $pdate"
 fi

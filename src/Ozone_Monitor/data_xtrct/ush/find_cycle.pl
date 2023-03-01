@@ -4,11 +4,12 @@
 #  find_cycle.pl
 #
 #    Arguments: 
-#       --dir     : Required string value containing  $TANKdir/$SUFFIX.
-#       --cyc     : Optional integer value:
+#       -dir     : Required string value containing  $TANKdir/$SUFFIX.
+#       -cyc     : Optional integer value:
 #       		1 = last cycle  (default)
+#       		2 = 2nd to last cycle 
 #       		0 = first cycle
-#       --run     : Run name, generally 'gdas' or 'gfs'.  
+#       -run     : Run name, generally 'gdas' or 'gfs'.  
 #		    If not specified 'gdas' will be used.
 #
 #    Return that first/last cycle as a text string in YYYYMMDDHH format,
@@ -49,19 +50,20 @@
 
    my $run  = 'gdas';
    my $dir  = '';
-   my $lcm  = 'conmon';
+   my $lcm  = 'oznmon';
    my $cyc  = '1';
 
    GetOptions( 'cyc:i' => \$cyc,
                'run:s' => \$run,
                'dir=s' => \$dir,
                'lcm:s' => \$lcm );  
- 
+  
+
    my @alldirs;
    my $dirpath = $dir;
 
    #-------------------------------------------------------------------- 
-   #  Get list of $run.* directories which contain conmon subdirectories
+   #  Get list of $run.* directories which contain oznmon subdirectories
    #
    opendir(DIR, $dirpath) or die "Cannot open directory $!";
    while (my $file = readdir(DIR)) {
@@ -79,6 +81,7 @@
    }
 
    my @mmdirs = grep { /$search_string/ } @alldirs;
+
    #-----------------------------------------------------------------------   
    #  If there are no $run.yyyymmdd subdirectories, then exit without 
    #    returning any date string.
@@ -97,26 +100,13 @@
 
    my $ctr;
    my $incr;
-   my $end_ctr;
-   my @hrs;
 
-   #-----------------------------------------------------------------------
-   #  Arrange the logic here for accessing either the first or last
-   #  cycle.  If we're after the first cycle the directories will be 
-   #  processed from 0 to max.  Note below the cycle hours are processed
-   #  from max to 0, so the cycle order is reversed (18..00) when looking
-   #  for the first cycle.
-   # 
    if( $cyc == 0 ){  
       $ctr = -1;
       $incr = 1;
-      $end_ctr = $#sortmm;
-      @hrs = qw( 18 12 06 00 );
    } else { 
       $ctr = $#sortmm + 1;
       $incr = -1;
-      @hrs = qw( 00 06 12 18 );
-      $end_ctr = 0;
    }
 
 
@@ -126,16 +116,16 @@
    #  subdirectories.
    #
 
-   my $exit_flag = 0;
+   my @hrs = qw( 00 06 12 18 );
 
    do {
       $ctr = $ctr + $incr;
  
-      #  In each subdirectory attempt to locate all *stas* files
+      #  In each subdirectory attempt to locate all *ieee_d files
       #  and parse out all unique date values.  The latest is the answer
       #  we're looking for. 
       #
-      #  If there are no *stas* files, step to the next iteration.
+      #  If there are no time.*ieee_d* files, step to the next iteration.
       #
 
       my $newdir; 
@@ -144,14 +134,19 @@
       do {
  
          $hr_ctr = $hr_ctr - 1;
-         
-         $newdir = "${dirpath}/${sortmm[$ctr]}/${hrs[$hr_ctr]}/${lcm}/time_vert";
 
+         $newdir = "${dirpath}/${sortmm[$ctr]}/${hrs[$hr_ctr]}/atmos/oznmon/time";
+         if( ! -d $newdir ) {
+            $newdir = "${dirpath}/${sortmm[$ctr]}/${hrs[$hr_ctr]}/oznmon/time";
+            if( ! -d $newdir ) {
+               $newdir = "${dirpath}/${sortmm[$ctr]}/time";
+            }
+         }
 
          if( -d $newdir ) {
             opendir DIR, $newdir or die "Cannot open the current directory: $!";
 
-            my @timefiles = grep { /stas/ && !/ctl/ } readdir DIR;
+            my @timefiles = grep { /ieee_d/ } readdir DIR;
 
             if( $#timefiles >= 0 ) {
                my @sorttime = sort( @timefiles );
@@ -172,11 +167,9 @@
                   my $teststr = $sorttime[$ii];
 
                   my @values = split( '\.', $teststr );
-                  if( length($values[$idx] ) == 10 ){   
-                     push( @times, $values[$idx] );
-                  }
-               }
+                  push( @times, $values[$idx] );
 
+               }
                if ( $#times >= 0 ) {
                   my @utimes = sort( uniq( @times ) );
                   if( $cyc == 1 ) {
@@ -192,17 +185,9 @@
                }
             }
 
-         } 
+         }
           
       } while $hr_ctr > 0 && $found_cycle == 0;
 
-
-      if( $cyc == 0 && $ctr >= $end_ctr ){  
-         $exit_flag = 1;
-      } elsif( $cyc == 1 && $ctr <= $end_ctr ){
-         $exit_flag = 1;
-      }
-   
-
-   } while $found_cycle == 0 && $exit_flag == 0;
+   } while $found_cycle == 0 && $ctr > 0;
 

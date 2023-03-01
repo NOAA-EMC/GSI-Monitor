@@ -198,9 +198,12 @@ else							# hera|jet|s4
       if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" ]]; then
          $SUB -A $ACCOUNT -l procs=${ntasks},walltime=0:50:00 -N ${jobname} \
               -V -j oe -o ${logfile} $cmdfile
+      elif [[ ${MY_MACHINE} = "jet" ]]; then
+         $SUB -A $ACCOUNT -l procs=${ntasks},walltime=0:50:00 -N ${jobname} \
+              -p ${BATCH_PARTITION} -V -j oe -o ${logfile} $cmdfile
       else
          $SUB -A $ACCOUNT -l procs=${ntasks},walltime=0:50:00 -N ${jobname} \
-              -p ${RADMON_PARTITION} -V -j oe -o ${logfile} $cmdfile
+              -p ${SERVICE_PARTITION} -V -j oe -o ${logfile} $cmdfile
       fi
    done
 fi

@@ -2,13 +2,15 @@
 
 #-------------------------------------------------------------------
 #
-#  script:   OznMon_MkBase.sh suffix [-s|--sat sat_name -r|--run gdas|gfs]
+#  script:   OznMon_MkBase.sh
 #
 #  purpose:  Generate the baseline stat files for each instrument
 #            by level and region.  Baseline stat includes the 
 #            30 day average number of obs and sdv, and 30 day avg
 #            penalty and sdv.  These files are used only if the 
 #            diagnostic reports are switched on. 
+#
+#  calling:  OznMon_MkBase.sh suffix 1>log 2>err
 #-------------------------------------------------------------------
 
 function usage {
@@ -18,7 +20,7 @@ function usage {
   echo "            -s|--sat (optional) restricts the list of sat/instrument "
   echo "              sources.  If no sat is specified then all "
   echo "              sat/instrument sources will be included." 
-  echo "            -r|--run indicates RUN value, usually gfs|gdas, gdas is default"
+  echo "            -r|--run indicates RUN value, usually gfs|gdas"
 }
 
 nargs=$#
@@ -57,19 +59,19 @@ do
    shift
 done
 
-echo "OZNMON_SUFFIX, SATYPE = $OZNMON_SUFFIX, $SATYPE"
+this_file=`basename $0`
+this_dir=`dirname $0`
 
 
 #------------------------------------------------------------------
 # Set environment variables.
 #-------------------------------------------------------------------
-this_dir=`dirname $0`
 top_parm=${this_dir}/../../parm
 
 oznmon_user_settings=${oznmon_user_settings:-${top_parm}/OznMon_user_settings}
 if [[ ! -e ${oznmon_user_settings} ]]; then
    echo "Unable to source ${oznmon_user_settings} file"
-   exit 4
+   exit 3
 fi
 
 . ${oznmon_user_settings}
@@ -81,7 +83,7 @@ fi
 oznmon_config=${oznmon_config:-${top_parm}/OznMon_config}
 if [[ ! -e ${oznmon_config} ]]; then
    echo "Unable to source ${oznmon_config} file"
-   exit 3
+   exit 4
 fi
 
 . ${oznmon_config}
@@ -90,78 +92,51 @@ if [[ $? -ne 0 ]]; then
    exit $?
 fi
 
+
 #-------------------------------------------------------------------
 #  Set dates
-#    BDATE is beginning date for the 30/60 day range
-#    EDATE is ending date for 30/60 day range (always use 00 cycle) 
+#    BDATE is beginning date for the 45 day range
+#    EDATE is ending date for 45 day range (always use 00 cycle) 
 #-------------------------------------------------------------------
-EDATE=`${MON_USH}/find_last_cycle.sh --net ${OZNMON_SUFFIX} --run ${RUN} --tank ${TANKDIR} --mon oznmon`
+EDATE=`${MON_USH}/find_last_cycle.sh --net ${OZNMON_SUFFIX} \
+        --run ${RUN} --mon oznmon --tank ${TANKDIR}`
 
-sdate=`echo $EDATE|cut -c1-8`
-EDATE=${sdate}00
+sdate=$(echo $EDATE|cut -c1-8)
+EDATE="${sdate}00"
 BDATE=`$NDATE -1080 $EDATE`	# 45 days
 
-echo EDATE = $EDATE
-echo BDATE = $BDATE
-
-tmpdir=${OZN_WORK_DIR}/base_${OZNMON_SUFFIX}
-rm -rf $tmpdir
-mkdir -p $tmpdir
-cd $tmpdir
+wrkdir=${OZN_WORK_DIR}/base_${OZNMON_SUFFIX}
+if [[ -e ${wrkdir} ]]; then rm -rf ${wrkdir}; fi
+mkdir -p ${wrkdir}
+cd ${wrkdir}
 
 #-------------------------------------------------------------------
 #  If no single sat source was supplied at the command line then 
-#  find or build $SATYPE list for this data source.
+#  find $SATYPE list for this data source, checking the 
+#  $TANKDIR/info directory first.
 #-------------------------------------------------------------------
 if [[ $SINGLE_SAT -eq 0 ]]; then
 
-   if [[ -e ${HOMEgdas_ozn}/fix/gdas_oznmon_satype.txt ]]; then
-      echo "using satype file"
-      SATYPE=`cat ${HOMEgdas_ozn}/fix/gdas_oznmon_satype.txt`
-   else 
-      echo building satype from scratch
-      PDY=`echo $EDATE|cut -c1-8`
-      cyc=`echo $EDATE|cut -c9-10`
-
-      test_dir=${OZN_STATS_TANKDIR}/${RUN}.${PDY}/${cyc}/oznmon/time
-      if [[ -d ${test_dir} ]]; then
-         test_list=`ls ${test_dir}/*.${EDATE}.ieee_d*`
-
-         for test in ${test_list}; do
-            this_file=`basename $test`
-            tmp=`echo "$this_file" | cut -d. -f1`
-            echo $tmp
-
-            #----------------------------------------------------------   
-            #  remove sat/instrument_anl names so we don't end up
-            #  with both "omi_aura" and "omi_aura_anl" if analysis
-            #  files are being generated for this source.
-            #----------------------------------------------------------   
-            test_anl=`echo $tmp | grep "_anl"`
-            if [[ $test_anl = "" ]]; then
-               SATYPE_LIST="$SATYPE_LIST $tmp"
-            fi
-         done
-      fi
-      SATYPE=$SATYPE_LIST
-
+   if [[ -e ${OZN_TANKDIR_STATS}/info/gdas_oznmon_satype.txt ]]; then
+      SATYPE=$(cat ${OZN_TANKDIR_STATS}/info/gdas_oznmon_satype.txt)
+   elif [[ -e ${HOMEgdas_ozn}/fix/gdas_oznmon_satype.txt ]]; then
+      SATYPE=$(cat ${HOMEgdas_ozn}/fix/gdas_oznmon_satype.txt)
    fi
 fi
 
-echo $SATYPE
 
 #-------------------------------------------------------------------
 #  Loop over $SATYPE and build base files for each
 #-------------------------------------------------------------------
 for type in ${SATYPE}; do
-   echo "processing $type"
 
    #-------------------------------------------------------------------
-   #  Create $tmpdir
+   #  Create $typdir
    #-------------------------------------------------------------------
-   workdir=${tmpdir}/${type}.$EDATE
-   mkdir -p $workdir
-   cd $workdir
+   typdir=${wrkdir}/${type}.${EDATE}
+   if [[ -e ${typdir} ]]; then rm -rf ${typdir}; fi
+   mkdir -p ${typdir}
+   cd ${typdir}
 
    #-------------------------------------------------------------------
    #  Copy the data files and ctl file to workdir
@@ -171,13 +146,12 @@ for type in ${SATYPE}; do
     
    while [[ $cdate -le $EDATE ]]; do
 
-      pdy=`echo $cdate | cut -c1-8 `
-      cyc=`echo $cdate | cut -c9-10`
-
-      test_dir=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${cdate} --net ${OZNMON_SUFFIX} --tank ${TANKDIR} --mon oznmon`
+      test_dir=$(${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${cdate} \
+	      --net ${OZNMON_SUFFIX} --tank ${TANKDIR} --mon oznmon)
+      test_dir=${test_dir}/time
 
       if [[ -d ${test_dir} ]]; then
-         test_file=${test_dir}/time/${type}.ges.${cdate}.ieee_d
+         test_file=${test_dir}/${type}.ges.${cdate}.ieee_d
 
          if [[ -s $test_file ]]; then
             $NCP ${test_file} ./${type}.${cdate}.ieee_d
@@ -185,42 +159,42 @@ for type in ${SATYPE}; do
          elif [[ -s ${test_file}.${Z} ]]; then
             $NCP ${test_file}.${Z} ./${type}.${cdate}.ieee_d.${Z}
             echo $cdate >> cycle_hrs.txt
-         else 
-            echo "WARNING:  unable to locate ${test_file}"
-         fi
-
-
-         if [[ $have_ctl -eq 0 ]]; then
-            test_file=${test_dir}/time/${type}.ges.ctl
-            if [[ -s ${test_file} ]]; then
-               $NCP ${test_file} ./${type}.ctl
-               have_ctl=1
-            elif [[ -s ${test_file}.${Z} ]]; then
-               $NCP ${test_file}.${Z} ./${type}.ctl.${Z}
-               have_ctl=1
-            fi
          fi
       fi
 
-      adate=`$NDATE +${CYCLE_INTERVAL} $cdate`
-      cdate=$adate
+
+      if [[ $have_ctl -eq 0 ]]; then
+         test_file=${test_dir}/${type}.ges.ctl
+         if [[ -s ${test_file} ]]; then
+            $NCP ${test_file} ./${type}.ctl
+            have_ctl=1
+         elif [[ -s ${test_file}.${Z} ]]; then
+            $NCP ${test_file}.${Z} ./${type}.ctl.${Z}
+            have_ctl=1
+         fi
+      fi
+
+      cdate=$($NDATE +${CYCLE_INTERVAL} $cdate)
    done
 
-   if [[ ${have_ctl} -eq 0 ]]; then
-      echo "Unable to locate ctl file for ${type}, skipping"
-      continue
+   if compgen -G "*.${Z}" > /dev/null; then
+      ${UNCOMPRESS} *.${Z}
    fi
 
-   if compgen -G "*.gz" > /dev/null; then
-      ${UNCOMPRESS} *.gz
+   #----------------------------------------
+   # skip this $type if there's no ctl file 
+   #----------------------------------------
+   if [[ ! -e ${type}.ctl ]]; then 
+      echo "no data for ${type}, skipping"
+      continue 
    fi
+
 
    #-------------------------------------------------------------------
    #  Get the number of levels for this $type
    #-------------------------------------------------------------------
    line=`cat ${type}.ctl | grep title`
    nlev=`echo $line|gawk '{print $4}'`
-   echo levels = $nlev
 
    #-------------------------------------------------------------------
    #  Cut out the iuse flags from the ctl file and dump them
@@ -235,7 +209,6 @@ for type in ${SATYPE}; do
    $NCP ${GSI_MON_BIN}/oznmon_make_base.x ./
 
    nfiles=`ls -1 ${type}*ieee_d | wc -l` 
-   echo nfiles = $nfiles
 
 cat << EOF > input
  &INPUT
@@ -249,14 +222,10 @@ EOF
    ./oznmon_make_base.x < input > stdout.${type}.base
 
    #-------------------------------------------------------------------
-   #  Copy base file back to $tmpdir 
+   #  Copy base file back to $wrkdir 
    #-------------------------------------------------------------------
-   $NCP $out_file ${tmpdir}/.
-
-   #-------------------------------------------------------------------
-   #  Clean up
-   #-------------------------------------------------------------------
-   cd $tmpdir
+   $NCP $out_file ${wrkdir}/.
+   cd $wrkdir
 
 done
 
@@ -271,54 +240,43 @@ if [[ ! -d ${OZN_TANKDIR_STATS}/info ]]; then
    mkdir -p ${OZN_TANKDIR_STATS}/info
 fi
 
+cd $wrkdir
 basefile=gdas_oznmon_base.tar
-cd ${tmpdir}
 
 if [[ $SINGLE_SAT -eq 0 ]]; then
    tar -cf ${basefile} *.base
-
 else
-   newbase=$tmpdir/newbase
-   mkdir $newbase
-   cd $newbase
 
-   #---------------------------------------
-   #  copy over existing $basefile
+   #---------------------------------------------------------
+   #  copy over existing $basefile, replace the changed file
    #
    if [[ -s ${OZN_TANKDIR_STATS}/info/${basefile} ]]; then
       $NCP ${OZN_TANKDIR_STATS}/info/${basefile} ./${basefile} 
    elif [[ -s ${HOMEgdas_ozn}/fix/${basefile} ]]; then
       $NCP ${HOMEgdas_ozn}/fix/${basefile} ./${basefile} 
    fi
- 
-   tar -xvf ${basefile}
-   rm ${basefile}
 
-   #----------------------------------------------------------------------
-   #  copy new *.base file from $tmpdir and build new $basefile (tar file)
-   #
-   cp -f $tmpdir/*.base .
-   tar -cvf ${basefile} *.base
-   mv -f ${basefile} $tmpdir/.
-   cd $tmpdir
-
+   new_base=$(ls *.base)
+   tar --delete -f $basefile  ${new_base}
+   tar -rf ${basefile} ${new_base}
 fi
 
-#---------------------------------------------
-#  Remove the old version of the $basefile
+
+#--------------------------------------------------------
+#  Remove the old version of the $basefile and copy new 
+#  $basefile to $OZN_TANKDIR_STATS/info
 #
 if [[ -e ${OZN_TANKDIR_STATS}/info/${basefile} || -e ${OZN_TANKDIR_STATS}/info/${basefile}.${Z} ]]; then
    rm -f ${OZN_TANKDIR_STATS}/info/${basefile}*
 fi
 
+$NCP ${basefile} ${OZN_TANKDIR_STATS}/info/.
 
-$NCP $tmpdir/${basefile} ${OZN_TANKDIR_STATS}/info/.
 
 #-------------------------------------------------------------------
 #  Clean up $tmpdir
 #-------------------------------------------------------------------
 cd ..
-rm -rf $tmpdir
+rm -rf $wrkdir
 
-echo "OznMon_MkBase.sh finished"
 exit

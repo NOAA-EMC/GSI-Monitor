@@ -1,38 +1,26 @@
 #!/bin/bash
 
 function usage {
-  echo "Usage:  Transfer.sh [-n|--nosrc] suffix"
+  echo "Usage:  RunTransfer.sh [-r] suffix"
   echo "            Suffix is data source identifier that matches data in "
   echo "              the $MY_TANKDIR/stats directory."
-  echo "        -a|--area  Specifies the geographic area.  Valid entries are"
-  echo "		'glb' or 'rgn'."
-  echo "        -r|--run   Specifies the RUN value (typically 'gdas' or 'gfs')"
+  echo "        -r|--run   Specifies the RUN value, typically 'gdas'(default) or 'gfs'"
 }
 
-
 nargs=$#
-if [[ $nargs -le 1 || $nargs -gt 6 ]]; then
+
+if [[ $nargs -lt 1 || $nargs -gt 3 ]]; then
    usage
    exit 1
 fi
 
-#---------------------------------------
-#  set default values, parse arguments
-#---------------------------------------
-SOURCE_PARMS=1
-AREA=glb
-RUN=""
+RUN=gdas
 
 while [[ $# -ge 1 ]]
 do
    key="$1"
-   echo $key
 
    case $key in
-      -a|--area)
-         AREA=$2
-         shift # past argument
-      ;;
       -r|--run)
          RUN=$2
          shift # past argument
@@ -46,57 +34,65 @@ do
    shift
 done
 
-echo "SOURCE_PARMS  = $SOURCE_PARMS"
-echo "AREA          = $AREA"
-echo "RADMON_SUFFIX = $RADMON_SUFFIX"
-echo "RUN           = $RUN"
+if [[ $MY_MACHINE != "wcoss2" ]]; then
+   echo
+   echo "This script can only run on wcoss2.  Your machine, ${MY_MACHINE}, is not supported."
+   echo
+   exit 2
+fi
 
+this_dir=`dirname $0`
+top_parm=${this_dir}/../../parm
 
-if [[ $SOURCE_PARMS -eq 1 ]]; then
-   this_dir=`dirname $0`
-   top_parm=${this_dir}/../../parm
+radmon_config=${radmon_config:-${top_parm}/RadMon_config}
+if [[ ! -e ${radmon_config} ]]; then
+   echo "Unable to locate ${radmon_config} file"
+   exit 3
+fi
 
-   radmon_config=${radmon_config:-${top_parm}/RadMon_config}
-   if [[ ! -e ${radmon_config} ]]; then
-      echo "Unable to locate ${radmon_config} file"
-      exit 3
-   fi
+. ${radmon_config}
+if [[ $? -ne 0 ]]; then
+   echo "Error detected while sourcing ${radmon_config} file"
+   exit $?
+fi
 
-   . ${radmon_config}
-   if [[ $? -ne 0 ]]; then
-      echo "Error detected while sourcing ${radmon_config} file"
-      exit $?
-   fi
+radmon_user_settings=${radmon_user_settings:-${top_parm}/RadMon_user_settings}
+if [[ ! -e ${radmon_user_settings} ]]; then
+   echo "Unable to locate ${radmon_user_settings} file"
+   exit 4
+fi
 
-   radmon_user_settings=${radmon_user_settings:-${top_parm}/RadMon_user_settings}
-   if [[ ! -e ${radmon_user_settings} ]]; then
-      echo "Unable to locate ${radmon_user_settings} file"
-      exit 4
-   fi
-
-   . ${radmon_user_settings}
-   if [[ $? -ne 0 ]]; then
-      echo "Error detected while sourcing ${radmon_user_settings} file"
-      exit $?
-   fi
-
+. ${radmon_user_settings}
+if [[ $? -ne 0 ]]; then
+   echo "Error detected while sourcing ${radmon_user_settings} file"
+   exit $?
 fi
 
 
-#--------------------------------------------------------------------
-
-log_file=${LOGdir}/transfer_${RADMON_SUFFIX}.log
-err_file=${LOGdir}/transfer_${RADMON_SUFFIX}.err
-
-echo "IMGNDIR = ${IMGNDIR}"
-echo "WEBDIR  = ${WEBDIR}"
-
-if [[ ${IMGNDIR} != "/" ]]; then
-   if [[ $MY_MACHINE = "wcoss2" ]]; then
-      /usr/bin/rsync -ave ssh --exclude *.ctl.${Z} \
-         --exclude 'horiz' --exclude *.png --delete-during ${IMGNDIR}/ \
-         ${WEBUSER}@${WEBSVR}.ncep.noaa.gov:${WEBDIR}/
-   fi
+transfer_log=${R_LOGDIR}/Transfer_${RADMON_SUFFIX}.log
+if [[ -e ${transfer_log} ]]; then
+   rm ${transfer_log}
 fi
+
+transfer_err=${R_LOGDIR}/Transfer_${RADMON_SUFFIX}.err
+if [[ -e ${transfer_err} ]]; then
+   rm ${transfer_err}
+fi
+
+transfer_queue=dev_transfer
+jobname=transfer_${RADMON_SUFFIX}
+export WEBDIR=${WEBDIR}/${RADMON_SUFFIX}/pngs
+
+transfer_work_dir=${MON_STMP}/${RADMON_SUFFIX}/${RUN}/radmon/transfer
+if [[ ! -d ${transfer_work_dir} ]]; then
+   mkdir -p ${transfer_work_dir}
+fi
+
+cmdfile="${transfer_work_dir}/transfer_cmd"
+echo "${IG_SCRIPTS}/transfer.sh" >$cmdfile
+chmod 755 $cmdfile
+
+$SUB -q $transfer_queue -A $ACCOUNT -o ${transfer_log} -e ${transfer_err} \
+     -V -l select=1:mem=500M -l walltime=45:00 -N ${jobname} ${cmdfile}
 
 exit

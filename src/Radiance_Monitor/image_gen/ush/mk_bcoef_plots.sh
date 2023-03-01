@@ -165,7 +165,7 @@ elif [[ $MY_MACHINE = "orion" ]]; then
 
 elif [[ $MY_MACHINE = "jet" ]]; then
    $SUB --account $ACCOUNT --ntasks=1 --mem=5g --time=1:00:00 -J ${jobname} \
-        -p ${SERVICE_PARTITION} -o ${logfile} -D . $IG_SCRIPTS/plot_bcoef.sh
+        -p ${BATCH_PARTITION} -o ${logfile} -D . $IG_SCRIPTS/plot_bcoef.sh
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
    $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e $R_LOGDIR/plot_bcoef.err -V \
