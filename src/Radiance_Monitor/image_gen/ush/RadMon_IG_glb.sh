@@ -86,11 +86,6 @@ done
 
 export RUN=${run}
 
-echo "RADMON_SUFFIX = ${RADMON_SUFFIX}"
-echo "RUN           = ${RUN}"
-echo "pdate         = ${pdate}"
-echo "num_cycles    = ${num_cycles}"
-
 if [[ ${#num_cycles} -gt 0 ]]; then
    export NUM_CYCLES=${num_cycles}
 fi
@@ -348,14 +343,11 @@ if [[ $RUN_TRANSFER -eq 1 ]]; then
       fi
 
       transfer_queue=dev_transfer
-
       jobname=transfer_${RADMON_SUFFIX}
-      job="${IG_SCRIPTS}/Transfer.sh --nosrc ${RADMON_SUFFIX}"
-
       export WEBDIR=${WEBDIR}/${RADMON_SUFFIX}/pngs
 
       cmdfile="${PLOT_WORK_DIR}/transfer_cmd"
-      echo "${IG_SCRIPTS}/Transfer.sh --nosrc ${RADMON_SUFFIX}" >$cmdfile
+      echo "${IG_SCRIPTS}/transfer.sh" >$cmdfile
       chmod 755 $cmdfile
 
       run_time="$rhr$cmin"	# HHMM format for qsub
