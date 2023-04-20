@@ -1,0 +1,68 @@
+README OznMon package 
+
+The OznMon (ozone monitoring) package can be used to extract information
+from ozone diagnostic files and generate image plots to visualize the results.
+The package also may optionally perform data validation and error checking.
+The package is supported on wcoss2, hera, orion, cheyenne, jet, and s4 
+machines.
+
+The package is organized in two processes, the data_extract and image_gen 
+(image generation).  There is also an nwprod directory, which contains the lower 
+level components of the data_extract portion.  The J-job, scripts, and ush scripts
+which used to be in the nwprod directory have been moved to the global-workflow
+repository and must be run as part of the vrfy job in global-workflow.
+
+
+To use the package:
+
+1.  Run GSI-monitor/ush/build.sh.  This builds all necessary executables.
+
+2.  The GSI-monitor sets default values for necessary storage, work, and log file 
+locations in GSI-monitor/parm/Mon_config.  If you want to override the defaults
+the important settings are: 
+
+tankdir  -- the location for extracted data storage
+ptmp     -- log file location
+stmp     -- work space
+
+Note that these locations are set for each machine.
+
+3.  To perform OznMon data extraction as part of the vrfy job in the global-workflow
+    make sure your expdir/*/config.vrfy file contains this line:
+
+         export VRFYOZN="YES"
+   
+    The extracted data should be in your comrot/$PSLOT directory. 
+
+4.  There is no automatic web site generation script available (yet).  The necessary files
+to construct a web site are located in GSI-monitor/src/Ozone_Monitor/image_gen/html.
+If you have any questions about this please contact me (edward.safford@noaa.gov).
+
+5.  Run the image generation.  Navigate to GSI-monitor/src/Ozone_Monitor/image_gen/ush
+and run:
+
+ ./OznMon_Plt.sh suffix -p|--pdate -r|--run -n|--ncyc -t|--tank
+
+	suffix       $NET value or the name of your parallel.  
+        -p|--pdate   Cycle time for which you wish to generate images.
+                        It must be in YYYYMMDDHH format.
+        -r|--run     $RUN value -- gdas (default) or gfs.
+        -n|--ncyc    Number of cycles to be used in time-series plots.  If not
+                        specified the default value of 120 cycles is used.
+        -t|--tank    Location of the extracted data files.  This is likely to be your 
+                        comrot/$PSLOT directory.  This is only needed if your extraction
+                        was via global-workflow and NOT copied to $TANKDIR.
+
+
+6.  Move the data and html files to the web server (emcrzdm).  If you're on wcoss2 and have
+password free access to web server set up for your user account, then run OznMon_Transfer.sh to 
+push the data files to the server.
+
+On all other machines you will have to manually move files from your $TANKDIR/imgn/$NET/$RUN/radmon
+directory to the server.
+
+
+
+If you encounter problems please send me contact and I'll be glad to help:
+      edward.safford@noaa.gov
+
