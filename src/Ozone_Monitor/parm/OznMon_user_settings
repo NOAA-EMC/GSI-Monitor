@@ -47,6 +47,7 @@ cc_list=""
 if [[ -e /u/${LOGNAME}/bin/get_cc_list.pl ]]; then
    cc_list=`/u/${LOGNAME}/bin/get_cc_list.pl --nr ${OZNMON_SUFFIX}_${RUN} --mon OznMon`
 fi
+export MAIL_CC=${cc_list}
 
 #
 #  KEEPDATA switches on/off allowing the work directory to remain after data 
