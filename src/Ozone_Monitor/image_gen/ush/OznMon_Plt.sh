@@ -232,7 +232,7 @@ if [[ $pdate -le $last_cycle && -d ${dp} ]]; then
    #--------------------------------------------------------------------
 
    if [[ -e ${OZN_TANKDIR_STATS}/info/gdas_oznmon_satype.txt ]]; then
-      export SATYPE=${SATYPE:-`cat ${OZN_TANKDIR}/info/${RUN}_oznmon_satype.txt`}
+      export SATYPE=${SATYPE:-`cat ${OZN_TANKDIR_STATS}/info/gdas_oznmon_satype.txt`}
    else
       export SATYPE=${SATYPE:-`cat ${HOMEgdas_ozn}/fix/${RUN}_oznmon_satype.txt`}
    fi
