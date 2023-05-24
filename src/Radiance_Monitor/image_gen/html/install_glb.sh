@@ -77,7 +77,7 @@ cd $workdir
 RUN=gdas
 
 PDATE=`${MON_USH}/find_last_cycle.sh --net ${RADMON_SUFFIX} \
-         --run ${RUN} --mon radmon --tank ${TANKDIR}`
+         --run ${RUN} --mon radmon --tank ${R_TANKDIR}`
 echo PDATE=$PDATE
 
 limit=`$NDATE -120 $PDATE`		#  5 days
@@ -92,7 +92,7 @@ while [[ data_found -eq 0 && $PDATE -ge $limit ]]; do
    CYC=`echo $PDATE|cut -c9-10`
 
    ieee_src=`${MON_USH}/get_stats_path.sh --run $RUN --pdate ${PDATE} \
-                      --net ${RADMON_SUFFIX} --tank ${TANKDIR} --mon radmon`
+                      --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
    echo "ieee_src = $ieee_src"
 
    if [[ -d ${ieee_src} ]]; then
