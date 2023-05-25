@@ -26,7 +26,7 @@ function usage {
   echo "            -n|--ncyc is the number of cycles to be used in time series plots.  If"
   echo "              not specified the default value in parm/RadMon_user_settins will be used"
   echo ""
-  echo "            -t | --tank parent directory to the adnmon data file location.  This"
+  echo "            -t | --tank parent directory to the radmon data file location.  This"
   echo "              will be extended by \$RADMON_SUFFIX, \$RUN, and \$PDATE to locate the"
   echo "              extracted radmon data."
   echo ""
