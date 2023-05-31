@@ -1,12 +1,7 @@
 #!/bin/sh
-#############################################################
-# Set up environment for NAM Radiance Monitor job
-#############################################################
-set -xa
-echo `date` $0 `date -u` begin
-export PS4='$SECONDS + '
 
-export RUN_ENVIR=${RUN_ENVIR:-nco}
+echo `date` $0 `date -u` begin
+
 export envir=${envir:-prod}
 export REGIONAL_RR=${REGIONAL_RR:-1}
 
@@ -26,82 +21,32 @@ export jobid=${jobid:-"${outid}.o${pid}"}
 export RADMON_SUFFIX=${RADMON_SUFFIX:-$NET}
 export DATAROOT=${DATAROOT:-/tmpnwprod2}
 export DATA=${DATA:-${DATAROOT}/${jobid}}
+echo "DATAROOT = $DATAROOT"
+echo "DATA = $DATA"
 
 mkdir -p $DATA
 cd $DATA
 
-###############################################################
-# This block can be modified for different test environment
-###############################################################
-if [ $RUN_ENVIR = nco -a $envir != prod ]; then
-  export SENDDBN=${SENDDBN:-NO}
-fi
-
-
-####################################
-# File To Log Msgs
-####################################
 export jlogfile=${jlogfile:-${COMROOT}/logs/jlogfiles/jlogfile.${job}.${pid}}
+echo "jlogfile = $jlogfile"
 
 ####################################
 # Determine Job Output Name on System
 ####################################
-export pgmout="OUTPUT.${pid}"
 export pgmerr=errfile
-export cycle=t${cyc}z
-export rgnHH=${rgnHH:-$cycle}
+export rgnHH=${rgnHH:-${cyc}z}
 export rgnTM=${rgnTM:-tm06}
-
-##############################################
-# SENDECF  - Flag Events on ECF
-# SENDCOM  - Copy Files From TMPDIR to $COMOUT
-# SENDDBN  - Issue DBNet Client Calls
-# VERBOSE  - Specify Verbose Output in exglobal
-##############################################
-export SENDCOM=${SENDCOM:-YES}
-export SENDDBN=${SENDDBN:-NO}
-export SENDECF=${SENDECF:-NO}
-export VERBOSE=${VERBOSE:-YES}
-
-###################################
-# Set up the UTILITIES
-###################################
-export utilscript=${utilscript:-${UTILROOT}/ush}
-export utilexec=${utilexec:-${UTILROOT}/exec}
-
+echo rgnHH = $rgnHH
 
 ##############################################
 # Specify Execution Areas
 ##############################################
-export HOMEnam=${HOMEnam:-${NWROOT}/nam_radmon.v2.0.0}  # need to use version here
-export SCRnam=${SCRnam:-$HOMEnam/scripts}
-export PARMnam=${PARMnam:-${HOMEnam}/parm}
+#export HOMEnam=${HOMEnam:-${NWROOT}/nam_radmon.v2.0.0}  # need to use version here
+export SCRnam=${SCRnam:-${HOMEnam}/scripts}
+#export PARMnam=${PARMnam:-${HOMEnam}/parm}
 
-
-###################################
-# source the parm file
-###################################
-.  ${PARMnam}/nam_radmon.parm
-
-#export HOMEgdas=${HOMEgdas:-${NWROOT}/gdas.$gdas_ver}
-#export PARMgdas=${PARMgdas:-$HOMEgdas/parm}
-#export SCRgdas=${SCRgdas:-$HOMEgdas/scripts}
-#export FIXgdas=${FIXgdas:-$HOMEgdas/fix}
-
-#  Q:  can these go to parm file?
-export HOMEradmon=${HOMEradmon:-/${NWROOT}/radmon_shared.${radmon_shared_ver}}
-export EXECradmon=${EXECradmon:-$HOMEradmon/exec}
-export FIXradmon=${FIXradmon:-${FIXgdasradmon}}
-export USHradmon=${USHradmon:-$HOMEradmon/ush}
-
-
-#############################################
-# Run setpdy and initialize PDY variables
-#############################################
-if [[ $MY_MACHINE != "theia" ]]; then
-   ${utilscript}/setpdy.sh
-   source ./PDY
-fi
+echo HOMEnam = $HOMEnam
+echo SRCnam = $SRCnam
 
 #############################################
 # COMOUT - WHERE GSI OUTPUT RESIDES
@@ -110,11 +55,20 @@ fi
 export TANKverf=${TANKverf:-/com/verf/${envir}}
 export TANKverf_rad=${TANKverf_rad:-${TANKverf}/radmon.${PDY}}
 export COM_IN=${COM_IN:-/com/${NET}/${envir}}
-export COMIN=${COMIN:-$COM_IN/${RUN}.${PDY}}
+export COMIN=${COMIN:-$COM_IN/${RADMON_SUFFIX}.${PDY}}
+
+echo "TANKverf: $TANKverf"
+echo "TANKverf_rad: $TANKverf_rad"
+echo "COM_IN: $COM_IN"
+echo "COMIN: $COMIN"
 
 mkdir -p -m 775 $TANKverf_rad
- 
-env
+
+echo "" 
+#echo "" 
+#env
+#echo "" 
+echo "" 
 
 ########################################
 # Set necessary environment variables
@@ -192,11 +146,11 @@ ${RADMONSH:-${SCRnam}/exnam_verfrad.sh} ${PDY} ${cyc}
 ################################
 # Remove the Working Directory
 ################################
-KEEPDATA=${KEEPDATA:-NO}
-cd $DATAROOT
-if [ ${KEEPDATA} = NO ] ; then 
-  rm -rf $DATA 
-fi
+#KEEPDATA=${KEEPDATA:-NO}
+#cd $DATAROOT
+#if [ ${KEEPDATA} = NO ] ; then 
+#  rm -rf $DATA 
+#fi
 
-date
+#date
 

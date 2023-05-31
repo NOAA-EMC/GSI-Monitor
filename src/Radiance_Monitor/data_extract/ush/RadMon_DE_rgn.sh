@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #--------------------------------------------------------------------
 #  RadMon_DE_rgn.sh
@@ -108,7 +108,7 @@ this_file=`basename $0`
 this_dir=`dirname $0`
 
 #-----------------------------------------------------------
-#  Prrocess command line arguments.
+#  Process command line arguments.
 #
 radstat_location=/gpfs/dell1/nco/ops/com/nam/prod
 cycle_interval=1
@@ -246,23 +246,29 @@ incr=0
 
 set_hr_tm 
 
-echo "incr  = ${incr}"
-echo "rgnHH, rgnTM = ${rgnHH}, ${rgnTM}"
-
 #------------------------------------------------------------------
+#  For rrfs use just $radstat_location.
+#
 #  If processing on of the last 5 cycles for the day, look for 
 #  them in the next day's directory.
 #------------------------------------------------------------------
-if [[ $rgnHH = "t00z" && $rgnTM != "tm00" ]]; then
+if [[ -e ${radstat_location}/${RADMON_SUFFIX}.prod.${pdate}_radstat ]]; then
+   echo " option 3"
+   export radstat=${radstat_location}/${RADMON_SUFFIX}.prod.${pdate}_radstat
+   export biascr=${radstat_location}/${RADMON_SUFFIX}.prod.${pdate}_satbias
+
+elif [[ $rgnHH = "t00z" && $rgnTM != "tm00" ]]; then
    echo " option 1"
    pdate06=`${NDATE} +6 $pdate`
    pdy06=`echo ${pdate06} | cut -c1-8`
    export radstat=${radstat_location}/${run}.${pdy06}/${RADMON_SUFFIX}.${rgnHH}.radstat.${rgnTM}
    export biascr=${radstat_location}/${run}.${pdy06}/${RADMON_SUFFIX}.${rgnHH}.satbias.${rgnTM}
-else
+
+elif [[ -e ${radstat_location}/${run}.${pdy}/${RADMON_SUFFIX}.${rgnHH}.radstat.${rgnTM} ]]; then
    echo " option 2"
    export radstat=${radstat_location}/${run}.${pdy}/${RADMON_SUFFIX}.${rgnHH}.radstat.${rgnTM}
    export biascr=${radstat_location}/${run}.${pdy}/${RADMON_SUFFIX}.${rgnHH}.satbias.${rgnTM}
+
 fi
 
 if [[ ! -e ${radstat} ]]; then
@@ -270,32 +276,31 @@ if [[ ! -e ${radstat} ]]; then
    exit 5
 fi
 if [[ ! -e ${biascr} ]]; then
-   echo "Unable to locate biascr file ${satbias}"
+   echo "Unable to locate biascr file ${biascr}"
    exit 6
 fi
 
 echo "radstat: ${radstat}"
-echo "biascr: ${satbias}"
-
-
+echo "biascr: ${biascr}"
 
 export PDATE=${pdate}
 export PDY=`echo $PDATE|cut -c1-8`
 export cyc=`echo $PDATE|cut -c9-10`
-export job=${RADMON_SUFFIX}_vrfyrad_${PDY}${cyc}
 
-export DATA=${DATA:-${MON_STMP}/${RADMON_SUFFIX}/${run}/radmon/DE_${PDATE}}  # this should be WORKDIR
+export DATA=${DATA:-${MON_STMP}/${RADMON_SUFFIX}/radmon/DE_${PDATE}}  # this should be WORKDIR
+
 cd ${MON_STMP}
 rm -rf ${DATA}
 mkdir -p ${DATA}
 
 logfile=$R_LOGDIR/DE.${PDY}.${cyc}.log
+export jlogfile=${R_LOGDIR}/jlogfile.${PDY}.${cyc}
 
 job=$HOMEnam/jobs/JNAM_VERFRAD
 
 if [[ $MY_MACHINE = "hera" ]]; then
-   $SUB -A $ACCOUNT -l procs=1,walltime=0:05:00 -N ${jobname} -V \
-        -j oe -o ${logfile} ${job}
+   $SUB -A $ACCOUNT --ntasks=1 --time=1:30:00 \
+        -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${job}
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
    $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/DE.${PDY}.${cyc}.err \
@@ -304,4 +309,4 @@ fi
 
 
 echo end RadMon_DE_rgn.sh
-exit ${exit_value}
+exit 
