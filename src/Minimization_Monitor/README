@@ -1,51 +1,73 @@
+README MinMon package 
 
-The Minimization Monitor (MinMon) provides a means to regularly
-track and report the peformance of the GSI minimization function.
-It can be configured to send automated warnings to report irregular
-events, such as resets, premature halts, and abnormally large, 
-final results.
+The Minimization Monitor (MinMon) provides a means to visualize and report 
+on the performance of the GSI minimization function.  The package 
+is supported on wcoss2, hera, orion, cheyenne, jet, and s4 machines.
 
-The MinMon routinely plots the operational GFS results for both
-runs (gfs,gdas).  See http://www.emc.ncep.noaa.gov/gmb/gdas/index.html
-and click on the "GSI Minimization Stats" in the left-most 
-column at bottom (you may need to scroll down to see it).
+The package is organized in two main processes: data_extract and image_gen 
+(image generation).  The data extract piece is now located in the 
+global-workflow repository and must be run as part of the vrfy job.  To 
+run it ensure your expdir/*/config.vrfy file includes this line:
 
---- ------------------------------------------------------ ---
---- These are placeholder instructions.                    ---
---- automated configuration scripts are not yet available. ---
---- ------------------------------------------------------ ---
-
-##  Note to self:  need to add automatic set-up of the LOGdir ##
-##  to the install script.				      ##
-
-To set up the MinMon with an experimental parallel, first run the
-MinMon_install.pl script (in the same directory as this README file).
-That will configure your copy of the MinMon for your local use.  You 
-will need to designate the location of your TANKdir, or extracted
-data repository.  Normally this will be space in a noscrub area.
-
-When you have produced gsistat files from your experimental run
-use the [MinMon_package_location]/data_xtrc/ush/MinMon_DE.sh script
-to perform the necessay data extraction on the gsistat file(s).  The
-default values within the MinMon_DE.sh and subsequent scripts are
-configured to process gsistat files from the operational GFS/gfs or 
-GFS/gdas.  You will need to override values such as the location of
-your gsistat files in order to run the MinMon.  You can do this in
-your shell or (recommended) you may adapt one of the 
-run_[gdas|gfs|fv3rt1]_DE.sh scripts to your use.  
-
-The MinMon_DE.sh script will produce output files in your $TANKdir
-directory in the structure of suffix/$run.$pdy/$cyc/minmon/[data files].
-Once you have data here you can run the 
-[MinMon_package_location]/image_gen/html/[install script] to configure
-a web site for your experiment.
-
-The last step is to run the image generation script 
-[MinMon_package_location]/image_gen/ush/MinMon_Plt.sh.  Here too there
-are several plot_[gfs|gdas|fv3rt1]_IG.sh scripts which can be adapted
-to override the default values used by MinMon_Plt.sh.  
+   export VRFYMIN="YES".
 
 
+To use the package:
+
+1.  Run GSI-monitor/ush/build.sh.  This builds all necessary executables.
+
+2.  The GSI-monitor sets default values for necessary storage, work, and log file 
+locations in GSI-monitor/parm/Mon_config.  If you want to override the defaults
+the important settings are: 
+
+tankdir  -- the location for extracted data storage
+ptmp     -- log file location
+stmp     -- work space
+WEBUSER  -- user name on web server (emcrzdm)
+
+Note that these locations  are set for each machine.
+
+In src/Minimization_Monitor/parm/MinMon_user_settings:
+
+DO_ERROR_RPT -- switch controling data reporting (warnings).
+MAIL_TO      -- email address to which warnings will be sent.
+
+3.  Once you've run an experiment using global-workflow, extracted data should be in 
+your comrot/$PSLOT directory.  You can leave the data there or move it to your 
+$TANKDIR.  If you leave it in place you will have to specify the location for the 
+image generation and web site create scripts below.  If you would like to move the 
+data to your $TANKDIR location use this script: 
+
+GSI-monitor/src/Minimization_Monitor/data_extract/ush/MinMon_CP.sh 
+
+4.  There is no automatic web site generation script available (yet).  The necessary files
+to construct a web site are located in GSI-monitor/src/Minimization_Monitor/image_gen/html.  
+If you have any questions about this please contact me (edward.safford@noaa.gov).
+
+5.  Run the image generation.  Navigate to GSI-monitor/src/Minimization_Monitor/image_gen/ush
+and run:
+
+ ./MinMon_Plt.sh suffix -p|--pdate -r|--run -t|--tank
+
+	suffix       $NET value or the name of your parallel.  
+        -p|--pdate   Cycle time for which you wish to generate images. It must be in
+                        YYYYMMDDHH format.  This is the FINAL cycle for which images
+                        will be generated (i.e. plot pdate and ncyc cycles before it).
+        -r|--run     $RUN value --  gdas (default) or gfs.
+        -n|--ncyc    Number of cycles to be used in time-series plots.  If not
+                        specified the default value of 120 cycles is used.
+        -t|--tank    Location of the extracted data files.  This is likely to be your 
+                        comrot/$PSLOT directory.  This is only needed if your extraction
+                        was via global-workflow and data has NOT been copied to $TANKDIR.
+
+6.  If you're running on wcoss2 MinMon_Plt.sh will move the generated image files to the web 
+server (emcrzdm), provided you have password free access set up for your user account. 
+
+On all other machines you will have to manually move files from your $TANKDIR/imgn/$NET/$RUN/minmon
+directory to the server.
 
 
- 
+
+If you encounter problems please send me email and I'll be glad to help:
+      edward.safford@noaa.gov
+
