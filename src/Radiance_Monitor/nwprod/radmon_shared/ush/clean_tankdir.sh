@@ -11,7 +11,6 @@
 
    area=$1
    days_to_keep=$2
-   echo " area, days_to_keep = ${area}, ${days_to_keep}"
 
    #---------------------------------------------------------------
    #  Algorithm
@@ -25,14 +24,9 @@
       subdir=${RUN}
    fi
 
-   echo "TANKverf = ${TANKverf}"
-
    dirs=`ls ${TANKverf}`
-   echo "dirs = ${dirs}"
-
 
    if [[ ${area} = 'rgn' ]]; then
-      echo " in rgn"
       #----------------------------------------------- 
       #  Determine number of days from $PDATE for all 
       #  directories that start with "radmon".  Note 
@@ -43,7 +37,6 @@
          file_name="${dir##*/}"
          file="${file_name%.*}"
          file_extension="${file_name##*.}"
-         echo "file, file_extension = ${file}, ${file_extension}"
 
          if [ ${file} = ${subdir} ]; then
 
@@ -54,7 +47,6 @@
             # by the number of seconds/day.
             #
             days=$(( ($(date --date=${PDY} +%s) - $(date --date=${file_extension} +%s) )/(60*60*24) ))
-            echo "days = ${days}"
 
             #----------------------------------------
             #  rm anything older than $days_to_keep
@@ -62,7 +54,6 @@
             if [ $days -gt ${days_to_keep} ]; then
                 
                cycle_dir="${TANKverf}/${dir}"
-               echo "cycle_dir = ${cycle_dir}"
 
                if [[ -d ${cycle_dir} ]]; then
                   echo "RM ${cycle_dir}"

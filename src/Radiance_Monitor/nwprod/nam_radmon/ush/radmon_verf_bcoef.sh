@@ -1,36 +1,6 @@
 #!/bin/bash
 
-export PDATE=${1:-${PDATE:?}}
-
-netcdf_boolean=".false."
-if [[ $RADMON_NETCDF -eq 1 ]]; then
-   netcdf_boolean=".true."
-fi
-
-if [[ "$VERBOSE" = "YES" ]]; then
-   set -ax
-fi
-
-
-# Directories
-FIXgdas=${FIXgdas:-$(pwd)}
-EXECradmon=${EXECradmon:-$(pwd)}
-TANKverf_rad=${TANKverf_rad:-$(pwd)}
-
-# File names
-pgmout=${pgmout:-${jlogfile}}
-#touch $pgmout
-
-# Other variables
-RAD_AREA=${RAD_AREA:-rgn}
-REGIONAL_RR=${REGIONAL_RR:-1}
-rgnHH=${rgnHH:-}
-rgnTM=${rgnTM:-}
-SATYPE=${SATYPE:-}
-VERBOSE=${VERBOSE:-NO}
-#LITTLE_ENDIAN=${LITTLE_ENDIAN:-0}
-USE_ANL=${USE_ANL:-0}
-
+PDATE=${1:-${PDATE:?}}
 
 err=0
 bcoef_exec=radmon_bcoef.x
@@ -51,11 +21,8 @@ if [[ ! -s ./${bcoef_exec} || ! -s ./biascr.txt ]]; then
    err=4
 else
 
-
 #--------------------------------------------------------------------
 #   Run program for given time
-
-   export pgm=${bcoef_exec}
 
    iyy=`echo $PDATE | cut -c1-4`
    imm=`echo $PDATE | cut -c5-6`
@@ -80,21 +47,13 @@ else
          ctr=`expr $ctr + 1`
 
          if [[ $dtype == "anl" ]]; then
-            data_file=${type}_anl.${PDATE}.ieee_d
-            ctl_file=${type}_anl.ctl
-            bcoef_ctl=bcoef.${ctl_file}
+            bcoef_file=bcoef.${type}_anl.${PDATE}.ieee_d
+            bcoef_ctl=bcoef.${type}_anl.ctl
          else
-            data_file=${type}.${PDATE}.ieee_d
-            ctl_file=${type}.ctl
-            bcoef_ctl=bcoef.${ctl_file}
+            bcoef_file=bcoef.${type}.${PDATE}.ieee_d
+            bcoef_ctl=bcoef.${type}.ctl
          fi 
 
-         if [[ $REGIONAL_RR -eq 1 ]]; then
-            bcoef_file=${rgnHH}.bcoef.${data_file}.${rgnTM}
-         else
-            bcoef_file=bcoef.${data_file}
-         fi
- 
          if [[ -e ./input ]]; then
              rm ./input
          fi
@@ -113,13 +72,11 @@ cat << EOF > input
   suffix='${RADMON_SUFFIX}',
   gesanl='${dtype}',
   little_endian=${LITTLE_ENDIAN},
-  netcdf=${netcdf_boolean},
+  netcdf=${RADMON_NETCDF},
  /
 EOF
-#         startmsg
          ./${bcoef_exec} < input >> stdout.${type} 2>>errfile
-#         export err=$?; err_chk
-         if [[ $err -ne 0 ]]; then
+         if [[ $? -ne 0 ]]; then
             fail=`expr $fail + 1`
          fi
 
@@ -154,8 +111,8 @@ EOF
    if [[ $RAD_AREA = "rgn" ]]; then
       cwd=`pwd`
       cd ${TANKverf_rad}
-      tar -xf ${tar_file}.${Z}
-      rm ${tar_file}.${Z}
+      tar -xf ${tar_file}.gz
+      rm ${tar_file}.gz
       cd ${cwd}
    fi
 
@@ -163,13 +120,5 @@ EOF
       err=5
    fi
 fi
-
-
-################################################################################
-#  Post processing
-if [[ "$VERBOSE" = "YES" ]]; then
-   echo $(date) EXITING $0 with error code ${err} >&2
-fi
-
 
 exit ${err}

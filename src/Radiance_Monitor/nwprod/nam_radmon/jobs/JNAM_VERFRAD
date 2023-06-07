@@ -1,74 +1,84 @@
 #!/bin/sh
 
-echo `date` $0 `date -u` begin
+#
+# JNAM_VERFRAD
+#
+# This j-job is the RadMon's regional job script.  It extracts
+# RadMon data from GSI radstat files and stores it in binary
+# format.  
+#
+# These environment variables must be set in order to run this
+# job:
+#
+#    $MY_RADMON  -- Directory of top level of RadMon package.
+#    $PDY        -- YYYYMMDD of cycle to be processed
+#    $cyc        -- HH of cycle to be processed
+#    $TANKverf   -- Output location for extracted data files.  Output
+#                   will be located in $TANKverf/stats/regional/$NET.
+#    $NDATE      -- Should be set by loading module prod_util.
+#
+# Other important environment variables with defaults:
+#
+#    $NET        -- identifying source also termed $RADMON_SUFFIX
+#                   within the RadMon package.  Default:  'nam'.
+#    $HOMEradmon -- Directory containing supporting extraction 
+#                   scripts.  Default:  '$MY_RADMON/nwprod/radmon_shared'.
+#    $HOMEnam    -- Directory containing regional job and scripts.
+#                   Default:  '$MY_RADMON/nwprod/nam_radmon'.
+#    $CYCLE_INTERVAL -- Interval (in hours) between cycles.  Default is 1.
+#    $COMIN      -- Location of radstat files.  Default: 
+#                   '/lfs/h1/ops/prod/com/nam/v4.2'
+#
 
-export envir=${envir:-prod}
+envir=${envir:-prod}
 export REGIONAL_RR=${REGIONAL_RR:-1}
 
 ###############################
-# Specify NET and RUN name
-##############################
+# Default NET
+#
 export NET=${NET:-nam}
-export RUN=${RUN:-nam}
 
 ########################################################### 
 # obtain unique process id (pid) and make temp directories
 ###########################################################
-export pid=$$
-export outid=${outid:-"LL$job"}
-export jobid=${jobid:-"${outid}.o${pid}"}
+pid=$$
+outid=${outid:-"LL$job"}
+jobid=${jobid:-"${outid}.o${pid}"}
 
 export RADMON_SUFFIX=${RADMON_SUFFIX:-$NET}
 export DATAROOT=${DATAROOT:-/tmpnwprod2}
 export DATA=${DATA:-${DATAROOT}/${jobid}}
-echo "DATAROOT = $DATAROOT"
-echo "DATA = $DATA"
 
 mkdir -p $DATA
 cd $DATA
 
 export jlogfile=${jlogfile:-${COMROOT}/logs/jlogfiles/jlogfile.${job}.${pid}}
-echo "jlogfile = $jlogfile"
 
-####################################
-# Determine Job Output Name on System
-####################################
-export pgmerr=errfile
-export rgnHH=${rgnHH:-${cyc}z}
-export rgnTM=${rgnTM:-tm06}
-echo rgnHH = $rgnHH
+rgnHH=${rgnHH:-${cyc}z}
+rgnTM=${rgnTM:-tm06}
 
 ##############################################
 # Specify Execution Areas
 ##############################################
-#export HOMEnam=${HOMEnam:-${NWROOT}/nam_radmon.v2.0.0}  # need to use version here
+export HOMEradmon=${HOMEradmon:-${MY_RADMON}/nwprod/radmon_shared}
+export HOMEnam=${HOMEnam:-${MY_RADMON}/nwprod/nam_radmon}
 export SCRnam=${SCRnam:-${HOMEnam}/scripts}
-#export PARMnam=${PARMnam:-${HOMEnam}/parm}
-
-echo HOMEnam = $HOMEnam
-echo SRCnam = $SRCnam
+export FIXnam=${FIXnam:-${HOMEnam}/fix}
 
 #############################################
-# COMOUT - WHERE GSI OUTPUT RESIDES
 # TANKverf - WHERE OUTPUT DATA WILL RESIDE
 #############################################
 export TANKverf=${TANKverf:-/com/verf/${envir}}
 export TANKverf_rad=${TANKverf_rad:-${TANKverf}/radmon.${PDY}}
-export COM_IN=${COM_IN:-/com/${NET}/${envir}}
+export COM_IN=${COM_IN:-/lfs/h1/ops/${envir}/com/${NET}/v4.2}
 export COMIN=${COMIN:-$COM_IN/${RADMON_SUFFIX}.${PDY}}
 
-echo "TANKverf: $TANKverf"
+echo "PDY: $PDY"
+echo "cyc: $cyc"
 echo "TANKverf_rad: $TANKverf_rad"
-echo "COM_IN: $COM_IN"
 echo "COMIN: $COMIN"
 
 mkdir -p -m 775 $TANKverf_rad
-
-echo "" 
-#echo "" 
-#env
-#echo "" 
-echo "" 
 
 ########################################
 # Set necessary environment variables
@@ -76,6 +86,13 @@ echo ""
 export RAD_AREA=${RAD_AREA:-rgn}
 export CYCLE_INTERVAL=${CYCLE_INTERVAL:-1}
 
+############################################
+#  determine PDY and cyc for previous cycle
+#############################################
+prevdate=$(${NDATE} -${CYCLE_INTERVAL} ${PDY}${cyc})
+export P_PDY=${prevdate:0:8}
+export p_cyc=${prevdate:8:2}
+export TANKverf_radM1=${TANKverf_radM1:-${TANKverf}/radmon.${P_PDY}}
 
 #####################################################################
 # Note:  The organization to the radstat catch-up files follows
@@ -133,9 +150,11 @@ case $cyc in
        export rgnTM=tm01;;
 esac
 
-export biascr=${biascr:-$COMIN/${RADMON_SUFFIX}.${rgnHH}.satbiasc.${rgnTM}}
+export biascr=${biascr:-$COMIN/${RADMON_SUFFIX}.${rgnHH}.satbias.${rgnTM}}
 export radstat=${radstat:-$COMIN/${RADMON_SUFFIX}.${rgnHH}.radstat.${rgnTM}}
 
+echo "radstat: $radstat"
+echo "biascr:  $biascr"
 
 ########################################################
 # Execute the script.
@@ -146,11 +165,9 @@ ${RADMONSH:-${SCRnam}/exnam_verfrad.sh} ${PDY} ${cyc}
 ################################
 # Remove the Working Directory
 ################################
-#KEEPDATA=${KEEPDATA:-NO}
-#cd $DATAROOT
-#if [ ${KEEPDATA} = NO ] ; then 
-#  rm -rf $DATA 
-#fi
-
-#date
+KEEPDATA=${KEEPDATA:-NO}
+if [ ${KEEPDATA} = NO ] ; then 
+  cd $DATAROOT
+  rm -rf $DATA 
+fi
 

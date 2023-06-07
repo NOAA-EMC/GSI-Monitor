@@ -110,9 +110,10 @@ this_dir=`dirname $0`
 #-----------------------------------------------------------
 #  Process command line arguments.
 #
-radstat_location=/gpfs/dell1/nco/ops/com/nam/prod
+radstat_location=/lfs/h1/ops/prod/com/nam/v4.2
 cycle_interval=1
 run=nam
+pdate=""
 
 while [[ $# -ge 1 ]]
 do
@@ -210,7 +211,8 @@ jobname=${jobname:-RadMon_DE_${RADMON_SUFFIX}}
 #       hrs to determine the next cycle.  
 #--------------------------------------------------------------------
 
-if [[ ${pdate} = "" ]]; then
+if [[ -z "${pdate}" ]]; then
+   echo "getting pdate from TANKVERF"
    ldate=`${DE_SCRIPTS}/find_cycle.pl --cyc 1 --dir ${TANKverf}`
 
    if [[ ${#ldate} -ne 10 ]]; then
@@ -252,6 +254,7 @@ set_hr_tm
 #  If processing on of the last 5 cycles for the day, look for 
 #  them in the next day's directory.
 #------------------------------------------------------------------
+radstat=""
 if [[ -e ${radstat_location}/${RADMON_SUFFIX}.prod.${pdate}_radstat ]]; then
    echo " option 3"
    export radstat=${radstat_location}/${RADMON_SUFFIX}.prod.${pdate}_radstat
@@ -270,6 +273,8 @@ elif [[ -e ${radstat_location}/${run}.${pdy}/${RADMON_SUFFIX}.${rgnHH}.radstat.$
    export biascr=${radstat_location}/${run}.${pdy}/${RADMON_SUFFIX}.${rgnHH}.satbias.${rgnTM}
 
 fi
+
+
 
 if [[ ! -e ${radstat} ]]; then
    echo "Unable to locate radstat file ${radstat}"

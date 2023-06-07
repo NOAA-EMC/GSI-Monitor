@@ -1,20 +1,9 @@
 #!/bin/bash
 
+echo "--> radmon_verf_time.sh"
+
 #  Command line arguments.
 export PDATE=${1:-${PDATE:?}}
-
-if [[ "$VERBOSE" = "YES" ]]; then
-   set -ax
-fi
-
-# Directories
-### verify these are ok and rm these redefinitions
-FIXgdas=${FIXgdas:-$(pwd)}            
-EXECradmon=${EXECradmon:-$(pwd)}
-TANKverf_rad=${TANKverf_rad:-$(pwd)}
-echo "FIXgdas: $FIXgdas"
-echo "EXECradmon: $EXECradmon"
-echo "TANKverf_rad: $TANKverf_rad"
 
 radmon_err_rpt=${radmon_err_rpt:-${USHradmon}/radmon_err_rpt.sh}
 base_file=${base_file:-$FIXgdas/gdas_radmon_base.tar}
@@ -35,20 +24,7 @@ chan_hdr=chan_hdr.txt
 count_hdr=count_hdr.txt
 count_err=count_err.txt
 
-netcdf_boolean=".false."
-if [[ $RADMON_NETCDF -eq 1 ]]; then
-   netcdf_boolean=".true."
-fi
-
-DO_DATA_RPT=${DO_DATA_RPT:-1}
-RAD_AREA=${RAD_AREA:-glb}
-REGIONAL_RR=${REGIONAL_RR:-0}
-rgnHH=${rgnHH:-}
-rgnTM=${rgnTM:-}
-SATYPE=${SATYPE:-}
-
 time_exec=radmon_time.x
-USE_ANL=${USE_ANL:-0}
 err=0 
 
 if [[ $USE_ANL -eq 1 ]]; then
@@ -76,9 +52,9 @@ CYCLE=$cyc
 local_base="local_base"
 if [[ $DO_DATA_RPT -eq 1 ]]; then
 
-   if [[ -e ${base_file}.${Z} ]]; then
-      $NCP ${base_file}.${Z}  ./${local_base}.{Z}
-      ${UNCOMPRESS} ${local_base}.${Z}
+   if [[ -e ${base_file}.gz ]]; then
+      $NCP ${base_file}.gz  ./${local_base}.gz
+      ${UNCOMPRESS} ${local_base}.gz
    else
       $NCP ${base_file}  ./${local_base}
    fi
@@ -96,7 +72,6 @@ if [[ $err -eq 0 ]]; then
    ctr=0
    fail=0
 
-   export pgm=${time_exec}
 #--------------------------------------------------------------------
 #   Loop over each entry in SATYPE
 #--------------------------------------------------------------------
@@ -116,19 +91,11 @@ if [[ $err -eq 0 ]]; then
          fi
 
          if [[ $dtype == "anl" ]]; then
-            data_file=${type}_anl.${PDATE}.ieee_d
-            ctl_file=${type}_anl.ctl
-            time_ctl=time.${ctl_file}
+            time_file=time.${type}_anl.${PDATE}.ieee_d
+            time_ctl=time.${type}_anl.ctl
          else
-            data_file=${type}.${PDATE}.ieee_d
-            ctl_file=${type}.ctl
-            time_ctl=time.${ctl_file}
-         fi
-
-         if [[ $REGIONAL_RR -eq 1 ]]; then
-            time_file=${rgnHH}.time.${data_file}.${rgnTM}
-         else
-            time_file=time.${data_file}
+            time_file=time.${type}.${PDATE}.ieee_d
+            time_ctl=time.${type}.ctl
          fi
 
 #--------------------------------------------------------------------
@@ -149,13 +116,12 @@ cat << EOF > input
   gesanl='${dtype}',
   little_endian=${LITTLE_ENDIAN},
   rad_area='${RAD_AREA}',
-  netcdf=${netcdf_boolean},
+  netcdf=${RADMON_NETCDF},
  /
 EOF
 
          ./${time_exec} < input >>   stdout.${type} 2>>errfile
-         
-         if [[ $err -ne 0 ]]; then
+         if [[ $? -ne 0 ]]; then
             fail=`expr $fail + 1`
          fi
 
@@ -182,13 +148,13 @@ EOF
    tar_file=radmon_time.tar
    tar -cf $tar_file time*.ieee_d* time*.ctl*
    ${COMPRESS} ${tar_file}
-   mv $tar_file.${Z} ${TANKverf_rad}/.
+   mv $tar_file.gz ${TANKverf_rad}/.
 
    if [[ $RAD_AREA = "rgn" ]]; then
       cwd=`pwd`
       cd ${TANKverf_rad}
-      tar -xf ${tar_file}.${Z}
-       rm ${tar_file}.${Z}
+      tar -xf ${tar_file}.gz
+      rm ${tar_file}.gz
       cd ${cwd}
    fi
 
@@ -208,6 +174,7 @@ fi
 ####################################################################
 
 if [[ $DO_DATA_RPT -eq 1 ]]; then
+echo "STARTING DATA_RPT"
 
 #---------------------------
 #  build report disclaimer 
@@ -273,12 +240,12 @@ EOF
    bad_chan=bad_chan.${PDATE}
    low_count=low_count.${PDATE}
 
-   qdate=`$NDATE -${CYCLE_INTERVAL} $PDATE`
-   pday=`echo $qdate | cut -c1-8`
+#   qdate=`$NDATE -${CYCLE_INTERVAL} $PDATE`
+#   pday=`echo $qdate | cut -c1-8`
    
-   prev_bad_pen=bad_pen.${qdate}
-   prev_bad_chan=bad_chan.${qdate}
-   prev_low_count=low_count.${qdate}
+   prev_bad_pen=bad_pen.${P_PDY}${p_cyc}
+   prev_bad_chan=bad_chan.${P_PDY}${p_cyc}
+   prev_low_count=low_count.${P_PDY}${p_cyc}
 
    prev_bad_pen=${TANKverf_radM1}/${prev_bad_pen}
    prev_bad_chan=${TANKverf_radM1}/${prev_bad_chan}
@@ -366,12 +333,10 @@ EOF
 
          echo DOING ERROR REPORTING
 
-
          cat << EOF > $report
 Radiance Monitor warning report
  
   Net:   ${RADMON_SUFFIX}
-  Run:   ${RUN}
   Cycle: $PDATE
 
 EOF
@@ -479,10 +444,5 @@ fi
    #-------------------------------------------------------------------
    ################################################################################
 
-   ################################################################################
-   #  Post processing
-   if [[ "$VERBOSE" = "YES" ]]; then
-      echo $(date) EXITING $0 error code ${err} >&2
-   fi
-
+echo "<-- radmon_verf_time.sh"
 exit ${err}

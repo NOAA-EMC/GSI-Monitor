@@ -3,48 +3,20 @@
 # Run data extract/validation for regional radiance diag data
 echo "---> exnam_vrfyrad.sh.ecf"
 
-export RUN_ENVIR=${RUN_ENVIR:-nco}
-export NET=${NET:-nam}
-export RUN=${RUN:-nam}
-#export envir=${envir:-prod}
-
 #  Command line arguments
 export PDY=${1:-${PDY:?}} 
 export cyc=${2:-${cyc:?}}
 
-#  Directories
-#export DATA=${DATA:-$(pwd)}
-#export COM_IN=${COMROOT}/${NET}/${envir}
-#export COMIN=${COMIN:-$COM_IN/${RUN}.${PDY}}
-
-export HOMEnam=${HOMEnam:-${NWROOT}/nam.${nam_ver}}
-export FIXnam=${FIXnam:-${HOMEnam}/fix}
-export USHnam=${USHnam:-${HOMEnam}/ush}
-
-#export HOMEradmon=${HOMEradmon:-/${NWROOT}/radmon_shared.v${radmon_shared_ver}}
-#export EXECradmon=${EXECradmon:-$HOMEradmon/exec}
-#export FIXradmon=${FIXradmon:-${HOMEradmon}/fix}
+USHnam=${USHnam:-${HOMEnam}/ush}
 export USHradmon=${USHradmon:-$HOMEradmon/ush}
 
 #  Filenames
-#export biascr=${biascr:-$COMOUT/${RADMON_SUFFIX}.t${cyc}z.satbias.${rgnTM}}
-#export radstat=${radstat:-$COMOUT/${RADMON_SUFFIX}.t${cyc}z.radstat.${rgnTM}}
 export satype_file=${satype_file:-nam_radmon_satype.txt}
 export base_file=${base_file:-${FIXnam}/nam_radmon_base.tar}
 
 #  Other variables
-#export RAD_AREA=${RAD_AREA:-rgn}
-export MAKE_CTL=${MAKE_CTL:-1}
-export MAKE_DATA=${MAKE_DATA:-1}
-export USE_ANL=${USE_ANL:-1}
 export PDATE=${PDY}${cyc}
-export DO_DIAG_RPT=${DO_DIAG_RPT:-1}
-export DO_DATA_RPT=${DO_DATA_RPT:-1}
 export NCP=${NCP:-/bin/cp}
-
-# RM this
-export NDATE=${NDATE:-/nwprod/util/exec/ndate}
-echo "NDATE = $NDATE"
 
 export Z=${Z:-"gz"}
 export UNCOMPRESS=${UNCOMPRESS:-"gunzip -f"}
@@ -58,9 +30,6 @@ export UNCOMPRESS=${UNCOMPRESS:-"gunzip -f"}
 #           . . .
 #       t00z.radstat.tm01  contents is dated 2016031723
 #       t00z.radstat.tm00  contents is dated 2016031800
-#
-export TANKverf=${TANKverf:-/com/${NET}/prod}
-export TANKverf_rad=${TANKverf_rad:-${TANKverf}/radmon.${PDY}}
 
 ###########################################################################
 # ensure work and TANK dirs exist, verify radstat and biascr are available
@@ -68,20 +37,6 @@ if [[ ! -d ${DATA} ]]; then
    mkdir $DATA
 fi
 cd $DATA
-
-if [[ ! -d ${TANKverf_rad} ]]; then
-   mkdir -p $TANKverf_rad
-fi
-
-if [[ "$VERBOSE" = "YES" ]]; then
-   if [[ -s ${radstat} ]]; then
-      echo ${radstat} is available
-   fi
-   if [[ -s ${biascr} ]]; then
-      echo ${biascr} is available
-   fi
-fi
-#####################################################################
 
 data_available=0
 if [[ -s ${radstat} && -s ${biascr} ]]; then
@@ -105,40 +60,21 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    #  cases write it back out to the radmon.$PDY directory.  Add any
    #  new sources to the list before writing back out.
    #------------------------------------------------------------------
-
    radstat_satype=`ls d*ges* | awk -F_ '{ print $2 "_" $3 }'`
-#   if [[ "${VERBOSE}" = "YES" ]]; then
-#      echo ${radstat_satype}
-#   fi
 
-   echo satype_file = ${satype_file}
- 
    #------------------------------------------------------------------
-   #  Get previous cycle's date, and look for the satype_file.  Using 
-   #  the previous cycle will get us the previous day's directory if 
-   #  the cycle being processed is 00z.
+   #  Look for the $satype_file from the info directory or $FIXnam
+   #  in that order.  
    #------------------------------------------------------------------
-   if [[ $CYC = "00" ]]; then
-      pday=${PDYm1}
-   else
-      pday=${PDY}
-   fi
-
-#   echo "FIXnam = ${FIXnam}"
-
-   if [[ ! -e ${TANKverf}/radmon.${pday}/${satype_file} ]]; then
-      if [[ ! -e ${FIXnam}/${satype_file} ]]; then 
-         export SATYPE=${radstat_satype}
-#         if [[ "$VERBOSE" = "YES" ]]; then
-#            echo " ${satype_file} not found.  Adding it now using radstat file contents."
-#         fi
-      else
+   if [[ ! -e ${TANKverf}/info/${satype_file} ]]; then
+      if [[ -e ${FIXnam}/${satype_file} ]]; then 
          export SATYPE=`cat ${FIXnam}/${satype_file}`
+      else
+         export SATYPE=${radstat_satype}
       fi
    else
-      export SATYPE=`cat ${TANKverf}/radmon.${pday}/${satype_file}`
+      export SATYPE=`cat ${TANKverf}/info/${satype_file}`
    fi
-
 
    #-------------------------------------------------------------
    #  Update the SATYPE if any new sat/instrument was 
@@ -150,9 +86,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
       test=`echo ${SATYPE} | grep ${type} | wc -l`
 
       if [[ ${test} -eq 0 ]]; then
-         if [[ "$VERBOSE" = "YES" ]]; then
-            echo "FOUND ${type} in radstat file but not in SATYPE list.  Adding it now."
-         fi
+         echo "FOUND ${type} in radstat file but not in SATYPE list.  Adding it now."
          satype_changes=1
          new_satype="${new_satype} ${type}"
       fi
@@ -168,35 +102,39 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    #------------------------------------------------------------------
    # Determine bin or nc4 diag files, rename, and uncompress
    #------------------------------------------------------------------
-
-   netcdf=0
-
+   netcdf=.false.
    for type in ${SATYPE}; do
       if [[ -e ./diag_${type}_ges.${PDATE}.nc4.${Z} ]]; then
-         netcdf=1; break
+         netcdf=.true.; break
       fi
    done
-
    export RADMON_NETCDF=$netcdf
-   echo "RADMON_NETCDF = $RADMON_NETCDF"
 
    for type in ${SATYPE}; do
-#      echo "type = $type"
-#      echo dir_ls=`ls `
-#      echo dir_ls = $dir_ls
 
-      if [[ ! -e ./diag_${type}_ges.${PDATE}.nc4.${Z} ]]; then
-         edited_satype="$(echo $SATYPE | tr ' ' '\n' | sed "/${type}/d")"
-         echo "REMOVED:  $type from SATYPE"
-         export SATYPE=${edited_satype}
+      if [[ RADMON_NETCDF == ".true." ]]; then
 
-      else 
-         mv ./diag_${type}_ges.${PDATE}.nc4.${Z} ${type}.${Z}
+         if [[ ! -e ./diag_${type}_ges.${PDATE}.nc4.${Z} ]]; then
+            edited_satype="$(echo $SATYPE | tr ' ' '\n' | sed "/${type}/d")"
+            echo "REMOVED:  $type from SATYPE"
+            export SATYPE=${edited_satype}
 
-         ${UNCOMPRESS} ./${type}.${Z}
-     
-         if [[ $USE_ANL -eq 1 ]]; then
+         else 
+            mv ./diag_${type}_ges.${PDATE}.nc4.${Z} ${type}.${Z}
+            ${UNCOMPRESS} ./${type}.${Z}
             mv ./diag_${type}_anl.${PDATE}.*${Z} ${type}_anl.${Z}
+            ${UNCOMPRESS} ./${type}_anl.${Z}
+         fi
+   
+      else	  
+         if [[ ! -e ./diag_${type}_ges.${PDATE}.${Z} ]]; then
+            edited_satype="$(echo $SATYPE | tr ' ' '\n' | sed "/${type}/d")"
+            echo "REMOVED:  $type from SATYPE"
+            export SATYPE=${edited_satype}
+         else	
+            mv ./diag_${type}_ges.${PDATE}.${Z} ${type}.${Z}
+            ${UNCOMPRESS} ./${type}.${Z}
+            mv ./diag_${type}_anl.${PDATE}.${Z} ${type}_anl.${Z}
             ${UNCOMPRESS} ./${type}_anl.${Z}
          fi
       fi
@@ -206,7 +144,6 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    #------------------------------------------------------------------
    #   Run the child sccripts.
    #------------------------------------------------------------------
-   export shared_scaninfo=$FIXnam/nam_radmon_scaninfo.txt
    ${USHnam}/radmon_verf_angle.sh ${PDATE}
    rc_angle=$?
 
@@ -222,11 +159,11 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
    #--------------------------------------
    #  optionally run clean_tankdir script
    #
-#   if [[ ${CLEAN_TANKVERF} -eq 1 ]]; then
-#      ${USHradmon}/clean_tankdir.sh rgn 10 
-#      rc_clean_tankdir=$?
-#      echo "rc_clean_tankdir = $rc_clean_tankdir"
-#   fi
+   if [[ ${CLEAN_TANKVERF} -eq 1 ]]; then
+      ${USHradmon}/clean_tankdir.sh rgn 20 
+      rc_clean_tankdir=$?
+      echo "rc_clean_tankdir = $rc_clean_tankdir"
+   fi
 
 fi
 
@@ -246,12 +183,6 @@ elif [[ $rc_time -ne 0 ]]; then
    err=$rc_time
 fi
 
-if [[ "$VERBOSE" = "YES" ]]; then
-   echo "end exnam_vrfyrad.sh.ecf, exit value = ${err}"
-fi
-
-
 echo "<--- exnam_vrfyrad.sh.ecf"
-set +x
 exit ${err}
 
