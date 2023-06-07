@@ -30,7 +30,6 @@ set -ax
    PDATE=$1
 
 
-   sat="sndrd4_g15"
    iyy=`echo $PDATE | cut -c1-4`
    imm=`echo $PDATE | cut -c5-6`
    idd=`echo $PDATE | cut -c7-8`
@@ -44,11 +43,10 @@ set -ax
    if [[ -s ${TANKverf}/info/${base_file} || \
 	 -s ${TANKverf}/info/${base_file}.${Z} ]]; then
       cp ${TANKverf}/info/${base_file}* .
-   fi
-
-   if [[ ! -s ${base_file} && ! -s ${base_file}.${Z} ]]; then
+   else 
       cp ${FIXgdas}/${base_file}* .
    fi
+
    if [[ ! -s ${base_file} && ! -s ${base_file}.${Z} ]]; then
       echo "WARNING:  Unable to locate ${base_file}"
    fi
@@ -60,11 +58,14 @@ set -ax
    tar -xvf ${base_file}
    rm -f ${base_file}
 
-#
-#  Get satype list, loop over satype
-#
-   PDATE=${iyy}${imm}${idd}${ihh}
-   echo PDATE = $PDATE
+   if [[ -e radmon_time.tar.${Z} ]]; then
+      gunzip radmon_time.tar.${Z}
+   fi
+
+   if [[ -e radmon_time.tar ]]; then
+      tar -xvf radmon_time.tar
+      gzip radmon_time.tar
+   fi
 
    test_list=`ls time.*.${PDATE}.ieee_d*`
    for test in ${test_list}; do
@@ -120,10 +121,17 @@ EOF
       ./radmon_validate_tm.x < input >   stdout.validate.$sat.$ihh
 
 
-      ${COMPRESS} time.${sat}.${PDATE}.ieee_d
+      if [[ -e radmon_time.tar || -e radmon_time.tar.${Z} ]]; then
+         rm time.${sat}.${PDATE}.ieee_d
+         rm time.${sat}.ctl
+      else
+         ${COMPRESS} time.${sat}.${PDATE}.ieee_d
+         ${COMPRESS} time.${sat}.ctl.ieee_d
+      fi
 
    done              #  end loop over SATYPE_LIST
 
    rm -f *.base
+   rm -f ./input
 
 echo "<-- end validate.sh"

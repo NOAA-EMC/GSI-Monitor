@@ -252,6 +252,9 @@ if [[ $exit_value == 0 ]]; then
    rm -f radmon_err_rpt.sh  
 
    nfile_dest=`ls -l ${dest_dir}/*${PDATE}*ieee_d* | egrep -c '^-'`
+   if [[ ${nfile_dest} -le 0 ]]; then
+      nfile_dest=`ls -l ${dest_dir}/radmon_*tar* | egrep -c '^-'`
+   fi
 
    if [[ exit_value -eq 0 && $nfile_src -ne $nfile_dest ]]; then
       exit_value=6 
