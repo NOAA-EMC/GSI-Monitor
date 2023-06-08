@@ -143,9 +143,6 @@ program angle
 
   write(6,*)'diag_rad =',diag_rad
   write(6,*)'data_file=',data_file
-!  write(6,*)'suffix   =',suffix
-!  write(6,*)'ctl_file =',ctl_file
-!  write(6,*)'little_endian =', little_endian
 
  
   !-----------------------------------------------------
@@ -185,10 +182,8 @@ program angle
   jiter  = header_fix%jiter
   angord = header_fix%angord
  
-!  write(6,*)'satype,satid,n_chan,angord=',satype,' ',dplat,' ',n_chan,' ',angord
 
   string = trim(satype) //'_'// trim(dplat)
-!  write(6,*)'string,satname=',string,' ',satname
   if ( trim(string) /= trim(satname) ) then
      write(6,*)'***ERROR*** inconsistent instrument types'
      write(6,*)'  satname,string  =',satname,' ',string
@@ -199,7 +194,6 @@ program angle
    open(iscan,file='scaninfo.txt',form='formatted')
   do 
    read(iscan,1000,IOSTAT=iflag) cflg,satscan_sis,start,step,nstep
-!   write(6,*) 'satscan_sis,start,step,nstep=',satscan_sis,start,step,nstep
    if( iflag /= 0 ) exit
    if(trim(satname) == trim(satscan_sis)) exit
   enddo
@@ -209,8 +203,6 @@ program angle
 
 
 ! Allocate arrays to hold observational information
-!  write(6,*)' '
-!  write(6,*)'allocate arrays'
   allocate (io_chan(n_chan), nu_chan(n_chan), wavenumbr(n_chan), &
        error(n_chan), use(n_chan), frequency(n_chan))
   allocate (timang(mstep,n_chan))
@@ -256,7 +248,6 @@ program angle
         end do
      end do
   end do
-!  write(6,*) 'arrays zeroed'
   
 ! Note:  timang has been deprecated and the satang file is no longer 
 !   used.  See the plot_angle_sep.*.gs scripts for how the timang
@@ -359,7 +350,6 @@ program angle
            jsub(2)=imixed
            nsub=2
            nnmixed=nnmixed+1
-!           write(6,*)'data_fix%land_frac,water,snow,ice = ',data_fix%land_frac, data_fix%water_frac, data_fix%snow_frac, data_fix%ice_frac
         end if
      end if
 
@@ -383,10 +373,6 @@ program angle
            cor_tot(1) =  (data_chan(j)%omgnbc - data_chan(j)%omgbc)
            nbc_omg(1) = - (data_chan(j)%omgnbc)
            bc_omg(1)  = - (data_chan(j)%omgbc)
-
-!           if ( trim(rad_area) == 'rgn' ) then
-!              write(6,*) 'chan,pen,cor_tot(1),nbc_omg(1),bc_omb(1) = ', j,pen,cor_tot(1),nbc_omg(1),bc_omg(1)
-!           endif
 
            cor_tot(2) =  (data_chan(j)%omgnbc - data_chan(j)%omgbc)**2
            nbc_omg(2) =  (data_chan(j)%omgnbc)**2
@@ -480,13 +466,10 @@ program angle
   write(6,*)'read in ',iread,' obs ',rread
   write(6,*)' '
 
-!  write(6,*)'nwater, nland, nice, nsnow, nmixed, ntotal = ', nwater, nland, nice, nsnow, nmixed, ntotal
   nntotal=nnwater+nnland+nnsnow+nnmixed
-!  write(6,*)'nnwater, nnland, nnsnow, nnmixed, nntotal = ', nnwater, nnland, nnsnow, nnmixed, nntotal
 
 
   ! Create Control file
-!  write(6,*)'call create_ctl_angle'
   if ( trim(gesanl) == 'ges' ) then
      dfile = trim(satname)
   else 
@@ -565,7 +548,6 @@ program angle
 
 ! Deallocate arrays
   write(6,*)' '
-!  write(6,*)'deallocate arrays'
 
   if(allocated(penalty))         deallocate (penalty)
   if(allocated(io_chan))         deallocate (io_chan)

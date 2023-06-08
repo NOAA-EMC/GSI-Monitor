@@ -60,8 +60,13 @@ for type in ${SATYPE}; do
          #-------------------------
          #  Locate $ieee_src 
          #
-	 ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${test_day} \
-		   --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
+	 if [[ ${RAD_AREA} == 'rgn' ]]; then
+            pdy=`echo ${test_day}|cut -c1-8`
+            ieee_src=${TANKverf}/radmon.${pdy} 
+         else
+   	    ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${test_day} \
+	   	      --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
+         fi
 
          using_tar=0
 	 if [[ -d ${ieee_src} ]]; then
@@ -110,7 +115,7 @@ for type in ${SATYPE}; do
              
          fi
       fi
-
+     
       if [[ ${found} -eq 0 ]]; then
          test_day=`$NDATE -24 ${test_day}`
          ((ctr--))
@@ -137,8 +142,6 @@ fi
 for type in ${rm_list}; do
    SATYPE=${SATYPE//$type/}
 done
-
-echo SATYPE = $SATYPE
 
 #---------------------------------------------------------------
 #  Sort out the bigSATLIST types using the number of channels.

@@ -1,7 +1,7 @@
 #! /usr/bin/perl
 
 #-----------------------------------------------------------------------
-#  find_cycle.pl
+#  rgn_find_cycle.pl
 #
 #    Arguments:
 #       --dir     : Required string value containing  $TANKdir/$SUFFIX.

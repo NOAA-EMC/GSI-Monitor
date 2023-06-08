@@ -46,7 +46,7 @@ else
 
       for dtype in ${gesanl}; do
 
-         ctr=`expr $ctr + 1`
+         ctr=$((ctr+1))
 
          if [[ $dtype == "anl" ]]; then
             angl_file=angle.${type}_anl.${PDATE}.ieee_d
@@ -103,7 +103,7 @@ EOF
    done    # for type in ${SATYPE} loop
 
 
-   ${USHradmon}/rstprod.sh
+   ${USHnam}/rstprod.sh
 
    echo TANKverf_rad = $TANKverf_rad
    

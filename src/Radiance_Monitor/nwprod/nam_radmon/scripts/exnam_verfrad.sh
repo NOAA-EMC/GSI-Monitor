@@ -7,7 +7,7 @@ echo "---> exnam_vrfyrad.sh.ecf"
 export PDY=${1:-${PDY:?}} 
 export cyc=${2:-${cyc:?}}
 
-USHnam=${USHnam:-${HOMEnam}/ush}
+export USHnam=${USHnam:-${HOMEnam}/ush}
 export USHradmon=${USHradmon:-$HOMEradmon/ush}
 
 #  Filenames

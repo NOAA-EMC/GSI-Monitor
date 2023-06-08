@@ -213,7 +213,7 @@ jobname=${jobname:-RadMon_DE_${RADMON_SUFFIX}}
 
 if [[ -z "${pdate}" ]]; then
    echo "getting pdate from TANKVERF"
-   ldate=`${DE_SCRIPTS}/find_cycle.pl --cyc 1 --dir ${TANKverf}`
+   ldate=`${MON_USH}/rgn_find_cycle.pl --cyc 1 --dir ${TANKverf}`
 
    if [[ ${#ldate} -ne 10 ]]; then
       echo "ERROR:  Unable to locate any previous cycle's data files"
@@ -292,7 +292,7 @@ export PDATE=${pdate}
 export PDY=`echo $PDATE|cut -c1-8`
 export cyc=`echo $PDATE|cut -c9-10`
 
-export DATA=${DATA:-${MON_STMP}/${RADMON_SUFFIX}/radmon/DE_${PDATE}}  # this should be WORKDIR
+export DATA=${DATA:-${MON_STMP}/${RADMON_SUFFIX}/radmon/DE_${PDATE}} 
 
 cd ${MON_STMP}
 rm -rf ${DATA}

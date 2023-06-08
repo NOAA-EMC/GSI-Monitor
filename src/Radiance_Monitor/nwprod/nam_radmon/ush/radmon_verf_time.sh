@@ -5,7 +5,7 @@ echo "--> radmon_verf_time.sh"
 #  Command line arguments.
 export PDATE=${1:-${PDATE:?}}
 
-radmon_err_rpt=${radmon_err_rpt:-${USHradmon}/radmon_err_rpt.sh}
+radmon_err_rpt=${radmon_err_rpt:-${USHnam}/radmon_err_rpt.sh}
 base_file=${base_file:-$FIXgdas/gdas_radmon_base.tar}
 report=report.txt
 disclaimer=disclaimer.txt
@@ -82,7 +82,7 @@ if [[ $err -eq 0 ]]; then
          continue
       fi
 
-      ctr=`expr $ctr + 1`
+      ctr=$((ctr+1))
 
       for dtype in ${gesanl}; do
 
@@ -122,7 +122,7 @@ EOF
 
          ./${time_exec} < input >>   stdout.${type} 2>>errfile
          if [[ $? -ne 0 ]]; then
-            fail=`expr $fail + 1`
+            fail=$((fail+1))
          fi
 
 #-------------------------------------------------------------------
@@ -143,7 +143,7 @@ EOF
    done
 
 
-   ${USHradmon}/rstprod.sh
+   ${USHnam}/rstprod.sh
 
    tar_file=radmon_time.tar
    tar -cf $tar_file time*.ieee_d* time*.ctl*
@@ -158,7 +158,7 @@ EOF
       cd ${cwd}
    fi
 
-   if [[ $fail -eq $ctr || $fail -gt $ctr  ]]; then
+   if [[ $fail -ge $ctr ]]; then
       echo "fail, ctr = $fail, $ctr"
       err=10
    fi

@@ -44,7 +44,7 @@ else
 
       for dtype in ${gesanl}; do
 
-         ctr=`expr $ctr + 1`
+         ctr=$((ctr+1))
 
          if [[ $dtype == "anl" ]]; then
             bcoef_file=bcoef.${type}_anl.${PDATE}.ieee_d
@@ -101,7 +101,7 @@ EOF
    done     # type in $SATYPE loop
 
 
-   ${USHradmon}/rstprod.sh
+   ${USHnam}/rstprod.sh
 
    tar_file=radmon_bcoef.tar
    tar -cf $tar_file bcoef*.ieee_d* bcoef*.ctl*

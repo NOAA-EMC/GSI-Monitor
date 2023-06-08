@@ -53,8 +53,13 @@ for type in ${SATYPE}; do
       #  Locate the ieee_d files, first checking for a tar file,
       #  and copy them locally.
       #
-      ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${cdate} \
-	        --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
+      if [[ ${RAD_AREA} == 'rgn' ]]; then
+         pdy=`echo ${cdate}|cut -c1-8`
+	 ieee_src=${TANKverf}/radmon.${pdy} 
+      else
+         ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${cdate} \
+	           --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
+      fi
 
       if [[ -d ${ieee_src} ]]; then
          if [[ -e ${ieee_src}/radmon_bcoef.tar && -e ${ieee_src}/radmon_bcoef.tar.${Z} ]]; then
