@@ -161,7 +161,6 @@ program angle
 
 !-------------------------------- 
 ! Attempt to read header
-!  write(6,*)'call read_diag_header'
   call read_radiag_header( lndiag, npred_radiag, retrieval,&
         header_fix, header_chan, data_name, iflag )
 !
@@ -272,7 +271,6 @@ program angle
         
 
 
-!  write(6,*)'beginning read entries in diag file'
   nwater = 0; nnwater=0
   nice   = 0
   nsnow  = 0; nnsnow=0
@@ -317,12 +315,9 @@ program angle
 
         if (rlon>180.) rlon = rlon - 360.
         if (ipos<1) then
-!           write(6,*)'scan position less than 1.  ipos=',ipos
            ipos=1
         endif
         if (ipos>nstep) then
-!           write(6,*)'scan position > nstep.  ipos,nstep,',&
-!                ipos,nstep
            ipos=nstep
         endif
         rread  = rread + 1.0 
@@ -427,9 +422,6 @@ program angle
               nsub = 1 
            endif
            do i=1,nsub
-!              if ( trim(rad_area) == 'rgn' ) then
-!                 write(6,*) 'INSIDE i 1 to nsub do loop'
-!              endif
               k=jsub(i)
               count(ipos,j,k)  = count(ipos,j,k) + 1.0 
               penalty(ipos,j,k) = penalty(ipos,j,k) + pen

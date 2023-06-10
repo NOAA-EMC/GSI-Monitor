@@ -24,7 +24,7 @@ function usage {
 }
 
 
-echo start RadMon_IG_rgn.sh
+echo "start RadMon_IG_rgn.sh"
 
 
 nargs=$#
@@ -208,7 +208,6 @@ if [[ ! -d ${PLOT_WORK_DIR} ]]; then
 fi
 
 cd $PLOT_WORK_DIR
-echo "PLOT_WORK_DIR: $PLOT_WORK_DIR"
 
 #------------------------------------------------------------------
 #   Submit plot jobs.
@@ -264,7 +263,6 @@ if [[ $RUN_TRANSFER -eq 1 ]]; then
          transfer_queue=dev_transfer
          jobname=transfer_${RADMON_SUFFIX}
          job="${IG_SCRIPTS}/Transfer.sh --nosrc ${RADMON_SUFFIX}"
-         echo "job = $job"
 
          export WEBDIR=${WEBDIR}/regional/${RADMON_SUFFIX}/pngs
 
@@ -285,5 +283,5 @@ fi
 #--------------------------------------------------------------------
 ${IG_SCRIPTS}/rm_img_files.pl --dir ${TANKimg}/pngs --nfl 30
 
-echo end RadMon_IG_rgn.sh
+echo "end RadMon_IG_rgn.sh"
 exit

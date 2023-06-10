@@ -1,49 +1,17 @@
-#!/bin/ksh
+#!/bin/bash
 
-################################################################################
-####  UNIX Script Documentation Block
-#                      .                                             .
-# Script name:         radmon_err_rpt.sh
-# Script description:  Compare the contents of error files from two different 
-#                      cycles.
+################################################################
+#  radmon_err_rpt.sh
 #
-# Author:        Ed  Safford       Org: NP23         Date: 2012-02-02
+#  This script prepares the error warning report for regional
+#  sources.  
 #
-# Abstract:  This script compares the contents of two error files from two different
-#            sets of radiance diagnostic files (which are an output from GSI runs).
-#            All unique satellite instrument/channel/region combinations that appear
-#            in both files are reported.
+#  NOTE:  This won't work at present, but has been included
+#  as a placeholder for future work.  The principle issue is 
+#  hourly data cycles which leads to significant, but expected
+#  inconsistencies in counts for many sat/instrument sources.
 #
-#            This script is run as a child script of radmon_verf_time.sh.  The parent
-#            script creates/copies the error files into a temporary working 
-#            directory before invoking this script.
-#
-#
-# Usage:  radmon_err_rpt.sh file1 file2 type cycle1 cycle2 diag_rpt outfile
-#
-#   Input script positional parameters:
-#     file1		obs, penalty, or channel error file
-#                       required
-#     file2		obs, penalty, or channel error file
-#                       required
-#     type              type of error file
-#                       choices are obs, pen, chan, or cnt; required
-#     cycle1		first cycle processing date
-#                       yyyymmddcc format; required
-#     cycle2		second cycle processing date
-#                       yyyymmddcc format; required
-#     diag_rpt          diagnostic report text file
-#                       required
-#     outfile           output file name
-#                       required
-#
-# Remarks:
-#
-#   Condition codes
-#      0 - no problem encountered
-#     >0 - some problem encountered
-####################################################################
-
+################################################################
 echo "-->  radmon_err_rpt.sh"
 
 #  Command line arguments.
@@ -75,7 +43,6 @@ if [[ -s $diag_rpt ]]; then
 else
    err=1
 fi
-echo "have_diag_rpt = $have_diag_rpt"
 
 #-----------------------------------------------------------------------------
 #  read each line in the $file1 

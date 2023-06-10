@@ -256,19 +256,16 @@ set_hr_tm
 #------------------------------------------------------------------
 radstat=""
 if [[ -e ${radstat_location}/${RADMON_SUFFIX}.prod.${pdate}_radstat ]]; then
-   echo " option 3"
    export radstat=${radstat_location}/${RADMON_SUFFIX}.prod.${pdate}_radstat
    export biascr=${radstat_location}/${RADMON_SUFFIX}.prod.${pdate}_satbias
 
 elif [[ $rgnHH = "t00z" && $rgnTM != "tm00" ]]; then
-   echo " option 1"
    pdate06=`${NDATE} +6 $pdate`
    pdy06=`echo ${pdate06} | cut -c1-8`
    export radstat=${radstat_location}/${run}.${pdy06}/${RADMON_SUFFIX}.${rgnHH}.radstat.${rgnTM}
    export biascr=${radstat_location}/${run}.${pdy06}/${RADMON_SUFFIX}.${rgnHH}.satbias.${rgnTM}
 
 elif [[ -e ${radstat_location}/${run}.${pdy}/${RADMON_SUFFIX}.${rgnHH}.radstat.${rgnTM} ]]; then
-   echo " option 2"
    export radstat=${radstat_location}/${run}.${pdy}/${RADMON_SUFFIX}.${rgnHH}.radstat.${rgnTM}
    export biascr=${radstat_location}/${run}.${pdy}/${RADMON_SUFFIX}.${rgnHH}.satbias.${rgnTM}
 

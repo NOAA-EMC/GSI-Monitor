@@ -81,7 +81,7 @@ EOF
 
          ./${angle_exec} < input >>   stdout.${type} 2>>errfile
          if [[ $? -ne 0 ]]; then
-             fail=`expr $fail + 1`
+  	    fail=$((fail+1))
          fi
          
 #-------------------------------------------------------------------
@@ -121,7 +121,7 @@ EOF
       cd ${cwd}
    fi   
 
-   if [[ $fail -eq $ctr || $fail -gt $ctr ]]; then
+   if [[ $fail -ge $ctr ]]; then
       err=3
    fi
 fi

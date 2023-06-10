@@ -3,6 +3,9 @@
 #-----------------------------------------------------------------------
 #  rgn_find_cycle.pl
 #
+#    Return the requested cycle time or nothing if none of the expected 
+#    	    data files are found.
+#
 #    Arguments:
 #       --dir     : Required string value containing  $TANKdir/$SUFFIX.
 #       --cyc     : Optional integer value:
@@ -11,9 +14,6 @@
 #                       0 = first cycle
 #       --run     : Optional run name, generally 'gdas' or 'gfs'.
 #                   This should be used if $TANK_USE_RUN is set to 1.
-#
-#    Return the requested cycle time or nothing if none of the expected 
-#    	    data files are found.
 #
 #    NOTE:  This version has been modified to add case 2 returning
 #           the 2nd to latest cycle time.  This is to counter a timing 
