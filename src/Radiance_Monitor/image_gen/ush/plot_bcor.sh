@@ -64,8 +64,13 @@ for type in ${SATYPE2}; do
       #  Attempt to locate the parent directory for the
       #  extracted ieee data files.
       #
-      ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${cdate} \
-	        --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
+      if [[ ${RAD_AREA} == 'rgn' ]]; then
+         pdy=`echo ${cdate}|cut -c1-8`
+	 ieee_src=${TANKverf}/radmon.${pdy} 
+      else
+         ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${cdate} \
+   	           --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
+      fi
 
       #-----------------------------------------------------------
       #  Now locate this cycle's data files, first checking for 

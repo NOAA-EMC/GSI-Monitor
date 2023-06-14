@@ -15,6 +15,7 @@ if [[ $nargs -lt 1 || $nargs -gt 3 ]]; then
 fi
 
 RUN=gdas
+RAD_AREA=glb
 
 while [[ $# -ge 1 ]]
 do
@@ -25,6 +26,10 @@ do
          RUN=$2
          shift # past argument
       ;;
+      -a|--area)
+         RAD_AREA=$2
+	 shift
+      ;;
       *)
          #any unspecified key is RADMON_SUFFIX
          export RADMON_SUFFIX=$key
@@ -33,13 +38,6 @@ do
 
    shift
 done
-
-if [[ $MY_MACHINE != "wcoss2" ]]; then
-   echo
-   echo "This script can only run on wcoss2.  Your machine, ${MY_MACHINE}, is not supported."
-   echo
-   exit 2
-fi
 
 this_dir=`dirname $0`
 top_parm=${this_dir}/../../parm
@@ -82,6 +80,8 @@ fi
 transfer_queue=dev_transfer
 jobname=transfer_${RADMON_SUFFIX}
 export WEBDIR=${WEBDIR}/${RADMON_SUFFIX}/pngs
+echo WEBDIR  = $WEBDIR
+echo IMGNDIR = $IMGNDIR
 
 transfer_work_dir=${MON_STMP}/${RADMON_SUFFIX}/${RUN}/radmon/transfer
 if [[ ! -d ${transfer_work_dir} ]]; then
@@ -91,6 +91,7 @@ fi
 cmdfile="${transfer_work_dir}/transfer_cmd"
 echo "${IG_SCRIPTS}/transfer.sh" >$cmdfile
 chmod 755 $cmdfile
+
 
 $SUB -q $transfer_queue -A $ACCOUNT -o ${transfer_log} -e ${transfer_err} \
      -V -l select=1:mem=500M -l walltime=45:00 -N ${jobname} ${cmdfile}

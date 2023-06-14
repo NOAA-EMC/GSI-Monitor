@@ -53,10 +53,18 @@ export IMGNDIR=${TANKimg}/pngs
 #--------------------------------------
 #  Definitions for internal reference
 #
-
 MY_RADMON=$MY_GSI_MONITOR/src/Radiance_Monitor
-export R_LOGDIR=${R_LOGDIR:-${MON_LOGDIR}/${RADMON_SUFFIX}/${RUN}/radmon}
-export PLOT_WORK_DIR=${PLOT_WORK_DIR:-${MON_STMP}/${RADMON_SUFFIX}/${RUN}/radmon/plot}
+
+if [[ $RAD_AREA = "rgn" ]]; then
+   export R_LOGDIR=${R_LOGDIR:-${MON_LOGDIR}/${RADMON_SUFFIX}/radmon}
+   export PLOT_WORK_DIR=${PLOT_WORK_DIR:-${MON_STMP}/${RADMON_SUFFIX}/radmon/plot}
+   export DATAROOT=${DATAROOT:-${MON_STMP}/${RADMON_SUFFIX}/radmon}
+else
+   export R_LOGDIR=${R_LOGDIR:-${MON_LOGDIR}/${RADMON_SUFFIX}/${RUN}/radmon}
+   export PLOT_WORK_DIR=${PLOT_WORK_DIR:-${MON_STMP}/${RADMON_SUFFIX}/${RUN}/radmon/plot}
+   export DATAROOT=${DATAROOT:-${MON_STMP}/${RADMON_SUFFIX}/${RUN}/radmon}
+fi
+
   
 export RADMON_DATA_EXTRACT=${RADMON_DATA_EXTRACT:-${MY_RADMON}/data_extract}
 export DE_EXEC=${DE_EXEC:-$GSI_MON_BIN}
@@ -74,6 +82,7 @@ export RADMON_PARM=${RADMON_PARM:-${MY_RADMON}/parm}
 export HOMEgdas=${HOMEgdas:-${MY_RADMON}/nwprod/gdas_radmon}
 export HOMEgfs=${HOMEgfs:-${HOMEgdas}}
 export HOMEnam=${HOMEnam:-${MY_RADMON}/nwprod/nam_radmon}
+export SRCnam=${SRCnam:-${HOMEnam}/scripts}
 export HOMEradmon=${HOMEradmon:-${MY_RADMON}/nwprod/radmon_shared}
 
 export EXECradmon=${EXECradmon:-$GSI_MON_BIN}
@@ -81,7 +90,6 @@ export FIXgdas=${FIXgdas:-${HOMEgdas}/fix}
 export PARMgdas=${PARMgdas:-${HOMEgdas}/parm}
 export parm_file=${parm_file:-${PARMgdas}/gdas_radmon.parm}
  
-export DATAROOT=${DATAROOT:-${MON_STMP}/${RADMON_SUFFIX}/${RUN}/radmon}
 
 #
 #  Definitions for parm files.  This allows users to swap in 

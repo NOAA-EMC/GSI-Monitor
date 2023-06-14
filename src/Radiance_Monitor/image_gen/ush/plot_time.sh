@@ -59,8 +59,13 @@ for type in ${SATYPE2}; do
    cdate=$bdate
    while [[ $cdate -le $edate ]]; do
 
-      ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${cdate} \
-	        --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
+      if [[ ${RAD_AREA} == 'rgn' ]]; then
+         pdy=`echo ${cdate}|cut -c1-8`
+         ieee_src=${TANKverf}/radmon.${pdy} 
+      else
+         ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${cdate} \
+	           --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
+      fi
 
       #-----------------------------------------------------------
       #  Locate the data files, first checking for a tar file,

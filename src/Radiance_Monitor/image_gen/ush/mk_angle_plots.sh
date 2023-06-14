@@ -12,8 +12,6 @@
 
 echo; echo "Begin mk_angle_plots.sh"
 
-export CYCLE_INTERVAL=${CYCLE_INTERVAL:-6}
-
 imgndir=${IMGNDIR}/angle
 if [[ ! -d ${imgndir} ]]; then
    mkdir -p ${imgndir}
@@ -58,8 +56,13 @@ for type in ${SATYPE}; do
          #-------------------------
          #  Locate $ieee_src
          #
-	 ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${test_day} \
-		    --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
+	 if [[ ${RAD_AREA} == 'rgn' ]]; then
+            pdy=`echo ${test_day}|cut -c1-8`
+	    ieee_src=${TANKverf}/radmon.${pdy} 
+	 else
+	    ieee_src=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${test_day} \
+		       --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
+         fi
 
 	 if [[ -d $ieee_src ]]; then
             using_tar=0
