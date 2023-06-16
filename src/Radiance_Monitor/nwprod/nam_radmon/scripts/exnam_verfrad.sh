@@ -112,7 +112,7 @@ if [[ -s ${radstat} && -s ${biascr} ]]; then
 
    for type in ${SATYPE}; do
 
-      if [[ RADMON_NETCDF == ".true." ]]; then
+      if [[ ${RADMON_NETCDF} == ".true." ]]; then
 
          if [[ ! -e ./diag_${type}_ges.${PDATE}.nc4.${Z} ]]; then
             edited_satype="$(echo $SATYPE | tr ' ' '\n' | sed "/${type}/d")"
