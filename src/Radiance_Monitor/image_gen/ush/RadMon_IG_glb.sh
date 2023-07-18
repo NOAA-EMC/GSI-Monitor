@@ -324,7 +324,7 @@ ${IG_SCRIPTS}/rm_img_files.pl --dir ${TANKimg}/pngs --nfl 30
 #----------------------------------------------------------------------
 if [[ $RUN_TRANSFER -eq 1 ]]; then
 
-   if [[ $MY_MACHINE = "wcoss2" ]]; then
+   if [[ $MY_MACHINE = "wcoss2" || $MY_MACHINE = "hera" ]]; then
       cmin=`date +%M`		# minute (MM)
       ctime=`date +%G%m%d%H`	# YYYYMMDDHH
       rtime=`$NDATE +1 $ctime`	# ctime + 1 hour
