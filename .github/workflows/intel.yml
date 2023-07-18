@@ -9,7 +9,7 @@ defaults:
 
 # Set I_MPI_CC/F90 so Intel MPI wrapper uses icc/ifort instead of gcc/gfortran
 env:
-  cache_key: intel4  # The number (#) following the cache_key "intel" is to flush Action cache.
+  cache_key: intel5  # The number (#) following the cache_key "intel" is to flush Action cache.
   CC: icc
   FC: ifort
   CXX: icpc
@@ -33,7 +33,7 @@ env:
 
 jobs:
   setup:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       # Cache spack, compiler and dependencies
@@ -79,7 +79,7 @@ jobs:
 
   build:
     needs: setup
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
 
     steps:
       - name: checkout-gsi-monitor

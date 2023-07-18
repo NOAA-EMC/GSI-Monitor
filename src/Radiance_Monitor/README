@@ -69,9 +69,9 @@ and run:
                         comrot/$PSLOT directory.  This is only needed if your extraction
                         was via global-workflow and NOT copied to $TANKDIR.
 
-6.  Move the data and html files to the web server (emcrzdm).  If you're on wcoss2 and  
-have set up password free access to web server for your account, RadMon_IG_glb.sh will 
-queue the transfer script and move the files to the server.  
+6.  Move the data and html files to the web server (emcrzdm).  If you're on wcoss2 or 
+hera and have set up password free access to web server for your account, RadMon_IG_glb.sh 
+will queue the transfer script and move the files to the server.  
 
 Alternately the transfer script, RunTransfer.sh, can be run from the command line:
   

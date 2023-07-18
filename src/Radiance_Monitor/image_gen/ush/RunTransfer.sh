@@ -79,7 +79,7 @@ fi
 
 transfer_queue=dev_transfer
 jobname=transfer_${RADMON_SUFFIX}
-export WEBDIR=${WEBDIR}/${RADMON_SUFFIX}/pngs
+export WEBDIR=${WEBDIR}/${RADMON_SUFFIX}
 echo WEBDIR  = $WEBDIR
 echo IMGNDIR = $IMGNDIR
 
@@ -92,8 +92,13 @@ cmdfile="${transfer_work_dir}/transfer_cmd"
 echo "${IG_SCRIPTS}/transfer.sh" >$cmdfile
 chmod 755 $cmdfile
 
+if [[ ${MY_MACHINE} = "hera" ]]; then
+   ${SUB} --account ${ACCOUNT}  --ntasks=1 --mem=500M --time=45:00 -J ${jobname} \
+          --partition service -o ${transfer_log} ${IG_SCRIPTS}/transfer.sh
 
-$SUB -q $transfer_queue -A $ACCOUNT -o ${transfer_log} -e ${transfer_err} \
-     -V -l select=1:mem=500M -l walltime=45:00 -N ${jobname} ${cmdfile}
+elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
+   $SUB -q $transfer_queue -A $ACCOUNT -o ${transfer_log} -e ${transfer_err} \
+        -V -l select=1:mem=500M -l walltime=45:00 -N ${jobname} ${cmdfile}
+fi
 
 exit
