@@ -24,8 +24,11 @@ if [[ ${TANKimg} != "/" && -d ${TANKimg} ]]; then
       ssh ${WEBUSER}@${WEBSVR} "mkdir -p ${WEBDIR}"
    fi
 
+   echo "rsync from ${TANKimg}"
+   echo "rysnc to   ${WEBUSER}@${WEBSVR}:${WEBDIR}/"
+
    /usr/bin/rsync -ave ssh --exclude *.ctl.${Z} \
-      --exclude 'horiz' --exclude *.png --delete-during --update ${TANKimg}/ \
+      --exclude 'horiz' --exclude '*.png' --delete-during --update ${TANKimg}/ \
       ${WEBUSER}@${WEBSVR}:${WEBDIR}/
 
 else
