@@ -7,12 +7,14 @@ The transfer mechanism is a password-free, secure log-in using a public/private
 encryption key pair.  There is information on the bottom of the wiki page about 
 how to set that up (see https://svnemc.ncep.noaa.gov/trac/gsi/wiki/RadianceMonitorPackage).
 
-The install script requires two parameters:  the data suffix (identifier) and area.  The 
-suffix is used to access data files from $MY_TANKDIR.  Area must be either 'glb' or 'rgn'
-meaning global or regional.
+The install script requires one parameter:  the data suffix (identifier).  The 
+suffix is used to access data files from $MY_TANKDIR.  If the data source is not in your 
+$MY_TANKDIR location (which it won't be if you're working from a parallel), then use the 
+--tank option to specify the location of the data.  That directory will then be expanded 
+using the suffix, run (gdas), and date.
  
 An example calling sequence is thus:
 
->  ./Install_html.sh newd glb
+>  ./Install_html.sh newd --tank /dir/to/my/data
 
 

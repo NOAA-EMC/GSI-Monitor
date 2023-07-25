@@ -25,7 +25,7 @@ if [[ ${TANKimg} != "/" && -d ${TANKimg} ]]; then
    fi
 
    /usr/bin/rsync -ave ssh --exclude *.ctl.${Z} \
-      --exclude 'horiz' --exclude *.png --delete-during --update ${TANKimg}/ \
+      --exclude 'horiz' --exclude '*.png' --delete-during --update ${TANKimg}/ \
       ${WEBUSER}@${WEBSVR}:${WEBDIR}/
 
 else

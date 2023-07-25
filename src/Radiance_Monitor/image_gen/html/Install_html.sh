@@ -17,7 +17,7 @@ function usage {
   echo "Usage:  Install_html.sh suffix [-t|--tank]"
   echo "            Suffix is data source identifier that matches data in "
   echo "              the $TANKDIR/stats directory."
-  echo "            -t | --tank parent directory to the radnmon data file location.  This"
+  echo "            -t | --tank parent directory to the radmon data file location.  This"
   echo "              will be extended by \$RADMON_SUFFIX, \$RUN, and \$PDATE to locate the"
   echo "              extracted radmon data."
   echo ""
