@@ -6,6 +6,7 @@ spack:
   specs:
   - netcdf-c@4.9.2
   - netcdf-fortran@4.6.0
+  - hdf5@1.14.0
   - bacio@2.4.1
   - w3emc@2.9.2
   - gsi-ncdiag@1.1.1
