@@ -38,8 +38,8 @@ while [[ $ctr -le 120 ]]; do
    tankdir_cdate=${tankdir_cdate}/time
 
    if [[ -d ${tankdir_cdate} ]]; then
-  
-      if [[ -e ${tankdir_cdate}/${SATYPE}.${ptype}.ctl ]]; then
+ 
+      if [[ ! -e ./${SATYPE}.${ptype}.ctl && -e ${tankdir_cdate}/${SATYPE}.${ptype}.ctl ]]; then
          $NCP ${tankdir_cdate}/${SATYPE}.${ptype}.ctl ./
       fi
 
