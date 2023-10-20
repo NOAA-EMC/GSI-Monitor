@@ -47,7 +47,7 @@ while [[ $ctr -le 119 ]]; do
 
    if [[ -d ${tankdir_cdate} ]]; then
 
-      if [[ -e ${tankdir_cdate}/${SATYPE}.${dsrc}.ctl ]]; then
+      if [[ ! -e ./${SATYPE}.${dsrc}.ctl && -e ${tankdir_cdate}/${SATYPE}.${dsrc}.ctl ]]; then
          $NCP ${tankdir_cdate}/${SATYPE}.${dsrc}.ctl ./
       fi
 
