@@ -66,7 +66,7 @@ for ptype in ${data_source}; do
       #         levels, so when nlev = 1 the plot script doesn't work.
       #
       if [[ $type != "omi_aura" && $type != "gome_metop-a" && \
-	    $type != "gome_metop-b" && $type != "ompstc8_npp" ]]; then
+	    $type != "gome_metop-b" && $type != "ompstc8_npp" && $type != "ompstc8_n20" ]]; then
          if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "jet" ||
                ${MY_MACHINE} = "s4"   || ${MY_MACHINE} = "orion" ]]; then
             echo "${ctr} ${OZN_IG_SCRIPTS}/plot_summary.sh $type $ptype" >> $cmdfile
