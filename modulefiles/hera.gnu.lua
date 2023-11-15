@@ -1,8 +1,7 @@
 help([[
 ]])
 
-prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.4.1/envs/unified-env/install/modulefiles/Core")
-prepend_path("MODULEPATH", "/scratch1/NCEPDEV/jcsda/jedipara/spack-stack/modulefiles")
+prepend_path("MODULEPATH", "/scratch1/NCEPDEV/nems/role.epic/spack-stack/spack-stack-1.5.1/envs/gsi-addon/install/modulefiles/Core")
 
 local stack_gnu_ver=os.getenv("stack_gnu_ver") or "9.2.0"
 local stack_openmpi_ver=os.getenv("stack_openmpi_ver") or "4.1.5"

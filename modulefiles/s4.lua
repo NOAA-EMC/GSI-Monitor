@@ -1,16 +1,17 @@
 help([[
 ]])
 
-local hpc_ver=os.getenv("hpc_ver") or "1.1.0"
-local hpc_intel_ver=os.getenv("hpc_intel_ver") or "18.0.4"
-local hpc_impi_ver=os.getenv("hpc_impi_ver") or "18.0.4"
-
-prepend_path("MODULEPATH", "/data/prod/hpc-stack/modulefiles/stack")
+prepend_path("MODULEPATH", "/data/prod/jedi/spack-stack/spack-stack-1.5.1/envs/gsi-addon/install/modulefiles/Core")
 
 load("license_intel/S4")
-load(pathJoin("hpc", hpc_ver))
-load(pathJoin("hpc-intel", hpc_intel_ver))
-load(pathJoin("hpc-impi", hpc_impi_ver))
+
+local stack_intel_ver=os.getenv("stack_intel_ver") or "2021.5.0"
+local stack_impi_ver=os.getenv("stack_impi_ver") or "2021.5.1"
+local cmake_ver=os.getenv("cmake_ver") or "3.23.1"
+
+load(pathJoin("stack-intel", stack_intel_ver))
+load(pathJoin("stack-intel-oneapi-mpi", stack_impi_ver))
+load(pathJoin("cmake", cmake_ver))
 
 load("common")
 
