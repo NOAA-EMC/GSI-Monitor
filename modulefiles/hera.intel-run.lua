@@ -11,7 +11,7 @@ local prod_util_ver=os.getenv("prod_util_ver") or "1.2.2"
 load(pathJoin("stack-intel", stack_intel_ver))
 load(pathJoin("stack-intel-oneapi-mpi", stack_impi_ver))
 load(pathJoin("grads", grads_ver))
-load(pathJoin("prod-util", prod_util_ver))
+load(pathJoin("prod_util", prod_util_ver))
 
 load("common-run")
 
