@@ -46,7 +46,7 @@ jobs:
         run: |
           git clone -c feature.manyFiles=true https://github.com/JCSDA/spack.git
           source spack/share/spack/setup-env.sh
-          spack env create gsi-monitor-env spack.yaml
+          spack env create gsi-monitor-env gsi-monitor/ci/spack.yaml
           spack env activate gsi-monitor-env
           sudo apt install cmake
           spack external find
