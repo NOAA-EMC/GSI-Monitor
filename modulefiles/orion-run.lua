@@ -1,17 +1,15 @@
 help([[
 ]])
 
-prepend_path("MODULEPATH", "/apps/contrib/NCEP/libs/hpc-stack/modulefiles/stack")
+prepend_path("MODULEPATH", "/work/noaa/epic/role-epic/spack-stack/orion/spack-stack-1.5.1/envs/gsi-addon/install/modulefiles/Core")
 
-local hpc_ver=os.getenv("hpc_ver") or "1.1.0"
-local hpc_intel_ver=os.getenv("hpc_intel_ver") or "2018.4"
-local hpc_impi_ver=os.getenv("hpc_impi_ver") or "2018.4"
+local stack_intel_ver=os.getenv("stack_intel_ver") or "2022.0.2"
+local stack_impi_ver=os.getenv("stack_impi_ver") or "2021.5.1"
 local grads_ver=os.getenv("grads_ver") or "2.2.1"
 local prod_util_ver=os.getenv("prod_util_ver") or "1.2.2"
 
-load(pathJoin("hpc", hpc_ver))
-load(pathJoin("hpc-intel", hpc_intel_ver))
-load(pathJoin("hpc-impi", hpc_impi_ver))
+load(pathJoin("stack-intel", stack_intel_ver))
+load(pathJoin("stack-intel-oneapi-mpi", stack_impi_ver))
 load(pathJoin("grads", grads_ver))
 load(pathJoin("prod_util", prod_util_ver))
 
