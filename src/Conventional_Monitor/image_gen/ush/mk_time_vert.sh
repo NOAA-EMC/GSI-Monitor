@@ -27,8 +27,9 @@ echo "--> mk_time_vert.sh"
       rm -f $errfile
    fi
 
-   if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} == "s4" || \
-         ${MY_MACHINE} == "jet" || ${MY_MACHINE} == "orion" ]]; then
+   if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} == "s4" ||
+         ${MY_MACHINE} == "jet" || ${MY_MACHINE} == "orion" ||
+         ${MY_MACHINE} == "hercules" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:15:00 \
                 -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${pltfile}
 
@@ -55,8 +56,9 @@ echo "--> mk_time_vert.sh"
          rm -f $errfile
       fi
 
-      if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} == "s4" || \
-            ${MY_MACHINE} == "jet" || ${MY_MACHINE} == "orion" ]]; then
+      if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} == "s4" ||
+            ${MY_MACHINE} == "jet" || ${MY_MACHINE} == "orion" ||
+            ${MY_MACHINE} == "hercules" ]]; then
          if [[ ${type} == "uv" || ${type} == "u" || ${type} == "v" ]]; then
             walltime="02:30:00"
          else
@@ -99,8 +101,9 @@ echo "--> mk_time_vert.sh"
          rm -f $errfile
       fi
 
-      if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} == "s4" || \
-            ${MY_MACHINE} == "jet" || ${MY_MACHINE} = "orion" ]]; then
+      if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} == "s4" || 
+            ${MY_MACHINE} == "jet" || ${MY_MACHINE} = "orion" ||
+            ${MY_MACHINE} == "hercules" ]]; then
          if [[ ${type} == "uv" || ${type} == "u" || ${type} == "v" ]]; then
             walltime="00:50:00"
          else

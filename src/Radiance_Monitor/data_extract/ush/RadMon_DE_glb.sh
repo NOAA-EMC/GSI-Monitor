@@ -236,7 +236,8 @@ if [[ -e ${radstat} && -e ${biascr} ]]; then
    fi
 
 
-   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "orion" ]]; then
+   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "orion" ||
+         $MY_MACHINE = "hercules" ]]; then
       $SUB --account=${ACCOUNT} --time=10 -J ${jobname} -D . \
         -o ${logfile} --ntasks=1 --mem=5g ${job} 
 

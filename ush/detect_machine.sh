@@ -1,5 +1,6 @@
 #!/bin/bash
 
+echo $(hostname -f)
 case $(hostname -f) in
 
   adecflow0[12].acorn.wcoss2.ncep.noaa.gov)  MACHINE_ID=wcoss2 ;; ### acorn
@@ -24,6 +25,8 @@ case $(hostname -f) in
   tfe[12]) MACHINE_ID=jet ;; ### tjet1-2
 
   Orion-login-[1-4].HPC.MsState.Edu) MACHINE_ID=orion ;; ### orion1-4
+
+  Hercules-login-[1-4].HPC.MsState.Edu) MACHINE_ID=hercules ;; ### hercules1-4
 
   cheyenne[1-6].cheyenne.ucar.edu)     MACHINE_ID=cheyenne ;; ### cheyenne1-6
   cheyenne[1-6].ib0.cheyenne.ucar.edu) MACHINE_ID=cheyenne ;; ### cheyenne1-6

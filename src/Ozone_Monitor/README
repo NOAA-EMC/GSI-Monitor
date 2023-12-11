@@ -3,7 +3,7 @@ README OznMon package
 The OznMon (ozone monitoring) package can be used to extract information
 from ozone diagnostic files and generate image plots to visualize the results.
 The package also may optionally perform data validation and error checking.
-The package is supported on wcoss2, hera, orion, cheyenne, jet, and s4 
+The package is supported on wcoss2, hera, hercules, orion, cheyenne, jet, and s4 
 machines.
 
 The package is organized in two processes, the data_extract and image_gen 

@@ -51,7 +51,7 @@ for dsrc in ${data_source}; do
       fi
 
       if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "jet" || ${MY_MACHINE} = "s4" ||
-            ${MY_MACHINE} = "orion" ]]; then
+            ${MY_MACHINE} = "orion" || ${MY_MACHINE} = "hercules" ]]; then
          echo "$ctr ${OZN_IG_SCRIPTS}/plot_horiz.sh $type $suffix '$list' $dsrc" >> $cmdfile
       else
          echo "${OZN_IG_SCRIPTS}/plot_horiz.sh $type $suffix '$list' $dsrc" >> $cmdfile

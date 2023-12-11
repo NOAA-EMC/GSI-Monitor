@@ -2,7 +2,7 @@ README MinMon package
 
 The Minimization Monitor (MinMon) provides a means to visualize and report 
 on the performance of the GSI minimization function.  The package 
-is supported on wcoss2, hera, orion, cheyenne, jet, and s4 machines.
+is supported on wcoss2, hera, orion, hercules, cheyenne, jet, and s4 machines.
 
 The package is organized in two main processes: data_extract and image_gen 
 (image generation).  The data extract piece is now located in the 

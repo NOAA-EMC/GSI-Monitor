@@ -4,7 +4,7 @@ The RadMon (radiance monitoring) package can be used to extract data from
 radiance diagnostic files and visualize the results by plotting the data using
 javascript or optionally GrADS.  The package also may optionally perform data 
 validation and error checking.  The package is supported on wcoss2, hera, 
-orion, cheyenne, jet, and s4 machines.
+orion, hercules, cheyenne, jet, and s4 machines.
 
 The package is organized in two main processes, data_extract and image_gen 
 (image generation).  There is also an nwprod directory, which contains the lower 

@@ -56,8 +56,9 @@
       rm -f ${errfile}
    fi
 
-   if [[ $MY_MACHINE == "hera" || $MY_MACHINE == "s4" || \
-         $MY_MACHINE == "jet" || $MY_MACHINE == "orion" ]]; then
+   if [[ $MY_MACHINE == "hera" || $MY_MACHINE == "s4" || 
+         $MY_MACHINE == "jet" || $MY_MACHINE == "orion" || 
+         $MY_MACHINE == "hercules" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_hist}
 
@@ -83,8 +84,9 @@
       rm -f ${errfile}
    fi
 
-   if [[ $MY_MACHINE == "hera" || $MY_MACHINE == "s4" || \
-         $MY_MACHINE == "jet" || $MY_MACHINE == "orion" ]]; then
+   if [[ $MY_MACHINE == "hera" || $MY_MACHINE == "s4" ||
+         $MY_MACHINE == "jet" || $MY_MACHINE == "orion" ||
+         $MY_MACHINE == "hercules" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_horz}
 
@@ -111,7 +113,8 @@
    fi
 
    if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} == "s4" || \
-         ${MY_MACHINE} == "jet" || ${MY_MACHINE} == "orion" ]]; then
+         ${MY_MACHINE} == "jet" || ${MY_MACHINE} == "orion" ||
+         ${MY_MACHINE} == "hercules" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=01:30:00 \
 	     -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_horz_uv}
 

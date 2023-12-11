@@ -164,7 +164,7 @@ if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
    $SUB --account $ACCOUNT --ntasks=1 --mem=5g --time=1:00:00 -J ${jobname} \
         -o ${logfile} -D . $IG_SCRIPTS/plot_bcoef.sh 
 
-elif [[ $MY_MACHINE = "orion" ]]; then
+elif [[ $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
    $SUB --account $ACCOUNT --ntasks=1 --mem=5g --time=20 -J ${jobname} \
         -p ${SERVICE_PARTITION} -o ${logfile} -D . $IG_SCRIPTS/plot_bcoef.sh 
 

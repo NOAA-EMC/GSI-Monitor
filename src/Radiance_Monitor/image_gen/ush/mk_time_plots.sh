@@ -189,7 +189,7 @@ if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" ]]; then
    ${SUB} --account ${ACCOUNT}  --ntasks=1 --mem=5g --time=1:00:00 -J ${jobname} \
           -o ${logfile} ${IG_SCRIPTS}/plot_summary.sh
 
-elif [[ ${MY_MACHINE} = "orion" ]]; then
+elif [[ ${MY_MACHINE} = "orion" || ${MY_MACHINE} = "hercules" ]]; then
    ${SUB} --account ${ACCOUNT}  --ntasks=1 --mem=5g --time=20:00 -J ${jobname} \
           -o ${logfile} ${IG_SCRIPTS}/plot_summary.sh
 
@@ -247,7 +247,8 @@ ctr=0
 
 for sat in ${SATLIST}; do
    if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "jet" || 
-         ${MY_MACHINE} = "s4"   || ${MY_MACHINE} = "orion" ]]; then
+         ${MY_MACHINE} = "s4"   || ${MY_MACHINE} = "orion" ||
+         ${MY_MACHINE} = "hercules" ]]; then
       echo "${ctr} $IG_SCRIPTS/plot_time.sh $sat $suffix '$list'" >> $cmdfile
    else
       echo "$IG_SCRIPTS/plot_time.sh $sat $suffix '$list'" >> $cmdfile
@@ -261,7 +262,7 @@ if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
    $SUB --account ${ACCOUNT} -n ${ctr}  -o ${logfile} -D . -J ${jobname} --time=1:00:00 \
         --wrap "srun -l --multi-prog ${cmdfile}"
 
-elif [[ $MY_MACHINE = "orion" ]]; then
+elif [[ $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
    $SUB --account ${ACCOUNT} -n ${ctr}  -o ${logfile} -D . -J ${jobname} --time=1:00:00 \
         -p $SERVICE_PARTITION --wrap "srun -l --multi-prog ${cmdfile}"
 
@@ -299,7 +300,8 @@ for sat in ${bigSATLIST}; do
    ctr=0 
    for var in $list; do
       if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "jet" || 
-            ${MY_MACHINE} = "s4"   || ${MY_MACHINE} = "orion" ]]; then
+            ${MY_MACHINE} = "s4"   || ${MY_MACHINE} = "orion" ||
+            ${MY_MACHINE} = "hercules" ]]; then
          echo "${ctr} $IG_SCRIPTS/plot_time.sh $sat $var $var" >> $cmdfile
       else
          echo "$IG_SCRIPTS/plot_time.sh $sat $var $var" >> $cmdfile
@@ -317,7 +319,7 @@ for sat in ${bigSATLIST}; do
       $SUB --account ${ACCOUNT} -n ${ctr}  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
            --wrap "srun -l --multi-prog ${cmdfile}"
 
-   elif [[ $MY_MACHINE = "orion" ]]; then
+   elif [[ $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
       $SUB --account ${ACCOUNT} -n ${ctr}  -o ${logfile} -D . -J ${jobname} --time=1:30:00 \
            -p $SERVICE_PARTITION --wrap "srun -l --multi-prog ${cmdfile}"
 
