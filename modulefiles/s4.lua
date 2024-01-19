@@ -1,7 +1,7 @@
 help([[
 ]])
 
-prepend_path("MODULEPATH", "/data/prod/jedi/spack-stack/spack-stack-1.5.1/envs/gsi-addon/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/data/prod/jedi/spack-stack/spack-stack-1.6.0/envs/gsi-addon-dev/install/modulefiles/Core")
 
 load("license_intel/S4")
 
