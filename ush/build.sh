@@ -22,7 +22,7 @@ echo "MACHINE_ID = $MACHINE_ID"
 source $DIR_ROOT/ush/module-setup.sh
 
 module use $DIR_ROOT/modulefiles
-module load $MACHINE_ID
+module load $MACHINE_ID.$COMPILER
 module list
 
 # Collect BUILD Options
