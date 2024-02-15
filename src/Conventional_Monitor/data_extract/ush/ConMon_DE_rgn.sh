@@ -132,10 +132,8 @@ do
    shift
 done
 
-
 this_file=`basename $0`
 this_dir=`dirname $0`
-
 
 nam_ver=v4.2
 
@@ -176,12 +174,11 @@ fi
 # Get date of cycle to process and/or previous cycle processed.
 #
 echo "C_TANKDIR: ${C_TANKDIR}"
+ldate=""
 if [[ ${#pdate} -le 0 ]]; then
    ldate=`${MON_USH}/rgn_find_cycle.pl --cyc 1 --dir ${C_TANKDIR} --mon conmon`
    pdate=`${NDATE} +01 ${ldate}`
 fi
-
-echo ldate, pdate = ${ldate}, ${pdate}
 
 export PDY=`echo ${pdate}|cut -c1-8`
 export CYC=`echo ${pdate}|cut -c9-10`
@@ -214,13 +211,14 @@ export CONMON_WORK_DIR=${CONMON_WORK_DIR:-${C_STMP_USER}/${CONMON_SUFFIX}}/conmo
 #  in set_hr_tm() flags this condition.
 #----------------------------------------------------------------------
 cnvstat=""
+pdate06=""
 day=${PDY}
+
 if [[ $use_next_day == 1 ]]; then
    pdate06=`${NDATE} +6 ${PDY}${CYC}`
    day=`echo ${pdate06} | cut -c1-8`
 fi
 export cnvstat=${cnvstat_location}/${CONMON_SUFFIX}.${day}/${CONMON_SUFFIX}.${rgnHH}.cnvstat.${rgnTM}
-echo cnvstat: ${cnvstat}
 
 if [[ -e ${cnvstat} ]]; then
    echo "cnvstat exists"
@@ -265,12 +263,12 @@ if [[ -e ${cnvstat} ]]; then
    if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" || ${MY_MACHINE} = "orion" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:30:00 \
   		-p ${SERVICE_PARTITION} -J ${jobname} -o ${C_LOGDIR}/DE.${PDY}.${CYC}.log \
-		${HOMEnam_conmon}/jobs/JGDAS_ATMOS_CONMON
+		${HOMEnam_conmon}/jobs/JNAM_CONMON
 
    elif [[ ${MY_MACHINE} = "jet" ]]; then
       ${SUB} -A ${ACCOUNT} -ntasks=1 --time=00:30:00 --mem=5000 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o ${C_LOGDIR}/DE.${PDY}.${CYC}.log \
-		${HOMEnam_conmon}/jobs/JGDAS_ATMOS_CONMON
+		${HOMEnam_conmon}/jobs/JNAM_CONMON
       
    elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
       ${SUB} -V -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${logfile} -l walltime=30:00 \
