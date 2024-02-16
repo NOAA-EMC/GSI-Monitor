@@ -141,8 +141,6 @@ echo CONMON_SUFFIX = ${CONMON_SUFFIX}
 echo cnvstat_location = ${cnvstat_location}
 echo pdate = ${pdate}
 
-export CONMON_AREA='rgn'
-
 top_parm=${this_dir}/../../parm
 
 conmon_config=${conmon_config:-${top_parm}/ConMon_config}
