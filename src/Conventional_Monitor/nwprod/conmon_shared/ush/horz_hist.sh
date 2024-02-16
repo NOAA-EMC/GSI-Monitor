@@ -91,39 +91,41 @@
       ${COMPRESS} ${stdout_tar}
             
       dest_dir=${TANKDIR_conmon}/horz_hist/${run}
-#      mv -f ${stdout_tar}.${Z} ${dest_dir}/.
-      cp -f ${stdout_tar}.${Z} ${dest_dir}/.
+      mv -f ${stdout_tar}.${Z} ${dest_dir}/.
 
       cat *nobs.${run} > nobs.${run}.${PDATE}
-      cp nobs.${run}.${PDATE} ${dest_dir}/.
+      mv nobs.${run}.${PDATE} ${dest_dir}/.
   
       #--------------------------------- 
       #  run the mk_low_cnt.pl script 
       #--------------------------------- 
-#      ${USHconmon}/mk_low_cnt.pl --net ${CONMON_SUFFIX} \
-#             --run ${RUN}  --cyc ${PDATE} \
-#             --nobsf ${TANKDIR_conmon}/horz_hist/${run}/nobs.${run}.${PDATE} \
-#             --lcntf ${TANKDIR_conmon}/horz_hist/${run}/low_cnt.${run}.${PDATE} \
-#             --basef ${conmon_base}
+      if [[ $DO_DATA_RPT -eq 1 && $AREA == 'glb' ]]; then
+         ${USHconmon}/mk_low_cnt.pl --net ${CONMON_SUFFIX} \
+             --run ${RUN}  --cyc ${PDATE} \
+             --nobsf ${TANKDIR_conmon}/horz_hist/${run}/nobs.${run}.${PDATE} \
+             --lcntf ${TANKDIR_conmon}/horz_hist/${run}/low_cnt.${run}.${PDATE} \
+             --basef ${conmon_base}
 
 
-      #--------------------------------
-      #  run the mk_err_rpt.pl script
-      #--------------------------------
-#      low_cnt_file=${TANKDIR_conmon}/horz_hist/${run}/low_cnt.${run}.${PDATE}
-#      if [[ -e ${low_cnt_file}.gz ]]; then
-#         $UNCOMPRESS ${low_cnt_file}.gz
-#      fi
+         #--------------------------------
+         #  run the mk_err_rpt.pl script
+         #--------------------------------
+         low_cnt_file=${TANKDIR_conmon}/horz_hist/${run}/low_cnt.${run}.${PDATE}
+         if [[ -e ${low_cnt_file}.gz ]]; then
+            $UNCOMPRESS ${low_cnt_file}.gz
+         fi
 
-#      prev_low_cnt_file=${TANKDIR_prev_conmon}/horz_hist/${run}/low_cnt.${run}.${GDATE}
-#      if [[ -e ${prev_low_cnt_file}.gz ]]; then
-#         $UNCOMPRESS ${prev_low_cnt_file}.gz
-#      fi
+	 gdate=`${NDATE} -6 ${PDATE}`
+         prev_low_cnt_file=${TANKDIR_prev_conmon}/horz_hist/${run}/low_cnt.${run}.${gdate}
+         if [[ -e ${prev_low_cnt_file}.gz ]]; then
+            $UNCOMPRESS ${prev_low_cnt_file}.gz
+         fi
 
-#      ${USHconmon}/mk_err_rpt.pl --net ${CONMON_SUFFIX} --run ${RUN} \
-#             --lcf ${low_cnt_file} --plcf ${prev_low_cnt_file} \
-#             --cyc0 ${PDATE} --cyc1 ${GDATE} \
-#             --errf ${TANKDIR_conmon}/horz_hist/${run}/err_rpt.${run}.${PDATE}
+         ${USHconmon}/mk_err_rpt.pl --net ${CONMON_SUFFIX} --run ${RUN} \
+             --lcf ${low_cnt_file} --plcf ${prev_low_cnt_file} \
+             --cyc0 ${PDATE} --cyc1 ${gdate} \
+             --errf ${TANKDIR_conmon}/horz_hist/${run}/err_rpt.${run}.${PDATE}
+      fi
    done
 
 echo "<-- horz_hist.sh"
