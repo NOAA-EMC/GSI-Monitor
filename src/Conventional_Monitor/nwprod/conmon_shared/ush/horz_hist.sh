@@ -99,7 +99,7 @@
       #--------------------------------- 
       #  run the mk_low_cnt.pl script 
       #--------------------------------- 
-      if [[ $DO_DATA_RPT -eq 1 && $AREA == 'glb' ]]; then
+      if [[ ${DO_DATA_RPT} -eq 1 && ${CONMON_AREA} == 'glb' ]]; then
          ${USHconmon}/mk_low_cnt.pl --net ${CONMON_SUFFIX} \
              --run ${RUN}  --cyc ${PDATE} \
              --nobsf ${TANKDIR_conmon}/horz_hist/${run}/nobs.${run}.${PDATE} \
