@@ -95,6 +95,7 @@ function set_hr_tm(){
 echo "Begin ConMon_DE_rgn.sh"
 exit_value=0
 
+export AREA='rgn'
 nargs=$#
 if [[ ${nargs} -lt 1 || ${nargs} -gt 7 ]]; then
    usage
