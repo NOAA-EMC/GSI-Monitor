@@ -28,6 +28,9 @@ module list
 # Collect BUILD Options
 CMAKE_OPTS+=" -DBUILD_UTIL_ALLMON=ON"
 
+# Build type for executables
+CMAKE_OPTS+=" -DCMAKE_BUILD_TYPE=$BUILD_TYPE"
+
 # Install destination for built executables, libraries, CMake Package config
 CMAKE_OPTS+=" -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX"
 
