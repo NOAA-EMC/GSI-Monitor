@@ -1,0 +1,111 @@
+#!/bin/bash
+
+#########################################################
+# Set up environment for GDAS Conventional Monitor job
+#########################################################
+echo "--> JNAM_CONMON"
+
+set -xa
+
+echo `date` $0 `date -u` begin
+export PS4='$SECONDS + '
+
+########################################################### 
+# set up temp working directory space
+###########################################################
+export CONMON_WORK_DIR=${CONMON_WORK_DIR:-/tmpnwprd}
+
+
+#####################
+# Specify NET value
+#####################
+export NET=${NET:-nam}
+version=${version:-v4.2}
+
+export CONMON_AREA=rgn
+
+export VERBOSE=${VERBOSE:-YES}
+export CLEAN_TANKDIR=${CLEAN_TANKDIR:-YES}
+
+
+###################################################################
+# C_COMIN        - WHERE NAM DATA (input data to this job) RESIDES
+# TANKDIR_conmon - WHERE OUTPUT DATA WILL RESIDE
+###################################################################
+export CONMON_SUFFIX=${CONMON_SUFFIX:-${NET}}
+export C_TANKDIR=${C_TANKDIR:-/com/verf/prod/${NET}}
+export TANKDIR_conmon=${C_TANKDIR}/conmon.${PDY}
+
+export COM_IN=${COM_IN:-${COMROOT}/${NET}/${version}}
+export C_COMIN=${C_COMIN:-$COM_IN/${CONMON_SUFFIX}.${PDY}}
+
+case $CYC in
+   00) export rgnHH=t00z
+       export rgnTM=tm00;;
+   01) export rgnHH=t06z
+       export rgnTM=tm05;;
+   02) export rgnHH=t06z
+       export rgnTM=tm04;;
+   03) export rgnHH=t06z
+       export rgnTM=tm03;;
+   04) export rgnHH=t06z
+       export rgnTM=tm02;;
+   05) export rgnHH=t06z
+       export rgnTM=tm01;;
+   06) export rgnHH=t06z
+       export rgnTM=tm00;;
+   07) export rgnHH=t12z
+       export rgnTM=tm05;;
+   08) export rgnHH=t12z
+       export rgnTM=tm04;;
+   09) export rgnHH=t12z
+       export rgnTM=tm03;;
+   10) export rgnHH=t12z
+       export rgnTM=tm02;;
+   11) export rgnHH=t12z
+       export rgnTM=tm01;;
+   12) export rgnHH=t12z
+       export rgnTM=tm00;;
+   13) export rgnHH=t18z
+       export rgnTM=tm05;;
+   14) export rgnHH=t18z
+       export rgnTM=tm04;;
+   15) export rgnHH=t18z
+       export rgnTM=tm03;;
+   16) export rgnHH=t18z
+       export rgnTM=tm02;;
+   17) export rgnHH=t18z
+       export rgnTM=tm01;;
+   18) export rgnHH=t18z       # dayfile changes here
+       export rgnTM=tm00;;
+   19) export rgnHH=t00z
+       export rgnTM=tm05;; 
+   20) export rgnHH=t00z
+       export rgnTM=tm04;;
+   21) export rgnHH=t00z
+       export rgnTM=tm03;;
+   22) export rgnHH=t00z
+       export rgnTM=tm02;;
+   23) export rgnHH=t00z
+       export rgnTM=tm01;;
+esac
+
+export cnvstat=${cnvstat:-${C_COMIN}/${CONMON_SUFFIX}.${rgnHH}.cnvstat.${rgnTM}}
+
+
+########################################################
+# Execute the script.
+# 
+${CONMONSH:-$HOMEnam_conmon/scripts/exnam_conmon.sh}
+########################################################
+
+################################
+# Remove the Working Directory
+################################
+KEEPDATA=${KEEPDATA:-YES}
+cd ${CONMON_WORK_DIR}
+if [ ${KEEPDATA} = NO ] ; then
+  rm -rf ${CONMON_WORK_DIR}
+fi
+
+echo "<-- JNAM_CONMON"

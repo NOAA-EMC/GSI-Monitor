@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -xa
 
 #-----------------------------------------------------
@@ -33,9 +33,6 @@ echo "--> diag2grad_t_case.sh"
 
    ctype=`echo ${mtype} | cut -c2-4`
    nreal2=`expr $nreal - 2`
-   if [[ $VERBOSE = "YES" ]]; then
-      echo ctype, nreal2 = $ctype, nreal2
-   fi
 
    card=alllev
    run_exe=1

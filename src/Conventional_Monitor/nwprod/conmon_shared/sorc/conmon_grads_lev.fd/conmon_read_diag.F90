@@ -1738,17 +1738,17 @@ module conmon_read_diag
             exit 
          endif
 
+         !--- read diag info
+         allocate(cdiag(ii),rdiag(file_nreal,ii))
+         read(lunin,IOSTAT=iflag) cdiag,rdiag
+
          !--------------------------------------------- 
          ! skip to next iteration if types don't match
          !
          if(( return_all .eqv. .false. ) .AND. ( trim( dtype ) /= trim( ctype )))  then
+            deallocate(cdiag, rdiag)
             cycle
          endif
-
-
-         !--- read diag info
-         allocate(cdiag(ii),rdiag(file_nreal,ii))
-         read(lunin,IOSTAT=iflag) cdiag,rdiag
 
          !--- exit loop on read error
          if( iflag /= 0 ) then
