@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -xa
 
 #-------------------------------------------------------
@@ -38,7 +38,7 @@ set -xa
    nreal2_ps=`expr $nreal - 2`     ### the data items in the grads files 
 
 
-   if [ "$mtype" = 'ps180' -o "$mtype" = 'ps181' -o  "$mtype" = 'ps183' -o  "$mtype" = 'ps187' ]; then
+   if [ "$mtype" = 'ps180' -o "$mtype" = 'ps181' -o  "$mtype" = 'ps183' -o  "$mtype" = 'ps187' -o "$mtype" = 'ps132' ]; then
       rm -f diag2grads
       cp $EXECconmon/conmon_grads_sfctime.x ./diag2grads
       rm -f input

@@ -22,11 +22,14 @@ echo "MACHINE_ID = $MACHINE_ID"
 source $DIR_ROOT/ush/module-setup.sh
 
 module use $DIR_ROOT/modulefiles
-module load $MACHINE_ID
+module load $MACHINE_ID.$COMPILER
 module list
 
 # Collect BUILD Options
 CMAKE_OPTS+=" -DBUILD_UTIL_ALLMON=ON"
+
+# Build type for executables
+CMAKE_OPTS+=" -DCMAKE_BUILD_TYPE=$BUILD_TYPE"
 
 # Install destination for built executables, libraries, CMake Package config
 CMAKE_OPTS+=" -DCMAKE_INSTALL_PREFIX=$INSTALL_PREFIX"
