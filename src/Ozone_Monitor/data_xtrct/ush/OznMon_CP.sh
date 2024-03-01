@@ -203,8 +203,8 @@ if compgen -G "${OZN_DATA_DIR}/time/*${PDATE}*.ieee_d*" > /dev/null; then
       $SUB --account=${ACCOUNT} --time=10 -J ${jobname} -D . \
         -o ${logfile} --ntasks=1 --mem=5g ${job}
 
-   elif [[ $MY_MACHINE = "orion" ]]; then
-      echo submit job on orion
+   elif [[ $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
+      echo submit job on orion or hercules
       $SUB --account=${ACCOUNT} --time=10 -J ${jobname} -D . \
         -o ${logfile} --ntasks=1 --mem=5g ${job}
    fi

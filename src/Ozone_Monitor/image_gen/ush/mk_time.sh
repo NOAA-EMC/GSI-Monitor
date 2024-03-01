@@ -50,7 +50,8 @@ for dsrc in ${data_source}; do
 >$cmdfile
    for type in ${SATYPE}; do
       if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "jet" || 
-            ${MY_MACHINE} = "s4"   || ${MY_MACHINE} = "orion" ]]; then
+            ${MY_MACHINE} = "s4"   || ${MY_MACHINE} = "orion" ||
+            ${MY_MACHINE} = "hercules" ]]; then
          echo "${ctr} ${OZN_IG_SCRIPTS}/plot_time.sh $type $suffix '$list' $dsrc" >> $cmdfile
          ((ctr=ctr+1))
       else
@@ -71,7 +72,8 @@ for dsrc in ${data_source}; do
       rm -f $errf
    fi
 
-   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" || ${MY_MACHINE} = "orion" ]]; then
+   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" ||
+         ${MY_MACHINE} = "orion" || ${MY_MACHINE} = "hercules" ]]; then
 
       $SUB --account ${ACCOUNT} -n $ctr  -o ${logf} -D . -J ${job} --time=10 \
            --wrap "srun -l --multi-prog ${cmdfile}"

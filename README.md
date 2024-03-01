@@ -3,7 +3,7 @@ GSI Monitoring Tools
 
 These tools monitor the Gridpoint Statistical Interpolation (GSI) package's data assimiliation, detecting 
 and reporting missing data sources, low observational counts, and high penalty values.  These machines 
-are supported:  wcoss2, hera, orion, jet, s4.
+are supported:  wcoss2, hera, hercules, orion, jet, s4.
 
 Suite includes:
 ```

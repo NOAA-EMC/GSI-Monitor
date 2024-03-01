@@ -30,7 +30,8 @@ export MY_MACHINE=$machine_id
 #         run-time modules.  If the run-time mod idea passes muster
 #         then I'll open an issue for the change to those machines.
 #
-if [[ $MY_MACHINE = "wcoss2" || $MY_MACHINE = "hera" || $MY_MACHINE = "orion" || $MY_MACHINE = "s4" || $MY_MACHINE = "jet" ]]; then
+if [[ $MY_MACHINE = "wcoss2" || $MY_MACHINE = "hera" || $MY_MACHINE = "orion" || \
+      $MY_MACHINE = "hercules" || $MY_MACHINE = "s4" || $MY_MACHINE = "jet" ]]; then
    source $DIR_ROOT/ush/module-setup.sh
    module use $DIR_ROOT/modulefiles
    module load ${MACHINE_ID}.${COMPILER}-run
@@ -95,6 +96,17 @@ case $MY_MACHINE in
    orion) 
       export SUB="sbatch" #/opt/slurm/bin/sbatch
       export SERVICE_PARTITION="orion"
+
+      tankdir="/work/noaa/da/$USER/nbns"
+      ptmp="/work2/noaa/stmp/$USER"
+      stmp="/work/noaa/stmp/$USER"
+      queue=""
+      project=""
+      account="da-cpu"
+
+   hercules) 
+      export SUB="sbatch" #/opt/slurm/bin/sbatch
+      export SERVICE_PARTITION="hercules"
 
       tankdir="/work/noaa/da/$USER/nbns"
       ptmp="/work2/noaa/stmp/$USER"

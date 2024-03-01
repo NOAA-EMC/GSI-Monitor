@@ -68,7 +68,8 @@ for ptype in ${data_source}; do
       if [[ $type != "omi_aura" && $type != "gome_metop-a" && \
 	    $type != "gome_metop-b" && $type != "ompstc8_npp" && $type != "ompstc8_n20" ]]; then
          if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "jet" ||
-               ${MY_MACHINE} = "s4"   || ${MY_MACHINE} = "orion" ]]; then
+               ${MY_MACHINE} = "s4"   || ${MY_MACHINE} = "orion" ||
+               ${MY_MACHINE} = "hercules" ]]; then
             echo "${ctr} ${OZN_IG_SCRIPTS}/plot_summary.sh $type $ptype" >> $cmdfile
          else
             echo "${OZN_IG_SCRIPTS}/plot_summary.sh $type $ptype" >> $cmdfile
@@ -95,7 +96,8 @@ for ptype in ${data_source}; do
    fi
 
 
-   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" || ${MY_MACHINE} = "orion" ]]; then
+   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" || ${MY_MACHINE} = "orion" || 
+         ${MY_MACHINE} = "hercules" ]]; then
 
       $SUB --account ${ACCOUNT} -n $ctr  -o ${logf} -D . -J ${job} --time=10 \
            --wrap "srun -l --multi-prog ${cmdfile}"
