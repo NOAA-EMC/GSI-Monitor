@@ -103,6 +103,7 @@ case $MY_MACHINE in
       queue=""
       project=""
       account="da-cpu"
+      ;;
 
    hercules) 
       export SUB="sbatch" #/opt/slurm/bin/sbatch
