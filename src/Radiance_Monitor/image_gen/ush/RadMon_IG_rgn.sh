@@ -131,7 +131,7 @@ fi
 last_plot_time=${TANKimg}/last_plot_time
 echo last_plot_time = $last_plot_time
 
-latest_data=`${MON_USH}/rgn_find_cycle.pl --cyc 1 --dir ${TANKverf}`
+latest_data=`${MON_USH}/rgn_find_cycle.pl --dir ${TANKverf} --mon radmon`
 
 if [[ ${pdate} = "" ]]; then
    if [[ -e ${last_plot_time} ]]; then
