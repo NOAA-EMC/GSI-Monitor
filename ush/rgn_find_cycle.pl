@@ -7,7 +7,7 @@
 #
 #    Arguments:
 #       --dir     : Required string value containing  $TANKdir/$SUFFIX.
-#       --mon     : Optional monitor name, default is conmon.  
+#       --mon     : Optional monitor name, default is radmon.  
 #
 #------------------------------------------------------------------------
 
@@ -50,7 +50,7 @@
    ##------------------------------------------------------------------
 
    my $dir  = '';
-   my $mon  = 'conmon';
+   my $mon  = 'radmon';
 
    GetOptions( 'dir=s' => \$dir,
                'mon:s' => \$mon );
