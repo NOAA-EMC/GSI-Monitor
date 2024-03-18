@@ -428,7 +428,7 @@ program bcor
         if (count(j,k)>0) then
            penalty(j,k)=penalty(j,k)/count(j,k)
         else
-           count(j,k)=rmiss
+           count(j,k) = 0.0
            penalty(j,k)=rmiss
         endif
      end do
