@@ -218,7 +218,6 @@ program bcoef
 
 !       If observation was assimilated, accumulate sum
         if (data_chan(j)%errinv > 1.e-6) then
-!           pen        =  data_chan(j)%errinv*(data_chan(j)%omgbc)**2
            pen        =  (data_chan(j)%errinv*(data_chan(j)%omgbc))**2
            count(j)   = count(j) + 1.0 
            penalty(j) = penalty(j) + pen
@@ -238,7 +237,7 @@ program bcoef
      if (count(j)>0) then
         penalty(j)=penalty(j)/count(j)
      else
-        count(j)=rmiss
+        count(j)=0.0
         penalty(j)=rmiss
      endif
   end do
