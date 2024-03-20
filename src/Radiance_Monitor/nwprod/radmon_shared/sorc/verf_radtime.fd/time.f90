@@ -383,7 +383,7 @@ program time
               endif
 
            else
-              count(j,k)=rmiss
+              count(j,k)=0.0
               penalty(j,k)=rmiss
            endif
 

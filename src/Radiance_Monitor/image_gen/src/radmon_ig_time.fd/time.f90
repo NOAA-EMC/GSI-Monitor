@@ -190,7 +190,11 @@ program gatime
                 tot_cnt = tot_cnt + cnt(ftyp,cyc,j,k)
              end do
 
-             chi(ftyp,j,k) = (tot_pen/tot_cnt)
+             if( tot_cnt > 0.0 ) then
+                 chi(ftyp,j,k) = (tot_pen/tot_cnt)
+             else
+                 chi(ftyp,j,k) = rmiss
+             end if
          end do
       end do
    end do
