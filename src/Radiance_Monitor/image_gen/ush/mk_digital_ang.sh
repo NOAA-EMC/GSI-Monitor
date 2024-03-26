@@ -106,7 +106,6 @@ for type in ${SATYPE_LIST}; do
    if [[ $RAD_AREA = 'rgn' ]]; then
       nregion=1
    fi
-   echo "mk_digital_angle.sh, nregion: $nregion"
 
    rm -f ${input}
 
