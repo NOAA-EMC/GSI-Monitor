@@ -40,7 +40,7 @@
 function large_mv () {
    while read imgf; do
       if [[ -s $imgf ]]; then
-         mv -f $imgf ${IMGNDIR}/$1/.
+         mv -f $imgf ${IMGNDIR}/$1
       fi
    done
 }
@@ -106,6 +106,7 @@ for type in ${SATYPE_LIST}; do
    if [[ $RAD_AREA = 'rgn' ]]; then
       nregion=1
    fi
+   echo "mk_digital_angle.sh, nregion: $nregion"
 
    rm -f ${input}
 

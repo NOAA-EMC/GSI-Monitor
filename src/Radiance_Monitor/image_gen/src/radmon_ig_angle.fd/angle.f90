@@ -221,10 +221,6 @@ program angle
    allocate ( ordang2   (2,3,nstep,nchanl,nregion,2) )    
    allocate ( ordang1   (2,3,nstep,nchanl,nregion,2) )    
 
-  do rgn=1,nregion
-     write(6,*) 'rgn = ', rgn
-  end do
-
   !--------------------
   ! initialize arrays
   !--------------------
@@ -1456,6 +1452,8 @@ program angle
                            ,F12.6,',',F12.6,',',F12.6,',',F12.6,',',F12.6,',' &
                            ,F12.6,',',F12.6,',',F12.6,',',F12.6,',',F12.6,',' &
                            ,F12.6,',',F12.6,',',F12.6,',',F12.6,',',F12.6,',')
+  83 FORMAT(A10,',',A10,',')
+  84 FORMAT(F12.6,',')
 
   do chan=1,nchanl
 
@@ -1501,31 +1499,22 @@ program angle
      !  fixang data is arranged:
      !     one row for each time step (cycle) consisting of:
      !        chan, time, 
-     !        avg ges fixang rgn 1, avg ges fixang rgn 2, avg ges fixang rgn 3,
-     !        avg ges fixang rgn 4, avg ges fixang rgn 5, avg anl fixang rgn 1,
-     !        avg anl fixang rgn 2, avg anl fixang rgn 3, avg anl fixang rgn 4,
-     !        avg anl fixang rgn 5, 
-     !        sdv ges fixang rgn 1, sdv ges fixang rgn 2, sdv ges fixang rgn 3,
-     !        sdv ges fixang rgn 4, sdv ges fixang rgn 5, sdv anl fixang rgn 1,
-     !        sdv anl fixang rgn 2, sdv anl fixang rgn 3, sdv anl fixang rgn 4,
-     !        sdv anl fixang rgn 5
+     !        avg ges fixang rgn 1-n, avg anl fixang rgn 1-n,
+     !        sdv ges fixang rgn 1-n, sdv anl fixang rgn 1-n
      !
      open(lsatout,file=fixang_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' fixang_out_file opened, status:  ', open_status
 
      do cyc=1,ncycle
-         write(lsatout,82) trim(str_nchanl), trim(times(cyc)),     &
-                 t_fixang(ges,cyc,chan,1,avg), t_fixang(ges,cyc,chan,2,avg), &
-                 t_fixang(ges,cyc,chan,3,avg), t_fixang(ges,cyc,chan,4,avg), &
-                 t_fixang(ges,cyc,chan,5,avg), t_fixang(anl,cyc,chan,1,avg), &
-                 t_fixang(anl,cyc,chan,2,avg), t_fixang(anl,cyc,chan,3,avg), &
-                 t_fixang(anl,cyc,chan,4,avg), t_fixang(anl,cyc,chan,5,avg), &
-                 t_fixang(ges,cyc,chan,1,sdv), t_fixang(anl,cyc,chan,2,sdv), &
-                 t_fixang(ges,cyc,chan,3,sdv), t_fixang(anl,cyc,chan,4,sdv), &
-                 t_fixang(ges,cyc,chan,5,sdv), t_fixang(ges,cyc,chan,1,sdv), &
-                 t_fixang(ges,cyc,chan,2,sdv), t_fixang(ges,cyc,chan,3,sdv), &
-                 t_fixang(ges,cyc,chan,4,sdv), t_fixang(ges,cyc,chan,5,sdv)
+
+         write(lsatout,83, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_fixang(ges,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_fixang(anl,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_fixang(ges,cyc,chan,ii,sdv); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_fixang(anl,cyc,chan,ii,sdv); end do
+         write(lsatout, *) ! Finish record 
+
      end do
      close(lsatout)
 
@@ -1533,25 +1522,22 @@ program angle
      !  lapse data is arranged:
      !     one row for each time step (cycle) consisting of:
      !        chan, time, 
-     !        avg ges lapse rgn 1-5, avg anl lapse rgn 1-5
-     !        sdv ges lapse rgn 1-5, sdv anl lapse rgn 1-5
+     !        avg ges lapse rgn 1-n, avg anl lapse rgn 1-n
+     !        sdv ges lapse rgn 1-n, sdv anl lapse rgn 1-n
      !
      open(lsatout,file=lapse_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' lapse_out_file opened, status:  ', open_status
 
      do cyc=1,ncycle
-         write(lsatout,82) trim(str_nchanl), trim(times(cyc)),     &
-                 t_lapse(ges,cyc,chan,1,avg), t_lapse(ges,cyc,chan,2,avg), &
-                 t_lapse(ges,cyc,chan,3,avg), t_lapse(ges,cyc,chan,4,avg), &
-                 t_lapse(ges,cyc,chan,5,avg), t_lapse(anl,cyc,chan,1,avg), &
-                 t_lapse(anl,cyc,chan,2,avg), t_lapse(anl,cyc,chan,3,avg), &
-                 t_lapse(anl,cyc,chan,4,avg), t_lapse(anl,cyc,chan,5,avg), &
-                 t_lapse(ges,cyc,chan,1,sdv), t_lapse(anl,cyc,chan,2,sdv), &
-                 t_lapse(ges,cyc,chan,3,sdv), t_lapse(anl,cyc,chan,4,sdv), &
-                 t_lapse(ges,cyc,chan,5,sdv), t_lapse(ges,cyc,chan,1,sdv), &
-                 t_lapse(ges,cyc,chan,2,sdv), t_lapse(ges,cyc,chan,3,sdv), &
-                 t_lapse(ges,cyc,chan,4,sdv), t_lapse(ges,cyc,chan,5,sdv)
+
+         write(lsatout,83, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_lapse(ges,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_lapse(anl,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_lapse(ges,cyc,chan,ii,sdv); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_lapse(anl,cyc,chan,ii,sdv); end do
+         write(lsatout, *) ! Finish record 
+
      end do
      close(lsatout)
 
@@ -1560,25 +1546,22 @@ program angle
      !  lapse2 data is arranged:
      !     one row for each time step (cycle) consisting of:
      !        chan, time, 
-     !        avg ges lapse2 rgn 1-5, avg anl lapse2 rgn 1-5
-     !        sdv ges lapse2 rgn 1-5, sdv anl lapse2 rgn 1-5
+     !        avg ges lapse2 rgn 1-n, avg anl lapse2 rgn 1-n
+     !        sdv ges lapse2 rgn 1-n, sdv anl lapse2 rgn 1-n
      !
      open(lsatout,file=lapse2_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' lapse2_out_file opened, status:  ', open_status
 
      do cyc=1,ncycle
-         write(lsatout,82) trim(str_nchanl), trim(times(cyc)),     &
-                 t_lapse2(ges,cyc,chan,1,avg), t_lapse2(ges,cyc,chan,2,avg), &
-                 t_lapse2(ges,cyc,chan,3,avg), t_lapse2(ges,cyc,chan,4,avg), &
-                 t_lapse2(ges,cyc,chan,5,avg), t_lapse2(anl,cyc,chan,1,avg), &
-                 t_lapse2(anl,cyc,chan,2,avg), t_lapse2(anl,cyc,chan,3,avg), &
-                 t_lapse2(anl,cyc,chan,4,avg), t_lapse2(anl,cyc,chan,5,avg), &
-                 t_lapse2(ges,cyc,chan,1,sdv), t_lapse2(anl,cyc,chan,2,sdv), &
-                 t_lapse2(ges,cyc,chan,3,sdv), t_lapse2(anl,cyc,chan,4,sdv), &
-                 t_lapse2(ges,cyc,chan,5,sdv), t_lapse2(ges,cyc,chan,1,sdv), &
-                 t_lapse2(ges,cyc,chan,2,sdv), t_lapse2(ges,cyc,chan,3,sdv), &
-                 t_lapse2(ges,cyc,chan,4,sdv), t_lapse2(ges,cyc,chan,5,sdv)
+
+         write(lsatout,83, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_lapse2(ges,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_lapse2(anl,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_lapse2(ges,cyc,chan,ii,sdv); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_lapse2(anl,cyc,chan,ii,sdv); end do
+         write(lsatout, *) ! Finish record 
+
      end do
      close(lsatout)
 
@@ -1586,25 +1569,22 @@ program angle
      !  mean data is arranged:
      !     one row for each time step (cycle) consisting of:
      !        chan, time, 
-     !        avg ges mean rgn 1-5, avg anl mean rgn 1-5
-     !        sdv ges mean rgn 1-5, sdv anl mean rgn 1-5
+     !        avg ges mean rgn 1-n, avg anl mean rgn 1-n
+     !        sdv ges mean rgn 1-n, sdv anl mean rgn 1-n
      !
      open(lsatout,file=mean_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' mean_out_file opened, status:  ', open_status
 
      do cyc=1,ncycle
-         write(lsatout,82) trim(str_nchanl), trim(times(cyc)),     &
-                 t_mean(ges,cyc,chan,1,avg), t_mean(ges,cyc,chan,2,avg), &
-                 t_mean(ges,cyc,chan,3,avg), t_mean(ges,cyc,chan,4,avg), &
-                 t_mean(ges,cyc,chan,5,avg), t_mean(anl,cyc,chan,1,avg), &
-                 t_mean(anl,cyc,chan,2,avg), t_mean(anl,cyc,chan,3,avg), &
-                 t_mean(anl,cyc,chan,4,avg), t_mean(anl,cyc,chan,5,avg), &
-                 t_mean(ges,cyc,chan,1,sdv), t_mean(anl,cyc,chan,2,sdv), &
-                 t_mean(ges,cyc,chan,3,sdv), t_mean(anl,cyc,chan,4,sdv), &
-                 t_mean(ges,cyc,chan,5,sdv), t_mean(ges,cyc,chan,1,sdv), &
-                 t_mean(ges,cyc,chan,2,sdv), t_mean(ges,cyc,chan,3,sdv), &
-                 t_mean(ges,cyc,chan,4,sdv), t_mean(ges,cyc,chan,5,sdv)
+
+         write(lsatout,83, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_mean(ges,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_mean(anl,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_mean(ges,cyc,chan,ii,sdv); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_mean(anl,cyc,chan,ii,sdv); end do
+         write(lsatout, *) ! Finish record 
+
      end do
      close(lsatout)
 
@@ -1613,25 +1593,22 @@ program angle
      !  scangl data is arranged:
      !     one row for each time step (cycle) consisting of:
      !        chan, time, 
-     !        avg ges scangl rgn 1-5, avg anl scangl rgn 1-5
-     !        sdv ges scangl rgn 1-5, sdv anl scangl rgn 1-5
+     !        avg ges scangl rgn 1-n, avg anl scangl rgn 1-n
+     !        sdv ges scangl rgn 1-n, sdv anl scangl rgn 1-n
      !
      open(lsatout,file=scangl_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' scangl_out_file opened, status:  ', open_status
 
      do cyc=1,ncycle
-         write(lsatout,82) trim(str_nchanl), trim(times(cyc)),     &
-                 t_scangl(ges,cyc,chan,1,avg), t_scangl(ges,cyc,chan,2,avg), &
-                 t_scangl(ges,cyc,chan,3,avg), t_scangl(ges,cyc,chan,4,avg), &
-                 t_scangl(ges,cyc,chan,5,avg), t_scangl(anl,cyc,chan,1,avg), &
-                 t_scangl(anl,cyc,chan,2,avg), t_scangl(anl,cyc,chan,3,avg), &
-                 t_scangl(anl,cyc,chan,4,avg), t_scangl(anl,cyc,chan,5,avg), &
-                 t_scangl(ges,cyc,chan,1,sdv), t_scangl(anl,cyc,chan,2,sdv), &
-                 t_scangl(ges,cyc,chan,3,sdv), t_scangl(anl,cyc,chan,4,sdv), &
-                 t_scangl(ges,cyc,chan,5,sdv), t_scangl(ges,cyc,chan,1,sdv), &
-                 t_scangl(ges,cyc,chan,2,sdv), t_scangl(ges,cyc,chan,3,sdv), &
-                 t_scangl(ges,cyc,chan,4,sdv), t_scangl(ges,cyc,chan,5,sdv)
+
+         write(lsatout,83, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_scangl(ges,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_scangl(anl,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_scangl(ges,cyc,chan,ii,sdv); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_scangl(anl,cyc,chan,ii,sdv); end do
+         write(lsatout, *) ! Finish record 
+
      end do
      close(lsatout)
 
@@ -1640,25 +1617,22 @@ program angle
      !  clw data is arranged:
      !     one row for each time step (cycle) consisting of:
      !        chan, time, 
-     !        avg ges clw rgn 1-5, avg anl clw rgn 1-5
-     !        sdv ges clw rgn 1-5, sdv anl clw rgn 1-5
+     !        avg ges clw rgn 1-n, avg anl clw rgn 1-n
+     !        sdv ges clw rgn 1-n, sdv anl clw rgn 1-n
      !
      open(lsatout,file=clw_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' clw_out_file opened, status:  ', open_status
 
      do cyc=1,ncycle
-         write(lsatout,82) trim(str_nchanl), trim(times(cyc)),     &
-                 t_clw(ges,cyc,chan,1,avg), t_clw(ges,cyc,chan,2,avg), &
-                 t_clw(ges,cyc,chan,3,avg), t_clw(ges,cyc,chan,4,avg), &
-                 t_clw(ges,cyc,chan,5,avg), t_clw(anl,cyc,chan,1,avg), &
-                 t_clw(anl,cyc,chan,2,avg), t_clw(anl,cyc,chan,3,avg), &
-                 t_clw(anl,cyc,chan,4,avg), t_clw(anl,cyc,chan,5,avg), &
-                 t_clw(ges,cyc,chan,1,sdv), t_clw(anl,cyc,chan,2,sdv), &
-                 t_clw(ges,cyc,chan,3,sdv), t_clw(anl,cyc,chan,4,sdv), &
-                 t_clw(ges,cyc,chan,5,sdv), t_clw(ges,cyc,chan,1,sdv), &
-                 t_clw(ges,cyc,chan,2,sdv), t_clw(ges,cyc,chan,3,sdv), &
-                 t_clw(ges,cyc,chan,4,sdv), t_clw(ges,cyc,chan,5,sdv)
+
+         write(lsatout,83, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_clw(ges,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_clw(anl,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_clw(ges,cyc,chan,ii,sdv); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_clw(anl,cyc,chan,ii,sdv); end do
+         write(lsatout, *) ! Finish record 
+
      end do
      close(lsatout)
 
@@ -1667,25 +1641,22 @@ program angle
      !   cos data is arranged:
      !     one row for each time step (cycle) consisting of:
      !        chan, time, 
-     !        avg ges  cos rgn 1-5, avg anl  cos rgn 1-5
-     !        sdv ges  cos rgn 1-5, sdv anl  cos rgn 1-5
+     !        avg ges  cos rgn 1-n, avg anl  cos rgn 1-n
+     !        sdv ges  cos rgn 1-n, sdv anl  cos rgn 1-n
      !
      open(lsatout,file=cos_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' cos_out_file opened, status:  ', open_status
 
      do cyc=1,ncycle
-         write(lsatout,82) trim(str_nchanl), trim(times(cyc)),     &
-                 t_cos(ges,cyc,chan,1,avg), t_cos(ges,cyc,chan,2,avg), &
-                 t_cos(ges,cyc,chan,3,avg), t_cos(ges,cyc,chan,4,avg), &
-                 t_cos(ges,cyc,chan,5,avg), t_cos(anl,cyc,chan,1,avg), &
-                 t_cos(anl,cyc,chan,2,avg), t_cos(anl,cyc,chan,3,avg), &
-                 t_cos(anl,cyc,chan,4,avg), t_cos(anl,cyc,chan,5,avg), &
-                 t_cos(ges,cyc,chan,1,sdv), t_cos(anl,cyc,chan,2,sdv), &
-                 t_cos(ges,cyc,chan,3,sdv), t_cos(anl,cyc,chan,4,sdv), &
-                 t_cos(ges,cyc,chan,5,sdv), t_cos(ges,cyc,chan,1,sdv), &
-                 t_cos(ges,cyc,chan,2,sdv), t_cos(ges,cyc,chan,3,sdv), &
-                 t_cos(ges,cyc,chan,4,sdv), t_cos(ges,cyc,chan,5,sdv)
+
+         write(lsatout,83, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_cos(ges,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_cos(anl,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_cos(ges,cyc,chan,ii,sdv); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_cos(anl,cyc,chan,ii,sdv); end do
+         write(lsatout, *) ! Finish record 
+
      end do
      close(lsatout)
 
@@ -1694,25 +1665,22 @@ program angle
      !   sin data is arranged:
      !     one row for each time step (cycle) consisting of:
      !        chan, time, 
-     !        avg ges  sin rgn 1-5, avg anl  sin rgn 1-5
-     !        sdv ges  sin rgn 1-5, sdv anl  sin rgn 1-5
+     !        avg ges  sin rgn 1-n, avg anl  sin rgn 1-n
+     !        sdv ges  sin rgn 1-n, sdv anl  sin rgn 1-n
      !
      open(lsatout,file=sin_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' sin_out_file opened, status:  ', open_status
 
      do cyc=1,ncycle
-         write(lsatout,82) trim(str_nchanl), trim(times(cyc)),     &
-                 t_sin(ges,cyc,chan,1,avg), t_sin(ges,cyc,chan,2,avg), &
-                 t_sin(ges,cyc,chan,3,avg), t_sin(ges,cyc,chan,4,avg), &
-                 t_sin(ges,cyc,chan,5,avg), t_sin(anl,cyc,chan,1,avg), &
-                 t_sin(anl,cyc,chan,2,avg), t_sin(anl,cyc,chan,3,avg), &
-                 t_sin(anl,cyc,chan,4,avg), t_sin(anl,cyc,chan,5,avg), &
-                 t_sin(ges,cyc,chan,1,sdv), t_sin(anl,cyc,chan,2,sdv), &
-                 t_sin(ges,cyc,chan,3,sdv), t_sin(anl,cyc,chan,4,sdv), &
-                 t_sin(ges,cyc,chan,5,sdv), t_sin(ges,cyc,chan,1,sdv), &
-                 t_sin(ges,cyc,chan,2,sdv), t_sin(ges,cyc,chan,3,sdv), &
-                 t_sin(ges,cyc,chan,4,sdv), t_sin(ges,cyc,chan,5,sdv)
+
+         write(lsatout,83, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_sin(ges,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_sin(anl,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_sin(ges,cyc,chan,ii,sdv); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_sin(anl,cyc,chan,ii,sdv); end do
+         write(lsatout, *) ! Finish record 
+
      end do
      close(lsatout)
 
@@ -1721,25 +1689,22 @@ program angle
      !   emiss data is arranged:
      !     one row for each time step (cycle) consisting of:
      !        chan, time, 
-     !        avg ges  emiss rgn 1-5, avg anl  emiss rgn 1-5
-     !        sdv ges  emiss rgn 1-5, sdv anl  emiss rgn 1-5
+     !        avg ges  emiss rgn 1-n, avg anl  emiss rgn 1-n
+     !        sdv ges  emiss rgn 1-n, sdv anl  emiss rgn 1-n
      !
      open(lsatout,file=emiss_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' emiss_out_file opened, status:  ', open_status
 
      do cyc=1,ncycle
-         write(lsatout,82) trim(str_nchanl), trim(times(cyc)),     &
-                 t_emiss(ges,cyc,chan,1,avg), t_emiss(ges,cyc,chan,2,avg), &
-                 t_emiss(ges,cyc,chan,3,avg), t_emiss(ges,cyc,chan,4,avg), &
-                 t_emiss(ges,cyc,chan,5,avg), t_emiss(anl,cyc,chan,1,avg), &
-                 t_emiss(anl,cyc,chan,2,avg), t_emiss(anl,cyc,chan,3,avg), &
-                 t_emiss(anl,cyc,chan,4,avg), t_emiss(anl,cyc,chan,5,avg), &
-                 t_emiss(ges,cyc,chan,1,sdv), t_emiss(anl,cyc,chan,2,sdv), &
-                 t_emiss(ges,cyc,chan,3,sdv), t_emiss(anl,cyc,chan,4,sdv), &
-                 t_emiss(ges,cyc,chan,5,sdv), t_emiss(ges,cyc,chan,1,sdv), &
-                 t_emiss(ges,cyc,chan,2,sdv), t_emiss(ges,cyc,chan,3,sdv), &
-                 t_emiss(ges,cyc,chan,4,sdv), t_emiss(ges,cyc,chan,5,sdv)
+
+         write(lsatout,83, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_emiss(ges,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_emiss(anl,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_emiss(ges,cyc,chan,ii,sdv); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_emiss(anl,cyc,chan,ii,sdv); end do
+         write(lsatout, *) ! Finish record 
+
      end do
      close(lsatout)
 
@@ -1748,25 +1713,22 @@ program angle
      !   ordang4 data is arranged:
      !     one row for each time step (cycle) consisting of:
      !        chan, time, 
-     !        avg ges  ordang4 rgn 1-5, avg anl  ordang4 rgn 1-5
-     !        sdv ges  ordang4 rgn 1-5, sdv anl  ordang4 rgn 1-5
+     !        avg ges  ordang4 rgn 1-n, avg anl  ordang4 rgn 1-n
+     !        sdv ges  ordang4 rgn 1-n, sdv anl  ordang4 rgn 1-n
      !
      open(lsatout,file=ordang4_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' ordang4_out_file opened, status:  ', open_status
 
      do cyc=1,ncycle
-         write(lsatout,82) trim(str_nchanl), trim(times(cyc)),     &
-                 t_ordang4(ges,cyc,chan,1,avg), t_ordang4(ges,cyc,chan,2,avg), &
-                 t_ordang4(ges,cyc,chan,3,avg), t_ordang4(ges,cyc,chan,4,avg), &
-                 t_ordang4(ges,cyc,chan,5,avg), t_ordang4(anl,cyc,chan,1,avg), &
-                 t_ordang4(anl,cyc,chan,2,avg), t_ordang4(anl,cyc,chan,3,avg), &
-                 t_ordang4(anl,cyc,chan,4,avg), t_ordang4(anl,cyc,chan,5,avg), &
-                 t_ordang4(ges,cyc,chan,1,sdv), t_ordang4(anl,cyc,chan,2,sdv), &
-                 t_ordang4(ges,cyc,chan,3,sdv), t_ordang4(anl,cyc,chan,4,sdv), &
-                 t_ordang4(ges,cyc,chan,5,sdv), t_ordang4(ges,cyc,chan,1,sdv), &
-                 t_ordang4(ges,cyc,chan,2,sdv), t_ordang4(ges,cyc,chan,3,sdv), &
-                 t_ordang4(ges,cyc,chan,4,sdv), t_ordang4(ges,cyc,chan,5,sdv)
+
+         write(lsatout,83, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_ordang4(ges,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_ordang4(anl,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_ordang4(ges,cyc,chan,ii,sdv); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_ordang4(anl,cyc,chan,ii,sdv); end do
+         write(lsatout, *) ! Finish record 
+
      end do
      close(lsatout)
 
@@ -1775,25 +1737,22 @@ program angle
      !   ordang3 data is arranged:
      !     one row for each time step (cycle) consisting of:
      !        chan, time, 
-     !        avg ges  ordang3 rgn 1-5, avg anl  ordang3 rgn 1-5
-     !        sdv ges  ordang3 rgn 1-5, sdv anl  ordang3 rgn 1-5
+     !        avg ges  ordang3 rgn 1-n, avg anl  ordang3 rgn 1-n
+     !        sdv ges  ordang3 rgn 1-n, sdv anl  ordang3 rgn 1-n
      !
      open(lsatout,file=ordang3_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' ordang3_out_file opened, status:  ', open_status
 
      do cyc=1,ncycle
-         write(lsatout,82) trim(str_nchanl), trim(times(cyc)),     &
-                 t_ordang3(ges,cyc,chan,1,avg), t_ordang3(ges,cyc,chan,2,avg), &
-                 t_ordang3(ges,cyc,chan,3,avg), t_ordang3(ges,cyc,chan,4,avg), &
-                 t_ordang3(ges,cyc,chan,5,avg), t_ordang3(anl,cyc,chan,1,avg), &
-                 t_ordang3(anl,cyc,chan,2,avg), t_ordang3(anl,cyc,chan,3,avg), &
-                 t_ordang3(anl,cyc,chan,4,avg), t_ordang3(anl,cyc,chan,5,avg), &
-                 t_ordang3(ges,cyc,chan,1,sdv), t_ordang3(anl,cyc,chan,2,sdv), &
-                 t_ordang3(ges,cyc,chan,3,sdv), t_ordang3(anl,cyc,chan,4,sdv), &
-                 t_ordang3(ges,cyc,chan,5,sdv), t_ordang3(ges,cyc,chan,1,sdv), &
-                 t_ordang3(ges,cyc,chan,2,sdv), t_ordang3(ges,cyc,chan,3,sdv), &
-                 t_ordang3(ges,cyc,chan,4,sdv), t_ordang3(ges,cyc,chan,5,sdv)
+
+         write(lsatout,83, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_ordang3(ges,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_ordang3(anl,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_ordang3(ges,cyc,chan,ii,sdv); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_ordang3(anl,cyc,chan,ii,sdv); end do
+         write(lsatout, *) ! Finish record 
+
      end do
      close(lsatout)
 
@@ -1802,25 +1761,22 @@ program angle
      !   ordang2 data is arranged:
      !     one row for each time step (cycle) consisting of:
      !        chan, time, 
-     !        avg ges  ordang2 rgn 1-5, avg anl  ordang2 rgn 1-5
-     !        sdv ges  ordang2 rgn 1-5, sdv anl  ordang2 rgn 1-5
+     !        avg ges  ordang2 rgn 1-n, avg anl  ordang2 rgn 1-n
+     !        sdv ges  ordang2 rgn 1-n, sdv anl  ordang2 rgn 1-n
      !
      open(lsatout,file=ordang2_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' ordang2_out_file opened, status:  ', open_status
 
      do cyc=1,ncycle
-         write(lsatout,82) trim(str_nchanl), trim(times(cyc)),     &
-                 t_ordang2(ges,cyc,chan,1,avg), t_ordang2(ges,cyc,chan,2,avg), &
-                 t_ordang2(ges,cyc,chan,3,avg), t_ordang2(ges,cyc,chan,4,avg), &
-                 t_ordang2(ges,cyc,chan,5,avg), t_ordang2(anl,cyc,chan,1,avg), &
-                 t_ordang2(anl,cyc,chan,2,avg), t_ordang2(anl,cyc,chan,3,avg), &
-                 t_ordang2(anl,cyc,chan,4,avg), t_ordang2(anl,cyc,chan,5,avg), &
-                 t_ordang2(ges,cyc,chan,1,sdv), t_ordang2(anl,cyc,chan,2,sdv), &
-                 t_ordang2(ges,cyc,chan,3,sdv), t_ordang2(anl,cyc,chan,4,sdv), &
-                 t_ordang2(ges,cyc,chan,5,sdv), t_ordang2(ges,cyc,chan,1,sdv), &
-                 t_ordang2(ges,cyc,chan,2,sdv), t_ordang2(ges,cyc,chan,3,sdv), &
-                 t_ordang2(ges,cyc,chan,4,sdv), t_ordang2(ges,cyc,chan,5,sdv)
+
+         write(lsatout,83, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_ordang2(ges,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_ordang2(anl,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_ordang2(ges,cyc,chan,ii,sdv); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_ordang2(anl,cyc,chan,ii,sdv); end do
+         write(lsatout, *) ! Finish record 
+
      end do
      close(lsatout)
 
@@ -1829,25 +1785,22 @@ program angle
      !   ordang1 data is arranged:
      !     one row for each time step (cycle) consisting of:
      !        chan, time, 
-     !        avg ges  ordang1 rgn 1-5, avg anl  ordang1 rgn 1-5
-     !        sdv ges  ordang1 rgn 1-5, sdv anl  ordang1 rgn 1-5
+     !        avg ges  ordang1 rgn 1-n, avg anl  ordang1 rgn 1-n
+     !        sdv ges  ordang1 rgn 1-n, sdv anl  ordang1 rgn 1-n
      !
      open(lsatout,file=ordang1_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' ordang1_out_file opened, status:  ', open_status
 
      do cyc=1,ncycle
-         write(lsatout,82) trim(str_nchanl), trim(times(cyc)),     &
-                 t_ordang1(ges,cyc,chan,1,avg), t_ordang1(ges,cyc,chan,2,avg), &
-                 t_ordang1(ges,cyc,chan,3,avg), t_ordang1(ges,cyc,chan,4,avg), &
-                 t_ordang1(ges,cyc,chan,5,avg), t_ordang1(anl,cyc,chan,1,avg), &
-                 t_ordang1(anl,cyc,chan,2,avg), t_ordang1(anl,cyc,chan,3,avg), &
-                 t_ordang1(anl,cyc,chan,4,avg), t_ordang1(anl,cyc,chan,5,avg), &
-                 t_ordang1(ges,cyc,chan,1,sdv), t_ordang1(anl,cyc,chan,2,sdv), &
-                 t_ordang1(ges,cyc,chan,3,sdv), t_ordang1(anl,cyc,chan,4,sdv), &
-                 t_ordang1(ges,cyc,chan,5,sdv), t_ordang1(ges,cyc,chan,1,sdv), &
-                 t_ordang1(ges,cyc,chan,2,sdv), t_ordang1(ges,cyc,chan,3,sdv), &
-                 t_ordang1(ges,cyc,chan,4,sdv), t_ordang1(ges,cyc,chan,5,sdv)
+
+         write(lsatout,83, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_ordang1(ges,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_ordang1(anl,cyc,chan,ii,avg); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_ordang1(ges,cyc,chan,ii,sdv); end do
+         do ii = 1, nregion; write(lsatout,84, Advance = 'No') t_ordang1(anl,cyc,chan,ii,sdv); end do
+         write(lsatout, *) ! Finish record 
+
      end do
      close(lsatout)
 

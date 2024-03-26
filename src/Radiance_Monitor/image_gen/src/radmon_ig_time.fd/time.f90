@@ -334,23 +334,8 @@ program gatime
                           ,F9.3,',',F9.3,',',F9.3,',',F9.3,',',F9.3,',' &
                           ,F9.2,',',F9.2)
 
-
-   78 FORMAT(A5,',',A10,',',I5.1,',',I5.1)
- 
-   79 FORMAT(A5,',',A10,',',I5.1,',',I5.1,',',I5.1,',',I5.1,',',I5.1,',' & 
-                           ,I5.1,',',I5.1,',',I5.1,',',I5.1,',',I5.1,',')
- 
-   80 FORMAT(A5,',',A10,',',F9.3,',',F9.3) 
-
-   81 FORMAT(A5,',',A10,',',F9.3,',',F9.3,',',F9.3,',',F9.3,',',F9.3,',' & 
-                           ,F9.3,',',F9.3,',',F9.3,',',F9.3,',',F9.3) 
-
-   82 FORMAT(A5,',',A10,',',F9.3,',',F9.3,',',F9.3,',',F9.3,',',F9.3,',' & 
-                           ,F9.3,',',F9.3,',',F9.3,',',F9.3,',',F9.3,',' &
-                           ,F9.3,',',F9.3,',',F9.3,',',F9.3,',',F9.3,',' & 
-                           ,F9.3,',',F9.3,',',F9.3,',',F9.3,',',F9.3)
-
-   83 FORMAT(A5,',',A10,',',F9.3,',',F9.3,',',F9.3,',',F9.3) 
+   84 FORMAT(A10,',',A10,',')
+   85 FORMAT(F12.6,',')
 
 
    write(6,*) 'after formats declared'
@@ -419,28 +404,19 @@ program gatime
      !----------------------------------------------------------------------------
      !  COUNT data is arranged:
      !     for each time step:
-     !          chan, time, cnt ges rgn 1, cnt ges rgn 2, cnt ges rgn 3, 
-     !                      cnt ges rgn 4, cnt ges rgn 5, cnt anl rgn 1,
-     !                      cnt anl rgn 2, cnt anl rgn 3, cnt anl rgn 4,
-     !                      cnt anl rgn 5
+     !          chan, time, cnt ges rgn 1-n, cnt anl rgn 1-n
      !
      open(lsatout,file=cnt_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' cnt_out_file opened, status:  ', open_status
 
-     do cyc=1,ncycle
-        if( nregion == 1 ) then
-           write(6,*) 'nregion = 1, writing cnt_out_file'
-           write(lsatout,78) trim(chan_nums(chan)), trim(times(cyc)),    &
-                         int(cnt(1,cyc,chan,1)), int(cnt(2,cyc,chan,1))
-        else
-           write(lsatout,79) trim(chan_nums(chan)), trim(times(cyc)),       &
-                         int(cnt(1,cyc,chan,1)), int(cnt(1,cyc,chan,2)), &
-                         int(cnt(1,cyc,chan,3)), int(cnt(1,cyc,chan,4)), &
-                         int(cnt(1,cyc,chan,5)), int(cnt(2,cyc,chan,1)), &
-                         int(cnt(2,cyc,chan,2)), int(cnt(2,cyc,chan,3)), &
-                         int(cnt(2,cyc,chan,4)), int(cnt(2,cyc,chan,5))
-        end if
+      do cyc=1,ncycle
+
+         write(lsatout,84, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,85, Advance = 'No') cnt(1,cyc,chan,ii); end do
+         do ii = 1, nregion; write(lsatout,85, Advance = 'No') cnt(2,cyc,chan,ii); end do
+         write(lsatout, *) ! Finish record       
+                                                              
      end do
      close(lsatout)
 
@@ -448,64 +424,41 @@ program gatime
      !----------------------------------------------------------------------------
      !  PENALTY data is arranged:
      !     for each time step:
-     !          chan, time, pen ges rgn 1, pen ges rgn 2, pen ges rgn 3, 
-     !                      pen ges rgn 4, pen ges rgn 5, pen anl rgn 1,
-     !                      pen anl rgn 2, pen anl rgn 3, pen anl rgn 4,
-     !                      pen anl rgn 5
+     !          chan, time, pen ges rgn 1-n, pen anl rgn 1-n,
      !
      open(lsatout,file=pen_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' pen_out_file opened, status:  ', open_status
 
-     do cyc=1,ncycle
-         if( nregion == 1 ) then
-            write(lsatout,80) trim(chan_nums(chan)), trim(times(cyc)),  &
-                          avg_pen(1,cyc,chan,1), avg_pen(2,cyc,chan,1)
-         else
-            write(lsatout,81) trim(chan_nums(chan)), trim(times(cyc)),     &
-                          avg_pen(1,cyc,chan,1), avg_pen(1,cyc,chan,2), &
-                          avg_pen(1,cyc,chan,3), avg_pen(1,cyc,chan,4), &
-                          avg_pen(1,cyc,chan,5), avg_pen(2,cyc,chan,1), &
-                          avg_pen(2,cyc,chan,2), avg_pen(2,cyc,chan,3), &
-                          avg_pen(2,cyc,chan,4), avg_pen(2,cyc,chan,5)
-         end if
+      do cyc=1,ncycle
+
+         write(lsatout,84, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,85, Advance = 'No') avg_pen(1,cyc,chan,ii); end do
+         do ii = 1, nregion; write(lsatout,85, Advance = 'No') avg_pen(2,cyc,chan,ii); end do
+         write(lsatout, *) ! Finish record       
+                                                              
      end do
      close(lsatout)
 
      !----------------------------------------------------------------------------
      !  OM[G|A]NBC data is arranged:
      !     for each time step:
-     !          chan, time, avg omgnbc rgn 1, avg omgnbc rgn 2, avg ombnbc rgn 3, 
-     !                      avg omgnbc rgn 4, avg omgnbc rgn 5, avg omanbc rgn 1,
-     !                      avg omanbc rgn 2, avg omanbc rgn 3, avg omanbc rgn 4,
-     !                      avg omanbc rgn 5, 
-     !                      sdv omgnbc rgn 1, sdv omgnbc rgn 2, sdv omgnbc rgn 3,
-     !                      sdv omgnbc rgn 4, sdv omgnbc rgn 5, sdv omanbc rgn 1,
-     !                      sdv omanbc rgn 2, sdv omanbc rgn 3, sdv omanbc rgn 4,
-     !                      sdv omanbc rgn 5
+     !          chan, time, avg omgnbc rgn 1-n, avg omanbc rgn 1-n,
+     !                      sdv omgnbc rgn 1-n, sdv omanbc rgn 1-n
      !
      open(lsatout,file=omgnbc_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' omgnbc_out_file opened, status:  ', open_status
 
-     do cyc=1,ncycle
-         if( nregion == 1 ) then 
-            write(lsatout,83) trim(chan_nums(chan)), trim(times(cyc)),        &
-                          avg_omgnbc(1,cyc,chan,1), avg_omgnbc(2,cyc,chan,1), &
-                          sdv_omgnbc(1,cyc,chan,1), sdv_omgnbc(2,cyc,chan,1)
-         else 
-            write(lsatout,82) trim(chan_nums(chan)), trim(times(cyc)),        &
-                          avg_omgnbc(1,cyc,chan,1), avg_omgnbc(1,cyc,chan,2), &
-                          avg_omgnbc(1,cyc,chan,3), avg_omgnbc(1,cyc,chan,4), &
-                          avg_omgnbc(1,cyc,chan,5), avg_omgnbc(2,cyc,chan,1), &
-                          avg_omgnbc(2,cyc,chan,2), avg_omgnbc(2,cyc,chan,3), &
-                          avg_omgnbc(2,cyc,chan,4), avg_omgnbc(2,cyc,chan,5), &
-                          sdv_omgnbc(1,cyc,chan,1), sdv_omgnbc(1,cyc,chan,2), &
-                          sdv_omgnbc(1,cyc,chan,3), sdv_omgnbc(1,cyc,chan,4), &
-                          sdv_omgnbc(1,cyc,chan,5), sdv_omgnbc(2,cyc,chan,1), &
-                          sdv_omgnbc(2,cyc,chan,2), sdv_omgnbc(2,cyc,chan,3), &
-                          sdv_omgnbc(2,cyc,chan,4), sdv_omgnbc(2,cyc,chan,5)
-         end if
+      do cyc=1,ncycle
+
+         write(lsatout,84, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,85, Advance = 'No') avg_omgnbc(1,cyc,chan,ii); end do
+         do ii = 1, nregion; write(lsatout,85, Advance = 'No') avg_omgnbc(2,cyc,chan,ii); end do
+         do ii = 1, nregion; write(lsatout,85, Advance = 'No') sdv_omgnbc(1,cyc,chan,ii); end do
+         do ii = 1, nregion; write(lsatout,85, Advance = 'No') sdv_omgnbc(2,cyc,chan,ii); end do
+         write(lsatout, *) ! Finish record       
+                                                              
      end do
      close(lsatout)
 
@@ -514,37 +467,22 @@ program gatime
      !  BIASCR (total correction) data is arranged:
      !     for each time step:
      !          chan, time, 
-     !          avg ges biascr rgn 1, avg ges biascr rgn 2, avg ges biascr rgn 3, 
-     !          avg ges biascr rgn 4, avg ges biascr rgn 5, avg anl biascr rgn 1,
-     !          avg anl biascr rgn 2, avg anl biascr rgn 3, avg anl biascr rgn 4,
-     !          avg anl biascr rgn 5, 
-     !          sdv ges biascr rgn 1, sdv ges biascr rgn 2, sdv ges biascr rgn 3,
-     !          sdv ges biascr rgn 4, sdv ges biascr rgn 5, sdv anl biascr rgn 1,
-     !          sdv anl biascr rgn 2, sdv anl biascr rgn 3, sdv anl biascr rgn 4,
-     !          sdv anl biascr rgn 5
+     !          avg ges biascr rgn 1-n, avg anl biascr rgn 1-n,
+     !          sdv ges biascr rgn 1-n, sdv anl biascr rgn 1-n
      !
      open(lsatout,file=totcor_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' totcor_out_file opened, status:  ', open_status
 
-     do cyc=1,ncycle
-         if( nregion == 1 ) then 
-            write(lsatout,83) trim(chan_nums(chan)), trim(times(cyc)),        &
-                          avg_biascr(1,cyc,chan,1), avg_biascr(2,cyc,chan,1), &
-                          sdv_biascr(1,cyc,chan,1), sdv_biascr(2,cyc,chan,1)
-         else
-            write(lsatout,82) trim(chan_nums(chan)), trim(times(cyc)),     &
-                          avg_biascr(1,cyc,chan,1), avg_biascr(1,cyc,chan,2), &
-                          avg_biascr(1,cyc,chan,3), avg_biascr(1,cyc,chan,4), &
-                          avg_biascr(1,cyc,chan,5), avg_biascr(2,cyc,chan,1), &
-                          avg_biascr(2,cyc,chan,2), avg_biascr(2,cyc,chan,3), &
-                          avg_biascr(2,cyc,chan,4), avg_biascr(2,cyc,chan,5), &
-                          sdv_biascr(1,cyc,chan,1), sdv_biascr(1,cyc,chan,2), &
-                          sdv_biascr(1,cyc,chan,3), sdv_biascr(1,cyc,chan,4), &
-                          sdv_biascr(1,cyc,chan,5), sdv_biascr(2,cyc,chan,1), &
-                          sdv_biascr(2,cyc,chan,2), sdv_biascr(2,cyc,chan,3), &
-                          sdv_biascr(2,cyc,chan,4), sdv_biascr(2,cyc,chan,5)
-         end if
+      do cyc=1,ncycle
+
+         write(lsatout,84, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,85, Advance = 'No') avg_biascr(1,cyc,chan,ii); end do
+         do ii = 1, nregion; write(lsatout,85, Advance = 'No') avg_biascr(2,cyc,chan,ii); end do
+         do ii = 1, nregion; write(lsatout,85, Advance = 'No') sdv_biascr(1,cyc,chan,ii); end do
+         do ii = 1, nregion; write(lsatout,85, Advance = 'No') sdv_biascr(2,cyc,chan,ii); end do
+         write(lsatout, *) ! Finish record       
+                                                              
      end do
      close(lsatout)
 
@@ -552,37 +490,22 @@ program gatime
      !----------------------------------------------------------------------------
      !  OM[G|A]BC data is arranged:
      !     for each time step:
-     !          chan, time, avg omgbc rgn 1, avg omgbc rgn 2, avg ombbc rgn 3, 
-     !                      avg omgbc rgn 4, avg omgbc rgn 5, avg omabc rgn 1,
-     !                      avg omabc rgn 2, avg omabc rgn 3, avg omabc rgn 4,
-     !                      avg omabc rgn 5, 
-     !                      sdv omgbc rgn 1, sdv omgbc rgn 2, sdv omgbc rgn 3,
-     !                      sdv omgbc rgn 4, sdv omgbc rgn 5, sdv omabc rgn 1,
-     !                      sdv omabc rgn 2, sdv omabc rgn 3, sdv omabc rgn 4,
-     !                      sdv omabc rgn 5
+     !          chan, time, avg omgbc rgn 1-n, avg omabc rgn 1-n,
+     !                      sdv omgbc rgn 1-n, sdv omabc rgn 1-n
      !
      open(lsatout,file=omgbc_out_file,iostat=open_status, &
                              action='write',status='new',form='formatted')
      write(6,*)' omgbc_out_file opened, status:  ', open_status
 
-     do cyc=1,ncycle
-         if( nregion == 1 ) then 
-            write(lsatout,83) trim(chan_nums(chan)), trim(times(cyc)),        &
-                          avg_omgbc(1,cyc,chan,1), avg_omgbc(2,cyc,chan,1), &
-                          sdv_omgbc(1,cyc,chan,1), sdv_omgbc(2,cyc,chan,1)
-         else
-            write(lsatout,82) trim(chan_nums(chan)), trim(times(cyc)),     &
-                          avg_omgbc(1,cyc,chan,1), avg_omgbc(1,cyc,chan,2), &
-                          avg_omgbc(1,cyc,chan,3), avg_omgbc(1,cyc,chan,4), &
-                          avg_omgbc(1,cyc,chan,5), avg_omgbc(2,cyc,chan,1), &
-                          avg_omgbc(2,cyc,chan,2), avg_omgbc(2,cyc,chan,3), &
-                          avg_omgbc(2,cyc,chan,4), avg_omgbc(2,cyc,chan,5), &
-                          sdv_omgbc(1,cyc,chan,1), sdv_omgbc(1,cyc,chan,2), &
-                          sdv_omgbc(1,cyc,chan,3), sdv_omgbc(1,cyc,chan,4), &
-                          sdv_omgbc(1,cyc,chan,5), sdv_omgbc(2,cyc,chan,1), &
-                          sdv_omgbc(2,cyc,chan,2), sdv_omgbc(2,cyc,chan,3), &
-                          sdv_omgbc(2,cyc,chan,4), sdv_omgbc(2,cyc,chan,5)
-         end if
+      do cyc=1,ncycle
+
+         write(lsatout,84, Advance = 'No') trim(str_nchanl), trim(times(cyc))
+         do ii = 1, nregion; write(lsatout,85, Advance = 'No') avg_omgbc(1,cyc,chan,ii); end do
+         do ii = 1, nregion; write(lsatout,85, Advance = 'No') avg_omgbc(2,cyc,chan,ii); end do
+         do ii = 1, nregion; write(lsatout,85, Advance = 'No') sdv_omgbc(1,cyc,chan,ii); end do
+         do ii = 1, nregion; write(lsatout,85, Advance = 'No') sdv_omgbc(2,cyc,chan,ii); end do
+         write(lsatout, *) ! Finish record       
+                                                              
      end do
      close(lsatout)
 
