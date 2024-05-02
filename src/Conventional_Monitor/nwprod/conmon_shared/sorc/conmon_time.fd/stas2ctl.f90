@@ -95,7 +95,20 @@ subroutine creatstas_ctl(dtype,itype,ituse,nt,nc,nlev,nregion,nvar,&
    end do
 
    write(21,161) nlev 
-   write(21,170)  
+   write(21,162)  
+   write(21,165)
+   write(21,166)
+   write(21,167)
+   write(21,168)
+   write(21,169)
+   write(21,170)
+   write(21,171)
+   write(21,172)
+   write(21,173)
+   write(21,174)
+   write(21,175)
+   write(21,176)
+   write(21,177)
    write(21,180) nvar 
    write(21,181) nlev
    write(21,182) nlev
@@ -133,7 +146,22 @@ subroutine creatstas_ctl(dtype,itype,ituse,nt,nc,nlev,nregion,nvar,&
 151 format('ydef ',i3,' linear 1.0 1.0')
 152 format(a80)
 161 format('zdef ',i3,' linear 1.0 1.0')
-170 format('tdef 1 linear 00z14dec2001 1hr ')
+162 format('tdef 1 linear 00z14dec2001 1hr ')
+
+165 format('*  z=    1, level=    0-2000')
+166 format('*  z=    2, level=    1000-2000')
+167 format('*  z=    3, level=    950-1000')
+168 format('*  z=    4, level=    900-950')
+169 format('*  z=    5, level=    850-900')
+170 format('*  z=    6, level=    800-850')
+171 format('*  z=    7, level=    750-800')
+172 format('*  z=    8, level=    700-750')
+173 format('*  z=    9, level=    600-700')
+174 format('*  z=   10, level=    500-600')
+175 format('*  z=   11, level=    400-500')
+176 format('*  z=   12, level=    300-400')
+177 format('*  z=   13, level=    0-300')
+
 180 format('vars ',i7)
 181 format('count1     ', i3,'  0 assimilated obs no. ,0: all')
 182 format('count_vqc1     ', i3,'  0  obs no. rejected by vqc for assimilated data, 0: all')
