@@ -1,10 +1,10 @@
 help([[
 ]])
 
-prepend_path("MODULEPATH", "/ncrc/proj/epic/spack-stack/spack-stack-1.6.0/envs/unified-env/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/ncrc/proj/epic/spack-stack/c6/spack-stack-1.6.0/envs/unified-env/install/modulefiles/Core")
 
 local stack_intel_ver=os.getenv("stack_intel_ver") or "2023.2.0"
-local stack_cray_mpich_ver=os.getenv("stack_cray_mpich_ver") or "8.1.28"
+local stack_cray_mpich_ver=os.getenv("stack_cray_mpich_ver") or "8.1.29"
 local grads_ver=os.getenv("grads_ver") or "2.0.2"
 local prod_util_ver=os.getenv("prod_util_ver") or "2.1.1"
 
