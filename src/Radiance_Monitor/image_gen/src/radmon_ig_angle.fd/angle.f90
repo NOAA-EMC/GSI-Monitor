@@ -34,7 +34,7 @@ program angle
   implicit none
 
   integer ftyp,cyc,chan,open_status,prd
-  integer d1, d7, d30, ctr
+  integer d1, d5_7, dmax, ctr, ndays
   integer ges, anl, avg, sdv
 
   logical exist
@@ -79,7 +79,7 @@ program angle
   real,allocatable,dimension(:,:,:,:,:):: ttl_sin, ttl_emiss, ttl_ordang4
   real,allocatable,dimension(:,:,:,:,:):: ttl_ordang3, ttl_ordang2, ttl_ordang1
 
-  ! arrays for d1, d7, and d30 values, which are written to data files
+  ! arrays for d1, d5_7, and dmax values, which are written to data files
   real,allocatable,dimension(:,:,:,:,:)   :: count, penalty 
   real,allocatable,dimension(:,:,:,:,:,:) :: omg_nbc, tot_cor, omg_bc
   real,allocatable,dimension(:,:,:,:,:,:) :: fixang, lapse, lapse2
@@ -105,8 +105,9 @@ program angle
    real                  :: scan_stepsz          = 1.00
    integer               :: scan_nstep           = 90
    integer               :: nregion              = 5
+   integer               :: cyc_per_day          = 4
    namelist /input/ satname, nchanl, ncycle, scan_start, &
-                    scan_stepsz, scan_nstep, nregion
+                    scan_stepsz, scan_nstep, nregion, cyc_per_day
 
 
 !************************************************************************
@@ -435,11 +436,28 @@ program angle
 !       to see more.
 
 !************************************************************************
-!  Process data for the 3 time periods (d1, d7, d30)
+!  Process data for the 3 time periods (d1, d5_7, dmax) (global sources)
+!
+!  Note:  When cyc_per_day == 24 (rgn sources) the 2nd period (d5_7) will
+!         actually only be 5 days (120 cycles).  It will usually be the
+!         same as dmax, which is set to ncycles.  Regional plots only 
+!         include the d1 and d5, but I don't want to change the output 
+!         format so as not to create backward compatibility problems.
 !************************************************************************
-  d1  =4
-  d7  =28
-  d30 = ncycle
+  d1  = cyc_per_day
+
+  if ( cyc_per_day == 24 ) then
+     ndays = 5
+  else
+     ndays = 7
+  end if
+
+  d5_7 = cyc_per_day * ndays
+  if ( d5_7 > ncycle ) then
+     d5_7 = ncycle
+  end if
+
+  dmax = ncycle
 
   do ftyp=1,2
      do chan=1,nchanl
@@ -608,9 +626,9 @@ program angle
                                     ordang1(ftyp,1,astep,chan,rgn,2), rmiss )
                     end if
 
-                 else if( cyc == d7 ) then
+                 else if( cyc == d5_7 ) then
                     if( ttl_cnt(ftyp,astep,chan,rgn) > 0.00 ) then 
-                       count(ftyp,2,astep,chan,rgn)   = ttl_cnt(ftyp,astep,chan,rgn)/d7 
+                       count(ftyp,2,astep,chan,rgn)   = ttl_cnt(ftyp,astep,chan,rgn)/d5_7
                        penalty(ftyp,2,astep,chan,rgn) = ttl_pen(ftyp,astep,chan,rgn) / &
                                                         ttl_cnt(ftyp,astep,chan,rgn)
 
@@ -707,9 +725,9 @@ program angle
                                     ordang1(ftyp,2,astep,chan,rgn,2), rmiss )
                     end if
 
-                 else if( cyc == d30 ) then
+                 else if( cyc == dmax ) then
                     if( ttl_cnt(ftyp,astep,chan,rgn) > 0.00 ) then 
-                       count(ftyp,3,astep,chan,rgn)   = ttl_cnt(ftyp,astep,chan,rgn)/d30
+                       count(ftyp,3,astep,chan,rgn)   = ttl_cnt(ftyp,astep,chan,rgn)/dmax
                        penalty(ftyp,3,astep,chan,rgn) = ttl_pen(ftyp,astep,chan,rgn) / &
                                                         ttl_cnt(ftyp,astep,chan,rgn)
 

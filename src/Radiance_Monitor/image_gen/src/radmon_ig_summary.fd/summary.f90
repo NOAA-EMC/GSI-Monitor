@@ -28,6 +28,7 @@ program summary
 
    integer luname,ldname,loname,lpname
    integer cyc,ii,iflag,j,k,res,chan,ftyp,open_status
+   integer period_one
 
    logical exist
 
@@ -219,9 +220,19 @@ program summary
 ! *****************************************************************************
 !  Observed - ges|anl with bias correction
 !    omgbc, omabc 
-!  Average and standard deviation by channel for 1 cycle and 30 days, 8 values
+!  
+!  Note:  If cyc_per_day is 24, indicating a regional source, then the first
+!         period is not a single cycle but rather a day. 
+!
+!  Average and standard deviation by channel for 1 period and 30 days, 8 values
 !    total for each channel (ges & anl).
 ! *****************************************************************************
+   if ( cyc_per_day == 24 ) then
+      period_one = 24
+   else
+      period_one = 1
+   end if
+
    do ftyp=1,2
       do j=1,nchanl
 
@@ -234,7 +245,7 @@ program summary
             chan_omgbc  = chan_omgbc + omg_bc( ftyp,cyc,j,1 )
             chan_omgbc2 = chan_omgbc2 + omg_bc2( ftyp,cyc,j,1 )
 
-            if( cyc == 1 ) then
+            if( cyc == period_one ) then
                avg_omgbc( ftyp,j,1 ) = chan_omgbc
                sdv_omgbc( ftyp,j,1 ) = chan_omgbc2
                call avgsdv(chan_cnt, avg_omgbc( ftyp,j,1 ),sdv_omgbc( ftyp,j,1), 0.00) 
@@ -324,7 +335,6 @@ program summary
 !    format: channel, use flage, ges values cycles 1-4, anl values cycles 1-4
 
    do j=1,nchanl
-!      write(loname,71) j, trim(use(j)), int(cnt(1,1,j,1)), int(cnt(1,2,j,1)), &
       write(loname,71) chan_nums(j), trim(use(j)), int(cnt(1,1,j,1)), int(cnt(1,2,j,1)), &
                                         int(cnt(1,3,j,1)), int(cnt(1,4,j,1)), &
                                         int(cnt(2,1,j,1)), int(cnt(2,2,j,1)), &
@@ -336,7 +346,6 @@ program summary
 !  write tot_cor/count values to output file 
 !    format: channel, use flage, tot_cor/cnt for 1 cycle, 4 cycles, 120 cycles
    do j=1,nchanl
-!      write(loname,72) j, trim(use(j)), &
       write(loname,72) chan_nums(j), trim(use(j)), &
             avg_tot_cor(1,j,1), avg_tot_cor(1,j,2), avg_tot_cor(1,j,3), &
             avg_tot_cor(2,j,1), avg_tot_cor(2,j,2), avg_tot_cor(2,j,3) 
@@ -360,7 +369,6 @@ program summary
          end if
       end do
 
-!      write(loname,73) j, trim(use(j)), &
       write(loname,73) chan_nums(j), trim(use(j)), &
          avg_omgbc(1,j,1), sdv_omgbc(1,j,1), avg_omgbc(1,j,2), sdv_omgbc(1,j,2), &
          avg_omgbc(2,j,1), sdv_omgbc(2,j,1), avg_omgbc(2,j,2), sdv_omgbc(2,j,2)
@@ -372,7 +380,6 @@ program summary
 !    format: channel, use flage, avg_pen for 1 cycle, 4 cycles, 120 cycles
 !            ges values), avg_pen for 1 cycle, 4 cycles, 120 cycles (ges values) 
    do j=1,nchanl
-!      write(loname,72) j, trim(use(j)), &
       write(loname,72) chan_nums(j), trim(use(j)), &
             avg_pen(1,j,1), avg_pen(1,j,2), avg_pen(1,j,3), &
             avg_pen(2,j,1), avg_pen(2,j,2), avg_pen(2,j,3) 

@@ -97,6 +97,7 @@ for type in ${SATYPE_LIST}; do
    if [[ $ntimes -lt $ncycle ]]; then
       ncycle=$ntimes
    fi
+   cyc_per_day=$((24/$CYCLE_INTERVAL))           # number cycles per day
 
    scan_start=`cat ./$scaninfo | grep $type | gawk '{print $2}'`
    scan_stepsz=`cat ./$scaninfo | grep $type | gawk '{print $3}'`
@@ -119,6 +120,7 @@ for type in ${SATYPE_LIST}; do
      scan_stepsz=${scan_stepsz},
      scan_nstep=${scan_nstep},
      nregion=${nregion},
+     cyc_per_day=${cyc_per_day},
     /
 EOF
 

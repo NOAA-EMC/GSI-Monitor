@@ -160,21 +160,6 @@
             }
         }
 
-        /*function ltoggle(id) {
-            var el = document.getElementById(id);
-            var img = document.getElementById("arrow");
-            var box = el.getAttribute("class");
-            if(box == "lhide"){
-                el.setAttribute("class", "lshow");
-                delay(img, "./pngs/arrowleft.png", 400);
-            }
-            else{
-                el.setAttribute("class", "lhide");
-                delay(img, "./pngs/arrowright.png", 400);
-            }
-        } */
-
-
 
         //---------------------------------------
         // function delay
