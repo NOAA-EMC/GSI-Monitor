@@ -16,7 +16,7 @@
 #
 #   The supported directory structures are:
 #      Operations:  $tankdir/$net/version/$run.$pdy/$hh/atmos/$monitor
-#      Workflow  :  $tankdir/$monitor/stats/$net/$run.$pdy/$hh
+#      Workflow  :  $tankdir/$net/$run.$pdy/$hh/products/atmos/$monitor
 #      Monitors* :  $tankdir/stats/$net/$run.$pdy/$hh/$monitor
 #
 #   The get_stats_path.sh script will be used to find a valid path from 
@@ -68,7 +68,6 @@ done
 #
 path=`${MON_USH}/get_stats_path.sh --net ${net} --run ${run} --tank ${tankdir} --mon ${monitor} --rpath base`
 
-
 #--------------------------------------------------
 # Set search string per monitor
 #
@@ -109,18 +108,7 @@ if [[ ${#path} -gt 0 ]]; then
       
       for hr in $hrs; do
 
-	 #----------------------------------------------------------------
-	 #  The workflow (wkfl) directory structure is a special case
-	 #    in that $monitor is the first subdirectory in the $tankdir.  
-	 #    To take that into account this check is added.
-	 #     
-	 wkfl_check=`echo ${path} | grep ${monitor}`
-	 if [[ ${#wkfl_check} -gt 0 ]]; then
-            wkfl_test=`find -L "${path}/${file}/${hr}/" -maxdepth 2 -mindepth 1 -name "${search}" -printf "%f\n" 2>/dev/null`
-	 else
-	     wkfl_test=""
-         fi
-
+         wkfl_test=`find -L "${path}/${file}/${hr}/products/atmos/${monitor}" -maxdepth 2 -mindepth 1 -name "${search}" -printf "%f\n" 2>/dev/null`
          mon_test=`find -L "${path}/${file}/${hr}/${monitor}" -maxdepth 2 -mindepth 1 -name "${search}" -printf "%f\n" 2>/dev/null`
          ops_test=`find -L "${path}/${file}/${hr}/atmos/${monitor}" -maxdepth 2 -mindepth 1 -name "${search}" -printf "%f\n" 2>/dev/null`
 

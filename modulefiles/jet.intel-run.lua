@@ -1,7 +1,7 @@
 help([[
 ]])
 
-prepend_path("MODULEPATH", "/mnt/lfs4/HFIP/hfv3gfs/role.epic/spack-stack/spack-stack-1.6.0/envs/gsi-addon-dev-rocky8/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/contrib/spack-stack/spack-stack-1.6.0/envs/gsi-addon-intel/install/modulefiles/Core")
 
 local stack_intel_ver=os.getenv("stack_intel_ver") or "2021.5.0"
 local stack_impi_ver=os.getenv("stack_impi_ver") or "2021.5.1"

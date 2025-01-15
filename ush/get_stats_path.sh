@@ -80,8 +80,8 @@ ops_base=${tankdir}/${net}/${version}
 ops_xtn=${run}.${pdy}/${hh}/atmos/${monitor}
 ops=${ops_base}/${ops_xtn}
 
-wkf_base=${tankdir}/${monitor}/stats/${net}
-wkf_xtn=${run}.${pdy}/${hh}
+wkf_base=${tankdir}/${net}
+wkf_xtn=${run}.${pdy}/${hh}/products/atmos/${monitor}
 wkf=${wkf_base}/${wkf_xtn}
 
 mon_base=${tankdir}/stats/${net}
