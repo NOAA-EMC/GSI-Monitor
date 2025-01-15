@@ -184,9 +184,9 @@ fi
 #--------------------------------------------------------------------
 # Clean $wrkdir 
 #
-#cd ${wrkdir}
-#cd ../
-#rm -rf ${wrkdir}
+cd ${wrkdir}
+cd ../
+rm -rf ${wrkdir}
 
 
 exit

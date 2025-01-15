@@ -441,8 +441,9 @@ program angle
 !  Note:  When cyc_per_day == 24 (rgn sources) the 2nd period (d5_7) will
 !         actually only be 5 days (120 cycles).  It will usually be the
 !         same as dmax, which is set to ncycles.  Regional plots only 
-!         include the d1 and d5, but I don't want to change the output 
-!         format so as not to create backward compatibility problems.
+!         include the d1 and d5, but I'm keeping the dmax value in the 
+!         output file because global sources still use it and I don't 
+!         want to create a difference in file format.
 !************************************************************************
   d1  = cyc_per_day
 
