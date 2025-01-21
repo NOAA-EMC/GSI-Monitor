@@ -213,7 +213,7 @@ jobname=${jobname:-RadMon_DE_${RADMON_SUFFIX}}
 
 if [[ -z "${pdate}" ]]; then
    echo "getting pdate from TANKVERF"
-   ldate=`${MON_USH}/rgn_find_cycle.pl --cyc 1 --dir ${TANKverf}`
+   ldate=`${MON_USH}/rgn_find_cycle.pl --dir ${TANKverf} --mon radmon`
 
    if [[ ${#ldate} -ne 10 ]]; then
       echo "ERROR:  Unable to locate any previous cycle's data files"
