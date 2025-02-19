@@ -262,7 +262,6 @@ if [[ $RUN_TRANSFER -eq 1 ]]; then
 
          transfer_queue=dev_transfer
          jobname=transfer_${RADMON_SUFFIX}
-         job="${IG_SCRIPTS}/Transfer.sh --nosrc ${RADMON_SUFFIX}"
 
          export WEBDIR=${WEBDIR}/regional/${RADMON_SUFFIX}
 

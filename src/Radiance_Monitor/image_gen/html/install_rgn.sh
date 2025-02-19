@@ -395,6 +395,11 @@ for file in $arrow_files; do
    $NCP ${RADMON_IMAGE_GEN}/html/${file} ${imgndir}/pngs/.
 done
 
+#---------------------------
+#  transfer files to server
+#
+${RADMON_IMAGE_GEN}/html/transfer_html.sh
+
 #------------------------
 # clean up $workdir
 #

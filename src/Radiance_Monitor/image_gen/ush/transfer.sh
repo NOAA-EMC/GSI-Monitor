@@ -2,6 +2,12 @@
 
 if [[ ${TANKimg} != "/" && -d ${TANKimg} ]]; then
 
+   if [[ ${INCLUDE_PNGS} == 1 ]]; then
+      exclude="--exclude 'horiz'"
+   else
+      exclude="--exclude 'horiz' --exclude '*.png'"
+   fi
+
    WEBSVR=${WEBSVR}.ncep.noaa.gov
 
    #----------------------------------------------------------
@@ -24,9 +30,8 @@ if [[ ${TANKimg} != "/" && -d ${TANKimg} ]]; then
       ssh ${WEBUSER}@${WEBSVR} "mkdir -p ${WEBDIR}"
    fi
 
-   /usr/bin/rsync -ave ssh --exclude *.ctl.${Z} \
-      --exclude 'horiz' --exclude '*.png' --delete-during --update ${TANKimg}/ \
-      ${WEBUSER}@${WEBSVR}:${WEBDIR}/
+   /usr/bin/rsync -ave ssh --exclude *.ctl.${Z} ${exclude} \
+      --delete-during --update ${TANKimg}/ ${WEBUSER}@${WEBSVR}:${WEBDIR}/
 
 else
    echo "Unable to run rsync, TANKimg has bad/no value of: ${TANKimg}"

@@ -10,9 +10,7 @@
 #--------------------------------------------------------------------
 #--------------------------------------------------------------------
 
-echo "BEGIN install_glb.sh"
-echo ""
-echo ""
+echo "BEGIN install_glb.sh"; echo; echo
 
 do_cmp=0
 cmp_src_default="GDAS"
@@ -37,7 +35,7 @@ if [[ $short = "Y" || $short = "y" ]]; then
    echo "Please specify the suffix of your comparison data source,"
    echo "  or just hit the return key to use the operational ${cmp_src} as "
    echo "  the comparison source"
-   echo ""
+   echo 
    echo -n " > "
    read text
 
@@ -82,7 +80,6 @@ fi
 
 PDATE=`${MON_USH}/find_last_cycle.sh --net ${RADMON_SUFFIX} \
          --run ${RUN} --mon radmon --tank ${R_TANKDIR}`
-echo PDATE=$PDATE
 
 limit=`$NDATE -120 $PDATE`		#  5 days
 
@@ -92,7 +89,7 @@ limit=`$NDATE -120 $PDATE`		#  5 days
 
 data_found=0
 while [[ data_found -eq 0 && $PDATE -ge $limit ]]; do
-
+ 
    ieee_src=`${MON_USH}/get_stats_path.sh --run $RUN --pdate ${PDATE} \
                       --net ${RADMON_SUFFIX} --tank ${R_TANKDIR} --mon radmon`
 
@@ -125,8 +122,8 @@ while [[ data_found -eq 0 && $PDATE -ge $limit ]]; do
 done
 
 if [[ $data_found -eq 0 ]]; then
-   echo Unable to locate any data files in the past 5 days for $SUFFIX 
-   echo in $TANKverf/angle.
+   echo Unable to locate any data files in the 5 days from ${PDATE}
+   echo for ${SUFFIX} in ${TANKverf}/angle.
    exit
 fi
 
@@ -395,6 +392,11 @@ for file in $arrow_files; do
    $NCP ${RADMON_IMAGE_GEN}/html/${file} ${imgndir}/pngs/.
 done
 
+#---------------------------
+#  transfer files to server
+#
+${RADMON_IMAGE_GEN}/html/transfer_html.sh
+
 #------------------------
 # clean up $workdir
 #
@@ -402,7 +404,6 @@ cd $workdir
 cd ../
 rm -rf $workdir
 
-echo ""
-echo "END install_glb.sh"
+echo; echo "END install_glb.sh"
 
 exit
