@@ -55,7 +55,7 @@ export MAIL_CC=${cc_list}
 #
 #  1=keep working directory, 0=rm working directory.
 #
-export KEEPDATA=${KEEPDATA:-1}
+export KEEPDATA=${KEEPDATA:-0}
 
 #
 #  REGIONAL_RR flags the data source as a regional rapid refresh.  The output 

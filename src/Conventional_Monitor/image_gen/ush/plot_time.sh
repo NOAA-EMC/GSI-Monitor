@@ -150,7 +150,6 @@ function large_mv () {
    done
 
 
-   C_IG_SAVE_WORK=1
    if [[ ${C_IG_SAVE_WORK} -eq 0 ]]; then
       cd ${workdir}
       cd ..
