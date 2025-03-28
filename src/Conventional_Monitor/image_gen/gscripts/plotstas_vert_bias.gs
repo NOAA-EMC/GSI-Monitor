@@ -38,8 +38,9 @@ function vert_bias (args)
    while(iy <=nyc)
 
 *     In order to save space skip certain redundant regions.
+*        skipping region2, N. Hemisphere
       if ( restrict = 1 )
-         if ( iy = 2 | iy = 3 | iy = 5 | iy = 6 )
+         if ( iy = 2 )
             iy=iy+1
             continue
          endif

@@ -30,11 +30,11 @@ function time_bias_ps (args)
    while(iy <=iyc)
 
 *         
-*     In order to save space skip regions N. Hemisphere(2), S. Hemisphere(3), and Canada(6)
+*     In order to save space skip regions N. Hemisphere(2)
 *        
       if ( restrict = 1 )
          say 'restrict true 'restrict
-         if ( iy = 2 | iy = 3 | iy = 5 | iy = 6 )
+         if ( iy = 2 )
             iy=iy+1
             continue
          endif
