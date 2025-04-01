@@ -85,7 +85,7 @@ if( $#unique >= $nfl ) {
 
    foreach my $sdir ( @sdir_list ) {
       foreach my $del ( @del_list ) {
-         my $rm_cmd = "rm -f $dir/$sdir/*$del*";
+         my $rm_cmd = "find $dir/$sdir -type f -name '*$del*' -delete";
          print "RM:  $rm_cmd\n";
          system( $rm_cmd ) == 0
             or die "system $rm_cmd failed: $?";
