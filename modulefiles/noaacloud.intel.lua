@@ -12,6 +12,7 @@ load("gnu")
 load(pathJoin("stack-intel", stack_intel_ver))
 load(pathJoin("stack-intel-oneapi-mpi", stack_impi_ver))
 unload("gnu")
+load(pathJoin("cmake", cmake_ver))
 
 load("common")
 

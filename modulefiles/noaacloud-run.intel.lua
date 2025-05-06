@@ -15,6 +15,10 @@ unload("gnu")
 local grads_ver=os.getenv("grads_ver") or "2.2.3"
 local prod_util_ver=os.getenv("prod_util_ver") or "2.1.1"
 
+load(pathJoin("grads", grads_ver))
+load(pathJoin("prod_util", prod_util_ver))
+
+
 load("common-run")
 
 whatis("Description: GSI Monitoring run-time environment on NOAA Cloud Intel compiler")
