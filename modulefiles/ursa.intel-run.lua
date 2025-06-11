@@ -8,15 +8,11 @@ local stack_oneapi_ver=os.getenv("stack_oneapi_ver") or "2024.2.1"
 local stack_intel_oneapi_mpi_ver=os.getenv("stack_intel_oneapi_mpi_ver") or "2021.13"
 
 local grads_ver=os.getenv("grads_ver") or "2.2.3"
-local prod_util_ver=os.getenv("prod_util_ver") or "2.1.1"
 
 load(pathJoin("stack-oneapi", stack_oneapi_ver))
 load(pathJoin("stack-intel-oneapi-mpi", stack_intel_oneapi_mpiver))
 
 load(pathJoin("grads", grads_ver))
-load(pathJoin("prod_util", prod_util_ver))
-
-setenv("wgrib2_ver", "3.6.0")
 
 load("common-run")
 
