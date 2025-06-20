@@ -12,5 +12,6 @@ load(pathJoin("stack-cray-mpich", stack_cray_mpich_ver))
 load(pathJoin("cmake", cmake_ver))
 
 load("common")
+unload("cray-libsci")
 
 whatis("Description: GSI Monitoring environment on GaeaC6 with Intel Compilers")
