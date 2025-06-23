@@ -15,5 +15,6 @@ load(pathJoin("Core", Core_ver))
 load(pathJoin("grads", grads_ver))
 
 load("common-run")
+unload("cray-libsci")
 
 whatis("Description: GSI Monitoring run-time environment on GaeaC6.intel")
