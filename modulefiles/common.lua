@@ -7,7 +7,9 @@ local netcdf_fortran_ver=os.getenv("netcdf_fortran_ver") or "4.6.1"
 local bacio_ver=os.getenv("bacio_ver") or "2.4.1"
 local w3emc_ver=os.getenv("w3emc_ver") or "2.10.0"
 local ncdiag_ver=os.getenv("ncdiag_ver") or "1.1.2"
+local cmake_ver=os.getenv("cmake_ver") or "3.27.9"
 
+load(pathJoin("cmake", cmake_ver))
 load(pathJoin("netcdf-c", netcdf_c_ver))
 load(pathJoin("netcdf-fortran", netcdf_fortran_ver))
 
