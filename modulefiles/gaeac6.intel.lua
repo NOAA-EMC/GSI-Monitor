@@ -1,7 +1,7 @@
 help([[
 ]])
 
-prepend_path("MODULEPATH", "/ncrc/proj/epic/spack-stack/c6/spack-stack-1.9.1/envs/ue-intel-2023.2.0/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/ncrc/proj/epic/spack-stack/c6/spack-stack-1.9.2/envs/ue-intel-2023.2.0/install/modulefiles/Core")
 
 local stack_intel_ver=os.getenv("stack_intel_ver") or "2023.2.0"
 local stack_cray_mpich_ver=os.getenv("stack_cray_mpich_ver") or "8.1.30"
