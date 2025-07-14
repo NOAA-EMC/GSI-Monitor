@@ -7,10 +7,12 @@ local craype_ver=os.getenv("craype_ver") or "2.7.8"
 local cray_mpich_ver=os.getenv("cray_mpich_ver") or "8.1.7"
 local cmake_ver= os.getenv("cmake_ver") or "3.20.2"
 
-local netcdf_ver=os.getenv("netcdf_ver") or "4.7.4"
+local hdf5_ver=os.getenv("hdf5_ver") or "1.14.0"
+local pnetcdf_ver=os.getenv("netcdf_ver") or "1.12.2"
+local netcdf_ver=os.getenv("netcdf_ver") or "4.9.2"
 local bacio_ver=os.getenv("bacio_ver") or "2.4.1"
-local w3emc_ver=os.getenv("w3emc_ver") or "2.9.2"
-local ncdiag_ver=os.getenv("ncdiag_ver") or "1.0.0"
+local w3emc_ver=os.getenv("w3emc_ver") or "2.12.0"
+local ncdiag_ver=os.getenv("ncdiag_ver") or "1.1.2"
 
 load(pathJoin("PrgEnv-intel", PrgEnv_intel_ver))
 load(pathJoin("intel", intel_ver))
@@ -18,9 +20,11 @@ load(pathJoin("craype", craype_ver))
 load(pathJoin("cray-mpich", cray_mpich_ver))
 load(pathJoin("cmake", cmake_ver))
 
-load(pathJoin("netcdf", netcdf_ver))
+load(pathJoin("hdf5-D", hdf5_ver))
+load(pathJoin("pnetcdf-D", pnetcdf_ver))
+load(pathJoin("netcdf-D", netcdf_ver))
 load(pathJoin("bacio", bacio_ver))
 load(pathJoin("w3emc", w3emc_ver))
-load(pathJoin("ncdiag", ncdiag_ver))
+load(pathJoin("ncdiag-A", ncdiag_ver))
 
 whatis("Description: GSI Monitoring environment on WCOSS2")
