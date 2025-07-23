@@ -2,7 +2,7 @@ help([[
 ]])
 
 -- Spack Stack installation specs
-prepend_path("MODULEPATH", "/apps/contrib/spack-stack/spack-stack-1.9.2/envs/ue-oneapi-2024.1.0/install/modulefiles/Core")
+prepend_path("MODULEPATH", "/apps/contrib/spack-stack/spack-stack-1.9.2/envs/ue-oneapi-2024.2.1/install/modulefiles/Core")
 
 local stack_oneapi_ver=os.getenv("stack_oneapi_ver") or "2024.2.1"
 local stack_intel_oneapi_mpi_ver=os.getenv("stack_intel_oneapi_mpi_ver") or "2021.13"
@@ -16,4 +16,4 @@ load(pathJoin("grads", grads_ver))
 
 load("common-run")
 
-whatis("Description: GSI Monitoring run-time environment on Orion")
+whatis("Description: GSI Monitoring run-time environment on Ursa")
