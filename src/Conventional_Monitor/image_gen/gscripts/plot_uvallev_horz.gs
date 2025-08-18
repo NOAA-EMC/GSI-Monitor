@@ -39,6 +39,7 @@ function uvallev (args)
    if(plotfile = uv232); nhe=1; endif
    if(plotfile = uv220); nhe=9; endif
    if(plotfile = uv233); nhe=11; endif
+   if(plotfile = uv401); nhe=1; endif
 
    he=1
    while(he <=nhe)
