@@ -141,7 +141,6 @@ EOF
    for file in ${type}.*.time.txt; do
       [ -f "$file" ] && mv -f "$file" "${IMGNDIR}/time/"
    done
-#  mv -f ${type}.*.time.txt  ${IMGNDIR}/time/.
    mv -f ${type}.chan.txt     ${IMGNDIR}/time/.
 
 done
