@@ -37,7 +37,7 @@ function qallev (args)
    if(plotfile = q130 | plotfile = q132); nhe=1;endif
    if(plotfile = q133 | plotfile = q134 | plotfile = q135);  nhe=2;endif
    if(plotfile = q187); nhe=1; endif
-   if(plotfile = q301); nhe=1; endif
+   if(plotfile = q301 | plotfile = q302); nhe=1; endif
 
    he=1
    while(he <=nhe)

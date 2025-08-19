@@ -34,8 +34,8 @@ function tallev (args)
    if(plotfile = t131); nhe=12;endif
    if(plotfile = t132); nhe=1;endif
    if(plotfile = t133); nhe=11;endif
-   if(plotfile = t134 | plotfile = t135);  nhe=2;endif
-   if(plotfile = t301); nhe=1;endif
+   if(plotfile = t134 | plotfile = t135); nhe=2;endif
+   if(plotfile = t301 | plotfile = t302); nhe=1;endif
 
    he=1
    while(he <=nhe)
