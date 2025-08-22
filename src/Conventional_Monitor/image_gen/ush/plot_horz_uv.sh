@@ -86,8 +86,9 @@
                ${NCP} ${C_IG_FIX}/uvsig.ctl ./${dtype}.ctl
                ${NCP} ${C_IG_GSCRIPTS}/plot_uvallev_horz.gs ./plot_${dtype}.gs
 
-            elif  [ "$mtype" = 'uv221' -o "$mtype" = 'uv230' -o "$mtype" = 'uv231' -o\
-		    "$mtype" = 'uv232' -o "$mtype" = 'uv233' -o "$mtype" = 'uv234' -o "$mtype" = 'uv235' ]; then
+            elif  [ "$mtype" = 'uv221' -o "$mtype" = 'uv230' -o "$mtype" = 'uv231' -o \
+		    "$mtype" = 'uv232' -o "$mtype" = 'uv233' -o "$mtype" = 'uv234' -o \
+		    "$mtype" = 'uv235' -o "$mtype" = 'uv401' ]; then
 
                ${NCP} ${C_IG_FIX}/uvallev.ctl  ./${dtype}.ctl
                ${NCP} ${C_IG_GSCRIPTS}/plot_uvallev_horz.gs ./plot_${dtype}.gs
@@ -96,13 +97,14 @@
 		   "$mtype" = 'uv246' -o "$mtype" = 'uv247' -o "$mtype" = 'uv248' -o \
 		   "$mtype" = 'uv249' -o "$mtype" = 'uv250' -o "$mtype" = 'uv251' -o \
 		   "$mtype" = 'uv252' -o "$mtype" = 'uv253' -o "$mtype" = 'uv254' -o \
-		   "$mtype" = 'uv255' -o "$mtype" = 'uv256' -o "$mtype" = 'uv257' -o "$mtype" = 'uv258' ]; then
+		   "$mtype" = 'uv255' -o "$mtype" = 'uv256' -o "$mtype" = 'uv257' -o \
+		   "$mtype" = 'uv258' ]; then
 
                ${NCP} ${C_IG_FIX}/uvallev.ctl ./${dtype}.ctl
                ${NCP} ${C_IG_GSCRIPTS}/plot_uvsatwind_horz.gs ./plot_${dtype}.gs
 
             elif [ "$mtype" = 'uv280' -o "$mtype" = 'uv281' -o "$mtype" = 'uv282' -o \
-		   "$mtype" = 'uv284' -o "$mtype" = 'uv287' ]; then
+		   "$mtype" = 'uv284' -o "$mtype" = 'uv287' -o "$mtype" = 'uv402' ]; then
 
                ${NCP} ${C_IG_FIX}/uvsfc11.ctl ./${dtype}.ctl
                ${NCP} ${C_IG_GSCRIPTS}/plot_uvsfc_horz.gs ./plot_${dtype}.gs

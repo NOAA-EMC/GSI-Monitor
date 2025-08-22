@@ -228,8 +228,8 @@ if [ -s $cnvstat  -a -s $pgrbf00 -a -s $pgrbf06 ]; then
 		${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON
       
       elif [[ $MY_MACHINE = "wcoss2" ]]; then
-        $SUB -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=30:00 -N ${jobname} \
-		-l select=1:mem=5000M ${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON
+        $SUB -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=45:00 -N ${jobname} \
+		-l select=1:mem=8gb ${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON
       fi
 
    else

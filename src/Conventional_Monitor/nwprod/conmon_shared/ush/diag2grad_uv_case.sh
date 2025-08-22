@@ -29,7 +29,14 @@ echo "--> diag2grad_uv_case.sh"
    echo "netcdf = $netcdf"
 
 
-   if [ "$mtype" = 'uv221' -o "$mtype" = 'uv224' -o "$mtype" = 'uv229' -o "$mtype" = 'uv230' -o "$mtype" = 'uv231' -o "$mtype" = 'uv232' -o "$mtype" = 'uv233' -o "$mtype" = 'uv234' -o "$mtype" = 'uv235' -o "$mtype" = 'uv240' -o "$mtype" = 'uv241' -o "$mtype" = 'uv242' -o "$mtype" = 'uv243'  -o "$mtype" = 'uv245' -o "$mtype" = 'uv246' -o "$mtype" = 'uv247' -o "$mtype" = 'uv248' -o "$mtype" = 'uv249' -o "$mtype" = 'uv250' -o "$mtype" = 'uv251' -o "$mtype" = 'uv252' -o "$mtype" = 'uv253' -o "$mtype" = 'uv254' -o "$mtype" = 'uv255' -o "$mtype" = 'uv256' -o "$mtype" = 'uv257' -o "$mtype" = 'uv258' -o "$mtype" = 'uv259' -o "$mtype" = 'uv260' ]; then
+   if [ "$mtype" = 'uv221' -o "$mtype" = 'uv224' -o "$mtype" = 'uv229' -o "$mtype" = 'uv230' -o \
+        "$mtype" = 'uv231' -o "$mtype" = 'uv232' -o "$mtype" = 'uv233' -o "$mtype" = 'uv234' -o \
+	"$mtype" = 'uv235' -o "$mtype" = 'uv240' -o "$mtype" = 'uv241' -o "$mtype" = 'uv242' -o \
+	"$mtype" = 'uv243' -o "$mtype" = 'uv245' -o "$mtype" = 'uv246' -o "$mtype" = 'uv247' -o \
+	"$mtype" = 'uv248' -o "$mtype" = 'uv249' -o "$mtype" = 'uv250' -o "$mtype" = 'uv251' -o \
+	"$mtype" = 'uv252' -o "$mtype" = 'uv253' -o "$mtype" = 'uv254' -o "$mtype" = 'uv255' -o \
+	"$mtype" = 'uv256' -o "$mtype" = 'uv257' -o "$mtype" = 'uv258' -o "$mtype" = 'uv259' -o \
+	"$mtype" = 'uv260' -o "$mtype" = 'uv401' ]; then
 
       rm -f diag2grads
       cp ${EXECconmon}/conmon_grads_lev.x ./diag2grads
@@ -73,7 +80,9 @@ EOF
 /
 EOF
 
-   elif [ "$mtype" = 'uv280' -o "$mtype" = 'uv281' -o "$mtype" = 'uv282' -o "$mtype" = 'uv284' -o "$mtype" = 'uv286' -o "$mtype" = 'uv287' -o "$mtype" = 'uv290' -o "$mtype" = 'uv291' -o "$mtype" = 'uv296' ]; then
+   elif [ "$mtype" = 'uv280' -o "$mtype" = 'uv281' -o "$mtype" = 'uv282' -o "$mtype" = 'uv284' -o \
+	  "$mtype" = 'uv286' -o "$mtype" = 'uv287' -o "$mtype" = 'uv290' -o "$mtype" = 'uv291' -o \
+	  "$mtype" = 'uv296' -o "$mtype" = 'uv402' ]; then
 
       rm -f diag2grads
       cp ${EXECconmon}/conmon_grads_sfctime.x ./diag2grads

@@ -137,8 +137,10 @@ EOF
 
    #------------------------------
    #  mv output files to IMGNDIR
-   
-   mv -f ${type}.*.time.txt  ${IMGNDIR}/time/.
+  
+   for file in ${type}.*.time.txt; do
+      [ -f "$file" ] && mv -f "$file" "${IMGNDIR}/time/"
+   done
    mv -f ${type}.chan.txt     ${IMGNDIR}/time/.
 
 done
