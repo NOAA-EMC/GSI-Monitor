@@ -70,13 +70,13 @@ echo "--> mk_time_vert.sh"
 
       elif [[ ${MY_MACHINE} == "wcoss2" ]]; then
          if [[ ${type} == "uv" || ${type} == "u" || ${type} == "v" ]]; then
-            walltime="02:30:00"
+            walltime="01:30:00"
          else
             walltime="50:00"
          fi
 
         $SUB -V -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${logfile} -l walltime=${walltime}\
-	       	-N ${jobname} -l select=1:mem=1G ${pltfile}
+	       	-N ${jobname} -l select=1:mem=8gb ${pltfile}
       fi
 
    done

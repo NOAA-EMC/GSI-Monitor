@@ -41,7 +41,8 @@ echo "--> diag2grad_t_case.sh"
       rm -f ./diag2grads
    fi
 
-   if [ "$mtype" = 't130' -o "$mtype" = 't131' -o "$mtype" = 't132' -o "$mtype" = 't133' -o "$mtype" = 't134' -o "$mtype" = 't135' ]; then
+   if [ "$mtype" = 't130' -o "$mtype" = 't131' -o "$mtype" = 't132' -o "$mtype" = 't133' -o \
+        "$mtype" = 't134' -o "$mtype" = 't135' -o "$mtype" = 't301' ]; then
       cp $EXECconmon/conmon_grads_lev.x ./diag2grads
 
       cat <<EOF >input
@@ -65,7 +66,8 @@ EOF
          /
 EOF
 
-   elif [ "$mtype" = 't180' -o "$mtype" = 't181' -o "$mtype" = 't182' -o "$mtype" = 't183'  -o "$mtype" = 't187' ]; then
+   elif [ "$mtype" = 't180' -o "$mtype" = 't181' -o "$mtype" = 't182' -o "$mtype" = 't183' -o \
+	  "$mtype" = 't187' -o "$mtype" = 't302' ]; then
       cp $EXECconmon/conmon_grads_sfc.x ./diag2grads
       cat <<EOF >input
          &input
