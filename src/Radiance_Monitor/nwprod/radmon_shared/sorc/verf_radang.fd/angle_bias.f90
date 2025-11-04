@@ -280,6 +280,7 @@ program angle
 
 ! Loop to read entries in diagnostic file
   iflag = 0
+  rread = 0
   loopd:  do while (iflag == 0)
 
 
