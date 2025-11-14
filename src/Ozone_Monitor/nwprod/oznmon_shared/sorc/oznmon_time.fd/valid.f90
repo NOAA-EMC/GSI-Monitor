@@ -60,9 +60,7 @@ module valid
       !--- variables
       character(20) fname
       character(40) test_satname
-      character(10) base_date
       character(20) dum1, dum2, dum3, dum4, dum5, dum6, dum7, dum8, dum9, dum10, dum11
-      character(20) dum
       integer fios
       integer level, region
 
@@ -231,9 +229,6 @@ module valid
       logical, intent( out )            :: valid
       real, intent( out )               :: bound
       integer, intent( out )		:: iret
-
-      !--- vars
-      real sdv2
 
 
       !--- initialize vars

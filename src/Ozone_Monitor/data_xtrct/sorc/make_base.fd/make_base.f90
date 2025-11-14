@@ -1,5 +1,6 @@
 program oznmon_make_base
   implicit none
+  external :: errexit
 
 !  Note that nregion is 6, but for error checking purposes we only 
 !    need to consider region 1, which is "global". 
@@ -11,8 +12,7 @@ program oznmon_make_base
 
   character(20) satname
 
-  real,allocatable,dimension(:,:,:):: count,error,use,penalty
-  real,allocatable,dimension(:,:,:):: omg_cor
+  real,allocatable,dimension(:,:,:):: count,penalty
 
   character(40) cycle_file, data_file, level_file, out_file
 
@@ -26,7 +26,7 @@ program oznmon_make_base
   real,allocatable,dimension(:,:):: min_count, max_count
   real,allocatable,dimension(:,:):: min_penalty, max_penalty
 
-  real total_sdv, avg_sdv, diff_count, diff_total, diff_pen, temp
+  real diff_count, diff_total, diff_pen
 
   character(10) cycle
 
