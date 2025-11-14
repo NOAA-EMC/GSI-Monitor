@@ -2,6 +2,9 @@ program horiz
   use oznmon_read_diag
 
   implicit none
+  external :: create_ctl_horiz
+  external :: errexit
+
   integer ntype, mls2_levs,mls3_levs
   parameter (ntype=4)
   parameter (mls2_levs=37)
@@ -14,16 +17,16 @@ program horiz
   character(6),dimension(ntype):: anl_vars
   character(8) stid
   character(20) satname,stringd,satsis
-  character(10) dum,satype,dplat
+  character(10) satype,dplat
   character(40) string,grad_file,ctl_file
   character(500) diag_oz
 
   integer luname,lungrd,lunctl,lndiag,isave
   integer iyy,imm,idd,ihh,idhh,incr,iread,irite,iflag
-  integer n_levs,j,nlev,nflag,i,nlevs,nobs,iobs,m_levs,k,lev_nobs
+  integer n_levs,j,nlev,nflag,i,nobs,iobs,m_levs,k,lev_nobs
   integer,allocatable,dimension(:):: iuse
 
-  real weight,rlat,rlon,rtim,rmiss,obs,ges,obsges,sza,fovn,toqf
+  real rlat,rlon,rtim,rmiss,obs,ges,obsges
   real,allocatable,dimension(:):: error,dlat,dlon
   real,allocatable,dimension(:):: prs_nlev
   real,allocatable,dimension(:,:):: var,var1

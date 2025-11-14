@@ -4,6 +4,9 @@ program main
    use kinds, only: i_kind
 
    implicit none
+   external :: errexit
+   external :: create_ctl_oz
+   external :: avgsdv
 
    integer ntype,mregion,mls2_levs,mls3_levs
    parameter (ntype=4,mregion=25,mls2_levs=37,mls3_levs=55)
@@ -12,21 +15,21 @@ program main
    character(10),dimension(ntype):: anl_vars
    character(10),dimension(ntype):: ges_vars
    character(20) satname,stringd,satsis
-   character(10) dum,obstype,dplat
+   character(10) obstype,dplat
    character(40) string,grad_file,ctl_file
    character(500) diag_oz
    character(40) bad_pen_file, bad_cnt_file
    character(40),dimension(mregion):: region
 
    integer luname,lungrd,lunctl,lndiag,nregion
-   integer lupen, lucnt, fiosp, fiosc
+   integer lupen, lucnt
    integer iyy,imm,idd,ihh,idhh,incr,iflag,ier,iret
-   integer n_levs,j,idsat,i,k,ii,nreg,nlevs,iobs,iread,nobs
+   integer n_levs,j,i,k,ii,nreg,iobs,iread,nobs
    integer,dimension(mregion):: jsub
    real,allocatable,dimension(:):: prs_nlev
 
    real pen,pbound,cbound
-   real weight,rlat,rlon,rmiss,obs,biascor,obsges,obsgesnbc,rterm
+   real rlat,rlon,rmiss
    real,dimension(2):: cor_omg
    real,dimension(mregion):: rlatmin,rlatmax,rlonmin,rlonmax
 

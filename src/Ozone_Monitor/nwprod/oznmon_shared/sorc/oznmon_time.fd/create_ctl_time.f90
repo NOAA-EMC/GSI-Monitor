@@ -3,6 +3,7 @@ subroutine create_ctl_oz(ntype,ptype,var_list,n_levs,iyy,imm,idd,ihh,idhh,&
      region,rlonmin,rlonmax,rlatmin,rlatmax,nu_nlev,use,error)
 
   implicit none
+  external :: w3movdat
 
   integer ntype
 
@@ -19,8 +20,8 @@ subroutine create_ctl_oz(ntype,ptype,var_list,n_levs,iyy,imm,idd,ihh,idhh,&
   character(40),dimension(nregion):: region
   character(80),dimension(nregion):: stringr
 
-  integer idsat,nregion,iuse
-  integer lunctl,iyy,imm,idd,ihh,j,i,n_levs,idhh,incr
+  integer nregion,iuse
+  integer lunctl,iyy,imm,idd,ihh,i,n_levs,idhh,incr
   integer iyy2,imm2,idd2,ihh2,ntime
   integer,dimension(8):: ida,jda
   real,dimension(n_levs):: nu_nlev

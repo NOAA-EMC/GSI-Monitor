@@ -285,7 +285,7 @@ module oznmon_read_diag
     istatus = 0
  
     if ( netcdf ) then
-       call read_ozndiag_header_nc( ftin, header_fix, header_nlev, new_hdr, istatus )
+       call read_ozndiag_header_nc( ftin, header_fix, header_nlev, istatus )
     else
        call read_ozndiag_header_bin( ftin, header_fix, header_nlev, new_hdr, istatus )
     endif
@@ -311,14 +311,13 @@ module oznmon_read_diag
   !------------------------------------------------------------
   !  subroutine read_ozndiag_header_nc
   !------------------------------------------------------------
-  subroutine read_ozndiag_header_nc( ftin, header_fix, header_nlev, new_hdr, istatus )
+  subroutine read_ozndiag_header_nc( ftin, header_fix, header_nlev, istatus )
 
     !--- interface
 
     integer                    ,intent(in)  :: ftin
     type(diag_header_fix_list ),intent(out) :: header_fix
     type(diag_header_nlev_list),pointer     :: header_nlev(:)
-    logical                                 :: new_hdr
     integer(i_kind),intent(out)             :: istatus
 
     !--- variables
@@ -327,11 +326,10 @@ module oznmon_read_diag
 
     character(len=10):: sat,obstype
     character(len=20):: isis
-    integer(i_kind):: jiter,nlevs
-    integer(i_kind),dimension(:),allocatable :: iouse
+    integer(i_kind):: nlevs
     real(r_double),dimension(:),allocatable  :: pobs,gross,tnoise
    
-    integer(i_kind)                          :: nsdim,k,idate,idx
+    integer(i_kind)                          :: k,idate,idx
     integer(i_kind),dimension(:),allocatable :: iuse_flag
 
  
@@ -467,7 +465,7 @@ module oznmon_read_diag
     !--- variables
     
     integer,save :: nlevs_last = -1
-    integer :: ilev,k,ioff0
+    integer :: k,ioff0
     character(len=10):: id,obstype
     character(len=20):: isis
     integer(i_kind):: jiter,nlevs,ianldate,iint,ireal,iextra
@@ -570,7 +568,7 @@ module oznmon_read_diag
    
 
     if ( netcdf ) then
-       call read_ozndiag_data_nc( ftin, header_fix, data_fix, data_nlev, data_extra, ntobs, iflag )
+       call read_ozndiag_data_nc( ftin, header_fix, data_fix, data_nlev, ntobs, iflag )
     else
        call read_ozndiag_data_bin( ftin, header_fix, data_fix, data_nlev, data_extra, ntobs, iflag )
     end if 
@@ -582,7 +580,7 @@ module oznmon_read_diag
   !------------------------------------------------  
   !  subroutine read_ozndiag_data_nc
   !------------------------------------------------  
-  subroutine read_ozndiag_data_nc( ftin, header_fix, data_fix, data_nlev, data_extra, ntobs, iflag )
+  subroutine read_ozndiag_data_nc( ftin, header_fix, data_fix, data_nlev, ntobs, iflag )
 
     !--- interface
 
@@ -596,12 +594,10 @@ module oznmon_read_diag
     !
     type(diag_data_fix_list),   pointer     :: data_fix(:)
     type(diag_data_nlev_list)  ,pointer     :: data_nlev(:,:)
-    type(diag_data_extra_list) ,pointer     :: data_extra(:,:)
 
     integer                    ,intent(out) :: iflag
     integer(i_kind)            ,intent(out) :: ntobs
     integer(i_kind)                         :: id,ii,jj,cur_idx
-    integer(i_kind),allocatable             :: Use_Flag(:)
     integer(i_kind)                         :: nlevs             ! number of levels
     integer(i_kind)                         :: nrecords          ! number of file records, which 
                                                                  ! is number of levels * number of obs
@@ -618,8 +614,6 @@ module oznmon_read_diag
     real(r_single),allocatable              :: fovn(:)           ! scan position (fielf of view)
     real(r_single),allocatable              :: toqf(:)           ! row anomaly index
    
-    logical                                 :: test
-
     cur_idx = ncdiag_open_id( nopen_ncdiag )
   
     !----------------------------------------------------------
@@ -830,7 +824,7 @@ module oznmon_read_diag
     !--- variables
     integer,save :: nlevs_last = -1
     integer,save :: iextra_last = -1
-    integer :: iev,iobs,i,j
+    integer :: i,j
     real(r_single),allocatable,dimension(:,:)  :: tmp_fix
     real(r_single),allocatable,dimension(:,:,:):: tmp_nlev
     real(r_single),allocatable,dimension(:,:)  :: tmp_extra
