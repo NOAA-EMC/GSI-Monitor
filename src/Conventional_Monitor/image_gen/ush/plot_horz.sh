@@ -91,13 +91,14 @@
                cp ${C_IG_GSCRIPTS}/plot_tallev_horz.gs ./plot_${dtype}.gs
 
             elif [ "$mtype" = 't180' -o "$mtype" = 't181' -o "$mtype" = 't182' -o \
-		   "$mtype" = 't183' -o "$mtype" = 't187'  ]; then
+		   "$mtype" = 't183' -o "$mtype" = 't187' -o "$mtype" = 't302' ]; then
 
                cp ${C_IG_FIX}/tsfc.ctl ./${dtype}.ctl
                cp ${C_IG_GSCRIPTS}/plot_tsfc_horz.gs ./plot_${dtype}.gs
    
             elif [ "$mtype" = 't130' -o "$mtype" = 't131' -o "$mtype" = 't132' -o \
-		   "$mtype" = 't133' -o "$mtype" = 't134' -o "$mtype" = 't135' ]; then
+		   "$mtype" = 't133' -o "$mtype" = 't134' -o "$mtype" = 't135' -o \
+		   "$mtype" = 't301' ]; then
 
                cp ${C_IG_FIX}/tallev.ctl ./${dtype}.ctl
                cp ${C_IG_GSCRIPTS}/plot_tallev_horz.gs ./plot_${dtype}.gs
@@ -107,13 +108,14 @@
                cp ${C_IG_FIX}/qmandlev.ctl ./${dtype}.ctl
                cp ${C_IG_GSCRIPTS}/plot_qallev_horz.gs ./plot_${dtype}.gs
 
-            elif [ "$mtype" = 'q180' -o "$mtype" = 'q181' -o  "$mtype" = 'q182' -o \
-		   "$mtype" = 'q183' -o "$mtype" = 'q187' ]; then
+            elif [ "$mtype" = 'q180' -o "$mtype" = 'q181' -o "$mtype" = 'q182' -o \
+		   "$mtype" = 'q183' -o "$mtype" = 'q187' -o "$mtype" = 'q302' ]; then
                cp ${C_IG_FIX}/qsfc.ctl ./${dtype}.ctl
                cp ${C_IG_GSCRIPTS}/plot_qsfc_horz.gs ./plot_${dtype}.gs
 
             elif [ "$mtype" = 'q130' -o "$mtype" = 'q131' -o "$mtype" = 'q132' -o \
-		   "$mtype" = 'q133' -o "$mtype" = 'q134' -o "$mtype" = 'q135' ]; then
+		   "$mtype" = 'q133' -o "$mtype" = 'q134' -o "$mtype" = 'q135' -o \
+		   "$mtype" = 'q301' ]; then
                cp ${C_IG_FIX}/qallev.ctl ./${dtype}.ctl
                cp ${C_IG_GSCRIPTS}/plot_qallev_horz.gs ./plot_${dtype}.gs
 

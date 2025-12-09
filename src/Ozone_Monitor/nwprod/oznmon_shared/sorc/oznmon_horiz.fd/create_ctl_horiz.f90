@@ -3,6 +3,8 @@ subroutine create_ctl_horiz(ntype,ptype,var_list,n_levs,iyy,imm,idd,ihh,idhh,&
      error,iuse,satype,dplat)
 
   implicit none
+  external :: w3movdat
+  external :: errexit
 
   integer ntype
 
@@ -15,7 +17,6 @@ subroutine create_ctl_horiz(ntype,ptype,var_list,n_levs,iyy,imm,idd,ihh,idhh,&
   character(40) ctl_file,grad_file
   character(80) string
 
-  integer idsat
   integer,dimension(n_levs):: iuse
   integer,dimension(8):: ida,jda
   real,dimension(5):: fha
