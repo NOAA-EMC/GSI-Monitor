@@ -39,7 +39,7 @@ export MINMON_SUFFIX=${MINMON_SUFFIX:-testminmon}
 
 export NWTEST=${NWTEST:-/scratch1/NCEPDEV/da/Edward.Safford/noscrub/GSI/util/Minimization_Monitor/nwprod}
 export HOMEgdas=${HOMEgdas:-${NWTEST}/gdas}
-export HOMEgfs=${HOMEgfs:-${HOMEgdas}}
+export HOMEglobal=${HOMEglobal:-${HOMEgdas}}
 export JOBGLOBAL=${HOMEgdas}/jobs
 export HOMEminmon=${HOMEminmon:-${NWTEST}/minmon_shared}
 export COM_IN=${COM_IN:-${DATAROOT}}

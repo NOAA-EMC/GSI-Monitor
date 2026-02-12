@@ -52,15 +52,15 @@ module list
 #############################################################
 export MINMON_SUFFIX=${MINMON_SUFFIX:-testminmon_gfs}
 export NWTEST=${NWTEST:-/lfs/h2/emc/da/noscrub/Edward.Safford/git/gsi/GSI/util/Minimization_Monitor/nwprod}
-export HOMEgfs=${NWTEST}/gfs
-#export HOMEgfs=${HOMEgfs:-${HOMEgdas}}
+export HOMEglobal=${NWTEST}/gfs
+#export HOMEglobal=${HOMEglobal:-${HOMEgdas}}
 
-export JOBGLOBAL=${HOMEgfs}/jobs
+export JOBGLOBAL=${HOMEglobal}/jobs
 export HOMEminmon=${NWTEST}/minmon_shared
 
 export COM_IN=${COM_IN:-${DATAROOT}}
 export M_TANKverf=${COMROOT}/${MINMON_SUFFIX}
-export M_FIXgfs=${HOMEgfs}/fix
+export M_FIXgfs=${HOMEglobal}/fix
 
 #############################################################
 # Execute job

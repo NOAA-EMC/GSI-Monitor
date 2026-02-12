@@ -53,7 +53,7 @@ export PARMmon=${PARMmon:-${HOMEgfs_conmon}/parm/mon}
 export HOMEconmon=${HOMEconmon:-${HOMEgfs_conmon}}
 export EXECconmon=${EXECconmon:-${HOMEconmon}/exec}
 
-export FIXconmon=${FIXconmon:-${FIXgfs}}
+export FIXconmon=${FIXconmon:-${FIXglobal}}
 export USHconmon=${USHconmon:-${HOMEconmon}/ush}
 
 export LITTLE_ENDIAN=${LITTLE_ENDIAN:-0}

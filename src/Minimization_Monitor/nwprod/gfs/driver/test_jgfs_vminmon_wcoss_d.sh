@@ -55,14 +55,14 @@ export COMROOT=${COMROOT:-/gpfs/dell2/ptmp/Edward.Safford/com}
 #############################################################
 export MINMON_SUFFIX=${MINMON_SUFFIX:-testminmon_gfs}
 export NWTEST=${NWTEST:-/gpfs/dell2/emc/modeling/noscrub/Edward.Safford/GSI/util/Minimization_Monitor/nwprod}
-export HOMEgfs=${NWTEST}/gfs
+export HOMEglobal=${NWTEST}/gfs
 
-export JOBGLOBAL=${HOMEgfs}/jobs
+export JOBGLOBAL=${HOMEglobal}/jobs
 export HOMEminmon=${NWTEST}/minmon_shared
 
 export COM_IN=${COM_IN:-${DATAROOT}}
 export M_TANKverf=${COMROOT}/${MINMON_SUFFIX}
-export M_FIXgfs=${HOMEgfs}/fix
+export M_FIXgfs=${HOMEglobal}/fix
 
 #############################################################
 # Execute job

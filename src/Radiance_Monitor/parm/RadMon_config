@@ -80,7 +80,7 @@ export IG_SCRIPTS=${IG_SCRIPTS:-${RADMON_IMAGE_GEN}/ush}
 export RADMON_PARM=${RADMON_PARM:-${MY_RADMON}/parm}
 
 export HOMEgdas=${HOMEgdas:-${MY_RADMON}/nwprod/gdas_radmon}
-export HOMEgfs=${HOMEgfs:-${HOMEgdas}}
+export HOMEglobal=${HOMEglobal:-${HOMEgdas}}
 export HOMEnam=${HOMEnam:-${MY_RADMON}/nwprod/nam_radmon}
 export SRCnam=${SRCnam:-${HOMEnam}/scripts}
 export HOMEradmon=${HOMEradmon:-${MY_RADMON}/nwprod/radmon_shared}
