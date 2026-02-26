@@ -56,7 +56,7 @@ export COMROOT=${COMROOT:-/gpfs/dell2/ptmp/Edward.Safford/com}
 export MINMON_SUFFIX=${MINMON_SUFFIX:-testminmon_gdas}
 export NWTEST=${NWTEST:-/gpfs/dell2/emc/modeling/noscrub/Edward.Safford/GSI/util/Minimization_Monitor/nwprod}
 export HOMEgdas=${NWTEST}/gdas
-export HOMEgfs=${HOMEgfs:-${HOMEgdas}}
+export HOMEglobal=${HOMEglobal:-${HOMEgdas}}
 
 export JOBGLOBAL=${HOMEgdas}/jobs
 export HOMEminmon=${NWTEST}/minmon_shared

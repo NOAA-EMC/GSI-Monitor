@@ -44,7 +44,7 @@ export NWTEST=${NWTEST:-/scratch1/NCEPDEV/da/Edward.Safford/noscrub/GSI-monitor/
 export jlogfile=jlogfile.${PDATE}
 
 export HOMEgdas=${HOMEgdas:-${NWTEST}/gdas_radmon}
-export HOMEgfs=$HOMEgdas
+export HOMEglobal=$HOMEgdas
 export FIXgdas=${HOMEgdas}/fix
 export EXECradmon=/scratch1/NCEPDEV/da/Edward.Safford/noscrub/GSI-monitor/install/bin
 

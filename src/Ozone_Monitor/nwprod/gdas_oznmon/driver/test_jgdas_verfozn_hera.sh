@@ -36,8 +36,8 @@ export HOMEgdas_ozn=${HOMEgdas_ozn:-${NWTEST}/gdas_oznmon}
 export PARMgdas_ozn=${PARMgdas_ozn:-${HOMEgdas_ozn}/parm}
 export FIXgdas_ozn=${FIXgdas_ozn:-${HOMEgdas_ozn}/fix}
 
-export HOMEgfs=${HOMEgfs:-${HOMEgdas_ozn}}
-export HOMEgfs_ozn=${HOMEgfs_ozn:-${HOMEgfs}}
+export HOMEglobal=${HOMEglobal:-${HOMEgdas_ozn}}
+export HOMEgfs_ozn=${HOMEgfs_ozn:-${HOMEglobal}}
 export PARMgfs_ozn=${PARMgfs_ozn:-${PARMgdas_ozn}}
 export FIXgfs_ozn=${FIXgfs_ozn:-${FIXgdas_ozn}}
 

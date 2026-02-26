@@ -53,8 +53,8 @@ export jlogfile=${COMROOT}/logs/jlogfiles/${RADMON_SUFFIX}_jlog
 export NWTEST=/lfs/h2/emc/da/noscrub/Edward.Safford/git/GSI-monitor/src/Radiance_Monitor/nwprod
 
 export HOMEgdas=${NWTEST}/gdas_radmon
-export HOMEgfs=${HOMEgdas}
-export FIXgdas=${FIXgdas:-$HOMEgfs/fix}
+export HOMEglobal=${HOMEgdas}
+export FIXgdas=${FIXgdas:-$HOMEglobal/fix}
 
 export JOBGLOBAL=${HOMEgdas}/jobs
 export HOMEradmon=${NWTEST}/radmon_shared
