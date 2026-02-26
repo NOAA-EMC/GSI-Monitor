@@ -14,7 +14,7 @@ export envir=${envir:-prod}
 echo `date` $0 `date -u` begin
 export PS4='$SECONDS + '
 
-########################################################### 
+###########################################################
 # set up working directory space
 ###########################################################
 export CONMON_WORK_DIR=${CONMON_WORK_DIR:-/tmpnwprd}
@@ -28,7 +28,7 @@ cd $C_DATA
 # Determine Job Output Name on System
 ####################################
 export outid="LL$job"
-export cycle=t${CYC}z 
+export cycle=t${CYC}z
 
 ###############################
 # Specify NET and RUN name
@@ -52,8 +52,6 @@ export PARMmon=${PARMmon:-${HOMEgfs_conmon}/parm/mon}
 
 export HOMEconmon=${HOMEconmon:-${HOMEgfs_conmon}}
 export EXECconmon=${EXECconmon:-${HOMEconmon}/exec}
-
-export FIXconmon=${FIXconmon:-${FIXglobal}}
 export USHconmon=${USHconmon:-${HOMEconmon}/ush}
 
 export LITTLE_ENDIAN=${LITTLE_ENDIAN:-0}
@@ -110,4 +108,3 @@ if [ ${KEEPDATA} = NO ] ; then
 fi
 
 date
-
