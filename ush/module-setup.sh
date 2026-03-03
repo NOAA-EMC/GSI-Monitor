@@ -29,6 +29,13 @@ elif [[ $MACHINE_ID = container* ]] ; then
     fi
     module purge
 
+elif [[ $MACHINE_ID = aws-ec2* ]] ; then
+    # We are on aws-ec2
+    if ( ! eval module help > /dev/null 2>&1 ) ; then
+        source /usr/share/lmod/lmod/init/bash
+    fi
+    module purge
+
 elif [[ $MACHINE_ID = hercules* ]] ; then
     # We are on Hercules
     if ( ! eval module help > /dev/null 2>&1 ) ; then
