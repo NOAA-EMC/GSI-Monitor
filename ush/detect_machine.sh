@@ -32,6 +32,9 @@ case $(hostname -f) in
   ufe1[0-5]) MACHINE_ID=ursa ;; ### ursa10-15
   ufeflow01) MACHINE_ID=ursa ;; ### ufeaecflow01
 
+  der*) MACHINE_ID=derecho ;; ### derecho[1-8]
+  dec*) MACHINE_ID=derecho ;; ### decxxxx computing node
+
   s4-submit.ssec.wisc.edu) MACHINE_ID=s4 ;; ### s4
 
   ip-*) MACHINE_ID=aws-ec2 ;; ### s4
@@ -95,6 +98,9 @@ elif [[ -d /work ]]; then
 elif [[ -d /gpfs/f6 ]]; then
   # We are on GAEAC6.
   MACHINE_ID=gaeac6
+elif [[ -d /gpfs/csfs1 ]]; then
+  # We are on DERECHO.
+  MACHINE_ID=derecho
 else
   echo WARNING: UNKNOWN PLATFORM 1>&2
 fi

@@ -65,7 +65,7 @@ else
    export DATAROOT=${DATAROOT:-${MON_STMP}/${RADMON_SUFFIX}/${RUN}/radmon}
 fi
 
-  
+
 export RADMON_DATA_EXTRACT=${RADMON_DATA_EXTRACT:-${MY_RADMON}/data_extract}
 export DE_EXEC=${DE_EXEC:-$GSI_MON_BIN}
 export DE_PARM=${DE_PARM:-${RADMON_DATA_EXTRACT}/parm}
@@ -80,7 +80,6 @@ export IG_SCRIPTS=${IG_SCRIPTS:-${RADMON_IMAGE_GEN}/ush}
 export RADMON_PARM=${RADMON_PARM:-${MY_RADMON}/parm}
 
 export HOMEgdas=${HOMEgdas:-${MY_RADMON}/nwprod/gdas_radmon}
-export HOMEgfs=${HOMEgfs:-${HOMEgdas}}
 export HOMEnam=${HOMEnam:-${MY_RADMON}/nwprod/nam_radmon}
 export SRCnam=${SRCnam:-${HOMEnam}/scripts}
 export HOMEradmon=${HOMEradmon:-${MY_RADMON}/nwprod/radmon_shared}
@@ -89,13 +88,12 @@ export EXECradmon=${EXECradmon:-$GSI_MON_BIN}
 export FIXgdas=${FIXgdas:-${HOMEgdas}/fix}
 export PARMgdas=${PARMgdas:-${HOMEgdas}/parm}
 export parm_file=${parm_file:-${PARMgdas}/gdas_radmon.parm}
- 
+
 
 #
-#  Definitions for parm files.  This allows users to swap in 
+#  Definitions for parm files.  This allows users to swap in
 #  their version of the two parm files when using a central install
 #  point and multiple users of the RadMon package.
 #
 export RADMON_CONFIG=${RADMON_CONFIG:-${RADMON_PARM}/RadMon_config}
 export RADMON_USER_SETTINGS=${RADMON_USER_SETTINGS:-${RADMON_PARM}/RadMon_user_settings}
-

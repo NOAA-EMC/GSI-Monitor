@@ -62,8 +62,8 @@ module list
 #
 export OZNMON_SUFFIX=${OZNMON_SUFFIX:-testozn}
 export NWTEST=${NWTEST:-/lfs/h2/emc/da/noscrub/Edward.Safford/git/gsi/gfsda.v16.1.5_wcoss2_port/util/Ozone_Monitor/nwprod}
-export HOMEgfs=${HOMEgfs:-${NWTEST}/gdas_oznmon.${gdas_oznmon_ver}}
-export HOMEgdas_ozn=${HOMEgdas_ozn:-${HOMEgfs}}
+export HOMEglobal=${HOMEglobal:-${NWTEST}/gdas_oznmon.${gdas_oznmon_ver}}
+export HOMEgdas_ozn=${HOMEgdas_ozn:-${HOMEglobal}}
 export PARMgdas_ozn=${HOMEgdas_ozn}/parm
 export FIXgdas_ozn=${FIXgdas_ozn:-${HOMEgdas_ozn}/fix}
 

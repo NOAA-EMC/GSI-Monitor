@@ -44,7 +44,7 @@ module list
 export MINMON_SUFFIX=${MINMON_SUFFIX:-testminmon_gdas}
 export NWTEST=${NWTEST:-/lfs/h2/emc/da/noscrub/Edward.Safford/git/gsi/GSI/util/Minimization_Monitor/nwprod}
 export HOMEgdas=${NWTEST}/gdas
-export HOMEgfs=${HOMEgfs:-${HOMEgdas}}
+export HOMEglobal=${HOMEglobal:-${HOMEgdas}}
 
 export JOBGLOBAL=${HOMEgdas}/jobs
 export HOMEminmon=${NWTEST}/minmon_shared

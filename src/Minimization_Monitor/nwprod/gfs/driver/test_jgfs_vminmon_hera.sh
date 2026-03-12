@@ -38,12 +38,12 @@ export STMP_USER=${STMP_USER:-/scratch2/NCEPDEV/stmp3/$LOGNAME}
 export MINMON_SUFFIX=${MINMON_SUFFIX:-testminmon}
 
 export NWTEST=${NWTEST:-/scratch1/NCEPDEV/da/Edward.Safford/noscrub/GSI/util/Minimization_Monitor/nwprod}
-export HOMEgfs=${HOMEgfs:-${NWTEST}/gfs}
-export JOBGLOBAL=${HOMEgfs}/jobs
+export HOMEglobal=${HOMEglobal:-${NWTEST}/gfs}
+export JOBGLOBAL=${HOMEglobal}/jobs
 export HOMEminmon=${HOMEminmon:-${NWTEST}/minmon_shared}
 export COM_IN=${COM_IN:-${DATAROOT}}
 #export M_TANKverf=${M_TANKverf:-${COMROOT}/${MINMON_SUFFIX}}
-export M_FIXgfs=${M_FIXgfs:-${HOMEgfs}/fix}
+export M_FIXgfs=${M_FIXgfs:-${HOMEglobal}/fix}
 
 #############################################################
 # Execute job

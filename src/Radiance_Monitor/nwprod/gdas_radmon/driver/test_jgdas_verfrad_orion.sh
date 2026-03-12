@@ -44,7 +44,7 @@ export NWTEST=${NWTEST:-/work/noaa/da/Edward.Safford/GSI-monitor/src/Radiance_Mo
 export jlogfile=jlogfile.${PDATE}
 
 export HOMEgdas=${HOMEgdas:-${NWTEST}/gdas_radmon}
-export HOMEgfs=$HOMEgdas
+export HOMEglobal=$HOMEgdas
 export FIXgdas=${HOMEgdas}/fix
 export EXECradmon=/work/noaa/da/Edward.Safford/GSI-monitor/install/bin
 
