@@ -32,10 +32,10 @@ option(BUILD_UTIL_FOR_NCO "Build only Operational Portions of the Monitor Utilit
 
 # If building all monitors, then force all options to ON
 if (BUILD_UTIL_ALLMON)
- set(BUILD_UTIL_MINMON ON CACHE BOOL "Build Minimization Monitoring Utilities" FORCE)
- set(BUILD_UTIL_CONMON ON CACHE BOOL "Build Conventional Monitoring Utilities" FORCE)
- set(BUILD_UTIL_OZNMON ON CACHE BOOL "Build Ozone Monitoring Utilities" FORCE)
- set(BUILD_UTIL_RADMON ON CACHE BOOL "Build Radiance Monitoring Utilities" FORCE)
+  set(BUILD_UTIL_MINMON ON CACHE BOOL "Build Minimization Monitoring Utilities" FORCE)
+  set(BUILD_UTIL_CONMON ON CACHE BOOL "Build Conventional Monitoring Utilities" FORCE)
+  set(BUILD_UTIL_OZNMON ON CACHE BOOL "Build Ozone Monitoring Utilities" FORCE)
+  set(BUILD_UTIL_RADMON ON CACHE BOOL "Build Radiance Monitoring Utilities" FORCE)
 endif()
 
 # Echo user options
