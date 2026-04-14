@@ -38,6 +38,8 @@ case $(hostname -f) in
   s4-submit.ssec.wisc.edu) MACHINE_ID=s4 ;; ### s4
 
   ip-*) MACHINE_ID=aws-ec2 ;; ### s4
+  compute-dy-*) MACHINE_ID=aws-ec2 ;; ### aws-ec2
+  processing-dy-*) MACHINE_ID=aws-ec2 ;; ### aws-ec2
 
   Orion-login-[1-4].HPC.MsState.Edu) MACHINE_ID=orion ;; ### orion1-4
 
@@ -70,7 +72,7 @@ fi
 if [[ -v SINGULARITY_NAME ]]; then
   # We are  in a container
   MACHINE_ID=container
-elif [[ -d /opt/spack-stack ]]; then
+elif [[ -d /opt/spack-stack && -d /lustre ]]; then
   # We are on AWS ec2
   MACHINE_ID=aws-ec2
 elif [[ -d /lfs/h3 ]]; then
