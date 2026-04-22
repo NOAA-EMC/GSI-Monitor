@@ -159,7 +159,7 @@ module conmon_read_diag
 
       if ( netcdf ) then
          write(6,*) ' call nc read subroutine'
-         call read_diag_file_nc( input_file, return_all, ctype, intype, expected_nreal, nobs, in_subtype, list )
+         call read_diag_file_nc( input_file, return_all, ctype, intype, nobs, in_subtype, list )
       else
          call read_diag_file_bin( input_file,return_all, ctype, intype, expected_nreal,nobs,in_subtype, list )
       end if
@@ -205,7 +205,7 @@ module conmon_read_diag
       !
       if ( netcdf ) then
          write(6,*) ' call nc retrieve all routine'
-         call read_diag_file_nc( input_file, return_all, ctype, intype, expected_nreal, nobs, in_subtype, list )
+         call read_diag_file_nc( input_file, return_all, ctype, intype, nobs, in_subtype, list )
       else
          write(6,*) ' call bin retrieve all routine'
          call read_diag_file_bin( input_file,return_all, ctype, intype, expected_nreal,nobs,in_subtype, list )
@@ -221,20 +221,18 @@ module conmon_read_diag
    !
    !  NetCDF read routine
    !-------------------------------
-   subroutine read_diag_file_nc( input_file, return_all, ctype, intype, expected_nreal, nobs, in_subtype, list )
+   subroutine read_diag_file_nc( input_file, return_all, ctype, intype, nobs, in_subtype, list )
 
       !--- interface 
       character(100), intent(in) :: input_file
       logical, intent(in)        :: return_all
       character(3), intent(in)   :: ctype
-      integer, intent(in)        :: intype, expected_nreal, in_subtype
+      integer, intent(in)        :: intype, in_subtype
       integer, intent(out)       :: nobs
       type(list_node_t), pointer :: list
 
       !--- local vars
-      type(list_node_t), pointer :: next => null()
-      type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, istatus, ftin, total_obs, id, idx
+      integer                    :: ii, ierr, istatus, ftin, id
 
       data ftin / 11 /
 
@@ -270,22 +268,22 @@ module conmon_read_diag
       select case ( trim( adjustl( ctype ) ) )
    
          case ( 'gps' ) 
-            call read_diag_file_gps_nc( input_file, return_all, ftin, ctype, intype, expected_nreal, nobs, in_subtype, list )
+            call read_diag_file_gps_nc( return_all, ftin, ctype, intype, nobs, in_subtype, list )
 
          case ( 'ps' ) 
-            call read_diag_file_ps_nc(  input_file, return_all, ftin, ctype, intype, expected_nreal, nobs, in_subtype, list )
+            call read_diag_file_ps_nc(  return_all, ftin, ctype, intype, nobs, in_subtype, list )
 
          case ( 'q' ) 
-            call read_diag_file_q_nc(   input_file, return_all, ftin, ctype, intype, expected_nreal, nobs, in_subtype, list )
+            call read_diag_file_q_nc(   return_all, ftin, ctype, intype, nobs, in_subtype, list )
 
          case ( 'sst' )
-            call read_diag_file_sst_nc( input_file, return_all, ftin, ctype, intype, expected_nreal, nobs, in_subtype, list )
+            call read_diag_file_sst_nc( return_all, ftin, ctype, intype, nobs, in_subtype, list )
 
          case ( 't' ) 
-            call read_diag_file_t_nc(   input_file, return_all, ftin, ctype, intype, expected_nreal, nobs, in_subtype, list )
+            call read_diag_file_t_nc(   return_all, ftin, ctype, intype, nobs, in_subtype, list )
 
          case ( 'uv' ) 
-            call read_diag_file_uv_nc(  input_file, return_all, ftin, ctype, intype, expected_nreal, nobs, in_subtype, list )
+            call read_diag_file_uv_nc(  return_all, ftin, ctype, intype, nobs, in_subtype, list )
 
          case default
             print *, 'ERROR:  unmatched ctype :', ctype
@@ -318,21 +316,20 @@ module conmon_read_diag
    !--------------------------------------------------------- 
    !  netcdf read routine for ps data types in netcdf files
    !
-   subroutine read_diag_file_ps_nc( input_file, return_all, ftin, ctype, intype,expected_nreal,nobs,in_subtype, list )
+   subroutine read_diag_file_ps_nc( return_all, ftin, ctype, intype, nobs, in_subtype, list )
   
       !--- interface 
-      character(100), intent(in) :: input_file
       logical, intent(in)        :: return_all
       integer, intent(in)        :: ftin
       character(3), intent(in)   :: ctype
-      integer, intent(in)        :: intype, expected_nreal, in_subtype
+      integer, intent(in)        :: intype, in_subtype
       integer, intent(out)       :: nobs
       type(list_node_t), pointer :: list
 
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, istatus, total_obs, idx
+      integer                    :: ii, ierr, total_obs, idx
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -359,7 +356,6 @@ module conmon_read_diag
       real(r_single), dimension(:), allocatable    :: Observation                     !  (obs)
       real(r_single), dimension(:), allocatable    :: Obs_Minus_Forecast_adjusted     !  (obs)
       real(r_single), dimension(:), allocatable    :: Obs_Minus_Forecast_unadjusted   !  (obs)
-      integer(i_kind)                              :: idate 
 
       print *, ' '
       print *, '      --> read_diag_file_ps_nc'
@@ -521,21 +517,20 @@ module conmon_read_diag
    !--------------------------------------------------------- 
    !  netcdf read routine for q data types in netcdf files
    !
-   subroutine read_diag_file_q_nc( input_file, return_all, ftin, ctype, intype,expected_nreal,nobs,in_subtype, list )
+   subroutine read_diag_file_q_nc( return_all, ftin, ctype, intype, nobs,in_subtype, list )
   
       !--- interface 
-      character(100), intent(in) :: input_file
       logical, intent(in)        :: return_all
       integer, intent(in)        :: ftin
       character(3), intent(in)   :: ctype
-      integer, intent(in)        :: intype, expected_nreal, in_subtype
+      integer, intent(in)        :: intype, in_subtype
       integer, intent(out)       :: nobs
       type(list_node_t), pointer :: list
 
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, istatus, total_obs, idx
+      integer                    :: ii, ierr, total_obs, idx
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -563,7 +558,6 @@ module conmon_read_diag
       real(r_single), dimension(:), allocatable    :: Obs_Minus_Forecast_adjusted     !  (obs)
       real(r_single), dimension(:), allocatable    :: Obs_Minus_Forecast_unadjusted   !  (obs)
       real(r_single), dimension(:), allocatable    :: Forecast_Saturation_Spec_Hum    !  (obs)
-      integer(i_kind)                              :: idate 
 
       print *, ' '
       print *, '      --> read_diag_file_q_nc'
@@ -736,21 +730,20 @@ module conmon_read_diag
    !  NOTE2:  There are known discrepencies between the contents
    !          of sst obs in binary and NetCDF files. 
    !
-   subroutine read_diag_file_sst_nc( input_file, return_all, ftin, ctype, intype,expected_nreal,nobs,in_subtype, list )
+   subroutine read_diag_file_sst_nc( return_all, ftin, ctype, intype, nobs, in_subtype, list )
   
       !--- interface 
-      character(100), intent(in) :: input_file
       logical, intent(in)        :: return_all
       integer, intent(in)        :: ftin
       character(3), intent(in)   :: ctype
-      integer, intent(in)        :: intype, expected_nreal, in_subtype
+      integer, intent(in)        :: intype, in_subtype
       integer, intent(out)       :: nobs
       type(list_node_t), pointer :: list
 
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, istatus, total_obs, idx
+      integer                    :: ii, ierr, total_obs, idx
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -781,7 +774,6 @@ module conmon_read_diag
       real(r_single), dimension(:), allocatable    :: DiurnalWarming_at_zob           !  (obs)
       real(r_single), dimension(:), allocatable    :: SkinLayerCooling_at_zob         !  (obs)
       real(r_single), dimension(:), allocatable    :: Sensitivity_Tzob_Tr             !  (obs)
-      integer(i_kind)                              :: idate 
 
       print *, ' '
       print *, '      --> read_diag_file_sst_nc'
@@ -966,21 +958,20 @@ module conmon_read_diag
    !--------------------------------------------------------- 
    !  netcdf read routine for t data types in netcdf files
    !
-   subroutine read_diag_file_t_nc( input_file, return_all, ftin, ctype, intype, expected_nreal, nobs, in_subtype, list )
+   subroutine read_diag_file_t_nc( return_all, ftin, ctype, intype, nobs, in_subtype, list )
   
       !--- interface 
-      character(100), intent(in) :: input_file
       logical, intent(in)        :: return_all
       integer, intent(in)        :: ftin
       character(3), intent(in)   :: ctype
-      integer, intent(in)        :: intype, expected_nreal, in_subtype
+      integer, intent(in)        :: intype, in_subtype
       integer, intent(out)       :: nobs
       type(list_node_t), pointer :: list
 
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, istatus, total_obs, idx, bcor_terms
+      integer                    :: ii, ierr, total_obs, idx, bcor_terms
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -1010,18 +1001,18 @@ module conmon_read_diag
       real(r_single), dimension(:), allocatable    :: Data_Pof                        !  (obs) 
       real(r_single), dimension(:), allocatable    :: Data_Vertical_Velocity          !  (obs)
       real(r_single), dimension(:,:), allocatable  :: Bias_Correction_Terms           !  (nobs, Bias_Correction_Terms_arr_dim)
-      integer(i_kind)                              :: idate 
       integer(i_kind)                              :: jj
 
       print *, ' '
       print *, '      --> read_diag_file_t_nc'
 
-      print *, '            input_file = ', input_file
       print *, '            ftin       = ', ftin
       print *, '            ctype      = ', ctype
       print *, '            intype     = ', intype  
-      print *, '            expected_nreal = ', expected_nreal 
       print *, '            in_subtype = ', in_subtype
+      print *, '          nopen_ncdiag = ', nopen_ncdiag
+
+      print *, '            ii         = ', ii
 
 
       !--- get NetCDF file dimensions
@@ -1204,21 +1195,20 @@ module conmon_read_diag
    !--------------------------------------------------------- 
    !  netcdf read routine for uv data types in netcdf files
    !
-   subroutine read_diag_file_uv_nc( input_file, return_all, ftin, ctype, intype, expected_nreal, nobs, in_subtype, list )
+   subroutine read_diag_file_uv_nc( return_all, ftin, ctype, intype, nobs, in_subtype, list )
   
       !--- interface 
-      character(100), intent(in) :: input_file
       logical, intent(in)        :: return_all
       integer, intent(in)        :: ftin
       character(3), intent(in)   :: ctype
-      integer, intent(in)        :: intype, expected_nreal, in_subtype
+      integer, intent(in)        :: intype, in_subtype
       integer, intent(out)       :: nobs
       type(list_node_t), pointer :: list
 
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, istatus, total_obs, idx
+      integer                    :: ii, ierr, total_obs, idx
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -1250,7 +1240,6 @@ module conmon_read_diag
       real(r_single), dimension(:), allocatable    :: v_Observation                   !  (obs)
       real(r_single), dimension(:), allocatable    :: v_Obs_Minus_Forecast_adjusted   !  (obs)
       real(r_single), dimension(:), allocatable    :: v_Obs_Minus_Forecast_unadjusted !  (obs)
-      integer(i_kind)                              :: idate 
 
       print *, ' '
       print *, '      --> read_diag_file_uv_nc'
@@ -1435,21 +1424,20 @@ module conmon_read_diag
    !          in binary and NetCDF formatted diag files. See
    !          comments below.
    !
-   subroutine read_diag_file_gps_nc( input_file, return_all, ftin, ctype, intype,expected_nreal,nobs,in_subtype, list )
+   subroutine read_diag_file_gps_nc( return_all, ftin, ctype, intype, nobs, in_subtype, list )
  
       !--- interface 
-      character(100), intent(in) :: input_file
       logical, intent(in)        :: return_all
       integer, intent(in)        :: ftin
       character(3), intent(in)   :: ctype
-      integer, intent(in)        :: intype, expected_nreal, in_subtype
+      integer, intent(in)        :: intype, in_subtype
       integer, intent(out)       :: nobs
       type(list_node_t), pointer :: list
 
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, istatus, total_obs, idx
+      integer                    :: ii, ierr, total_obs, idx
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -1462,14 +1450,12 @@ module conmon_read_diag
       real(r_single), dimension(:), allocatable    :: Latitude                          !  (obs)
       real(r_single), dimension(:), allocatable    :: Longitude                         !  (obs)
       real(r_single), dimension(:), allocatable    :: Incremental_Bending_Angle         !  (obs)
-      real(r_single), dimension(:), allocatable    :: Station_Elevation                 !  (obs)
       real(r_single), dimension(:), allocatable    :: Pressure                          !  (obs)
       real(r_single), dimension(:), allocatable    :: Height                            !  (obs)
       real(r_single), dimension(:), allocatable    :: Time                              !  (obs)
       real(r_single), dimension(:), allocatable    :: Model_Elevation                   !  (obs)
       real(r_single), dimension(:), allocatable    :: Setup_QC_Mark                     !  (obs)
       real(r_single), dimension(:), allocatable    :: Prep_Use_Flag                     !  (obs)
-      real(r_single), dimension(:), allocatable    :: Nonlinear_QC_Var_Jb               !  (obs)
       real(r_single), dimension(:), allocatable    :: Nonlinear_QC_Rel_Wgt              !  (obs)
       real(r_single), dimension(:), allocatable    :: Analysis_Use_Flag                 !  (obs)
       real(r_single), dimension(:), allocatable    :: Errinv_Input                      !  (obs)
@@ -1481,8 +1467,6 @@ module conmon_read_diag
       real(r_single), dimension(:), allocatable    :: GPS_Type                          !  (obs)
       real(r_single), dimension(:), allocatable    :: Temperature_at_Obs_Location       !  (obs)
       real(r_single), dimension(:), allocatable    :: Specific_Humidity_at_Obs_Location !  (obs)
-
-      integer(i_kind)                              :: idate 
 
 
 
@@ -1699,11 +1683,9 @@ module conmon_read_diag
       character(8),allocatable,dimension(:)  :: cdiag 
 
       character(3)   :: dtype
-      character(10)  :: otype
-      character(15)  :: fileo,fileo_subtyp
 
-      integer nchar,file_nreal,i,ii,mype,idate,iflag,file_itype,iscater,igrads
-      integer lunin,lunot,ldtype,file_subtype
+      integer nchar,file_nreal,i,ii,mype,idate,iflag,file_itype
+      integer lunin,file_subtype
       integer idx,ioff02
 
       data lunin / 11 /

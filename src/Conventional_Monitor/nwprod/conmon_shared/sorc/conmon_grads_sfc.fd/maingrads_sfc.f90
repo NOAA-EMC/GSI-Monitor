@@ -29,27 +29,20 @@ program maingrads_sfc
 
    end interface
 
-   real(4),dimension(21) :: pmand 
-   character(10) :: fileo,stype 
+   character(10) :: stype 
    character(3) :: intype
    character(3) :: subtype
-   integer nreal,nreal_m2,iscater,igrads,isubtype 
-   integer n_alllev,n_acft,n_lowlev,n_upair,nobs,lstype
-   integer n_mand,itype
+   integer nreal,iscater,igrads,isubtype 
+   integer nobs,lstype
+   integer itype
 
    type(list_node_t), pointer   :: list => null()
-   type(list_node_t), pointer   :: next => null()
-   type(data_ptr)               :: ptr
 
    !--- namelist with defaults
    logical               :: netcdf              = .false.
    character(100)        :: input_file          = "conv_diag"
    character(3)          :: run                 = "ges"
    namelist /input/input_file,intype,stype,itype,nreal,iscater,igrads,subtype,isubtype,netcdf,run
-
-   data n_mand / 21 /
-   data pmand /1000.,925.,850.,700.,500.,400.,300.,250.,200.,150.,100.,&
-               70.,50.,30.,20.,10.,7.,5.,3.,2.,1./
 
    read(5,input)
    write(6,*)' User input below'
@@ -61,7 +54,7 @@ program maingrads_sfc
    call set_netcdf_read( netcdf )
 
    call conmon_read_diag_file( input_file, intype, itype, nreal, nobs, isubtype, list )
-
+   print *, 'nobs read = ', nobs
  
    if( nobs > 0 ) then
       call grads_sfc(stype,lstype,nobs,nreal,iscater,igrads,isubtype,subtype,list,run) 

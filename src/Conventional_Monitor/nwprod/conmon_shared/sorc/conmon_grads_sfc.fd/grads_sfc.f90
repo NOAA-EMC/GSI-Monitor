@@ -5,12 +5,14 @@
 !       horizontal GrADS data files.
 !------------------------------------------------------------------------
 
-subroutine grads_sfc(fileo,ifileo,nobs,nreal,iscater,igrads,isubtype,subtype,list,run)
+subroutine grads_sfc(fileo,ifileo,nobs,nreal,iscater,igrads,subtype,list,run)
 
    use generic_list
    use data
 
    implicit none
+
+   external ::  rm_dups
 
    type(list_node_t), pointer   :: list
    type(list_node_t), pointer   :: next => null()
@@ -23,10 +25,9 @@ subroutine grads_sfc(fileo,ifileo,nobs,nreal,iscater,igrads,isubtype,subtype,lis
    character(ifileo) :: fileo
    character(30) :: files,filein,filegrads, file_nobs
    character(3) :: subtype,run
-   integer nobs,nreal,nlfag,nflg0,nlev,nlev0,iscater,igrads
+   integer nobs,nreal,nflg0,nlev0,iscater,igrads
    real(4) rtim,xlat0,xlon0,rlat,rlon
  
-   integer(4):: isubtype
    integer i,j,ilat,ilon,ipres,itime,iweight,ndup
 
    rtim=0.0
@@ -66,8 +67,6 @@ subroutine grads_sfc(fileo,ifileo,nobs,nreal,iscater,igrads,isubtype,subtype,lis
          rdiag_m2(i-2, obs_ctr) = ptr%p%rdiag( i )
       end do
    end do
-
-   print *, 'obs_ctr (list) = ', obs_ctr
 
 
    !-------------------------------
