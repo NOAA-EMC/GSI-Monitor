@@ -8,14 +8,12 @@
 
 
 subroutine grads_lev(fileo,ifileo,nobs,nreal,nlev,plev,iscater,igrads,&
-                        hint,subtype,list,run)
+                        levcard,hint,isubtype,subtype,list,run)
 
    use generic_list
    use data
 
    implicit none
-
-   external ::  rm_dups
 
    type(list_node_t), pointer   :: list
    type(list_node_t), pointer   :: next => null()
@@ -31,7 +29,9 @@ subroutine grads_lev(fileo,ifileo,nobs,nreal,nlev,plev,iscater,igrads,&
    character(3) ::  run             ! ges or anl
 
    character(30) :: files, filegrad, file_nobs
+   character(10) :: levcard 
 
+   integer(4):: isubtype
    integer i,j,k,ctr,obs_ctr
    integer ilat,ilon,ipres,itime,iweight,ndup
 
