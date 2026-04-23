@@ -5,6 +5,8 @@ subroutine create_ctl_angle(ntype,ftype,n_chan,iyy,imm,idd,ihh,incr,&
 
   implicit none
 
+  external :: w3movdat
+
   integer, intent(in)                         :: ntype,n_chan,iyy,imm,idd,ihh,incr
   character(10),dimension(ntype),intent(in)   :: ftype
   character(40),intent(in)                    :: ctl_file
@@ -29,7 +31,7 @@ subroutine create_ctl_angle(ntype,ftype,n_chan,iyy,imm,idd,ihh,incr,&
   character(80),dimension(nregion):: stringr
 
   integer iuse,klev
-  integer j,i,idhh
+  integer i,idhh
   integer iyy2,imm2,idd2,ihh2,ntime
   integer, dimension(8):: ida,jda
 

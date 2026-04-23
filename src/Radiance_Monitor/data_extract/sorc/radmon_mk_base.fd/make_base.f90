@@ -1,6 +1,8 @@
 program make_base
   implicit none
 
+  external ::  errexit
+
   integer n_chan, nregion, nfile, mregion, mfile
   real rmiss
 
@@ -13,10 +15,10 @@ program make_base
   character(20) satname
   real,allocatable,dimension(:,:,:):: count, penalty
 
-  character(40) data_file, cycle_file, ctl_file, out_file
+  character(40) data_file, cycle_file, out_file
   character(40) channel_file
-  integer lungrd, luncyc, j, k, ii, ierror, hr, status
-  integer lunctl, lunout, lunchn, channels
+  integer lungrd, luncyc, j, k, ii, ierror
+  integer lunout, lunchn
   integer,allocatable,dimension(:):: iuse
   integer,allocatable,dimension(:,:):: file_ctr
 
@@ -27,10 +29,9 @@ program make_base
   real,allocatable,dimension(:,:):: min_penalty, max_penalty
 
   integer num_sdv, counter
-  real total_sdv, avg_sdv, diff_count, diff_total, diff_pen, temp
+  real total_sdv, diff_count, diff_total, diff_pen, temp
   
-  character(10) date, new_date, cycle
-  character(40) ctl_var1, ctl_var2, dummy
+  character(10) date, cycle
   logical fexist, gexist
   integer luname
 

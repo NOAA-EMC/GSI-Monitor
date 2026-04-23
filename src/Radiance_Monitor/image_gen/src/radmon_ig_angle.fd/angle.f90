@@ -33,8 +33,10 @@ program angle
 !************************************************************************
   implicit none
 
+  external ::  avgsdv
+
   integer ftyp,cyc,chan,open_status,prd
-  integer d1, d5_7, dmax, ctr, ndays
+  integer d1, d5_7, dmax, ndays
   integer ges, anl, avg, sdv
 
   logical exist
@@ -52,9 +54,9 @@ program angle
 
   character(len=10),allocatable,dimension(:)::times
 
-  integer luname,ldname,lpname,lsatout,lpenout
+  integer luname,ldname,lpname,lsatout
   integer ii, jj, i, j, k
-  integer nstep, io_stat, nfloats
+  integer nstep, nfloats
   integer rgn, astep
   
   real start, stepsz

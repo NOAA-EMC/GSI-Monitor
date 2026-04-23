@@ -22,7 +22,7 @@ program bcoef
 
   integer ftyp,cyc,chan,open_status
 
-  logical eof, exist
+  logical exist
 
   character(20) str_nchanl
   character(60) sat_out_file
@@ -47,7 +47,7 @@ program bcoef
 !        ordang2    pred(11) = 2nd order angle term
 !        ordang1    pred(12) = 1st order angle term
 
-  integer luname,ldname,lpname,lsatchan,lsatout
+  integer luname,ldname,lpname,lsatout
   integer ii, jj
   
   real,allocatable,dimension(:,:,:):: mean,atmpath,clw,lapse2,lapse,cos_ssmis
@@ -61,7 +61,7 @@ program bcoef
   character(15)         :: satname              ='ssmis_f18'
   namelist /input/ satname,nchanl,ncycle
 
-  data luname,ldname,lpname,lsatchan / 5, 50, 51, 52 /
+  data luname,ldname,lpname / 5, 50, 51 /
 
 !************************************************************************
 ! Read namelist input

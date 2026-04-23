@@ -76,9 +76,6 @@ module bad_chan
       character(20), intent( in )       :: satname
       integer, intent( in )		:: channel
       
-      !--- variables
-      real                              :: count
-
       write(6,*) 'write_bad_chan, satname, channel', satname, channel
 
       write(funit,*) satname, 'channel= ', channel

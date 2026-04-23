@@ -22,30 +22,26 @@ program time
   parameter (iglobal=1, iland=2, iwater=3, isnowice=4, imixed=5)
 
   character(10),dimension(ntype):: ftype
-  character(8) stid
   character(20) satname,stringd,satsis
-  character(10) dum,satype,dplat
+  character(10) satype,dplat
   character(80) string,data_file,dfile,ctl_file
   character(500) diag_rad
   character(40),dimension(max_surf_region):: region
-  character(40),dimension(mregion):: surf_region
-  character :: command
   character(8) date,suffix,cycle
 
   integer luname,lungrd,lunctl,lndiag,nregion
   integer iyy,imm,idd,ihh,idhh,incr,iread,iflag
-  integer n_chan,j,idsat,i,k,ii,nreg
+  integer n_chan,j,i,k,ii,nreg
   integer,dimension(mregion):: jsub
   integer,allocatable,dimension(:):: io_chan,nu_chan
   integer :: ios = 0
-  integer :: channel_obs
   integer :: iret, ier, ver
   integer npred_radiag
   integer(i_kind)       :: istatus
 
   real rread, pen, bound
-  real rlat, rlon, rmiss, obs
-  real,dimension(2):: cor_tot,nbc_omg,bc_omg
+  real rlat, rlon, rmiss
+  real,dimension(2):: cor_tot
   real,dimension(2):: omgbc, omgnbc
   real,dimension(max_surf_region):: rlatmin,rlatmax,rlonmin,rlonmax
 
@@ -63,7 +59,7 @@ program time
 
   logical  valid_count, valid_penalty
   integer  nsnow, nland, nwater, nice, nmixed, ntotal
-  integer  nnsnow, nnland, nnwater, nnmixed, nntotal
+  integer  nnsnow, nnland, nnwater, nnmixed
   real     avg_cnt
 
 ! Namelist with defaults
@@ -77,6 +73,9 @@ program time
   logical               :: netcdf               = .false.
   namelist /input/ satname,iyy,imm,idd,ihh,idhh,incr,nchanl,&
        suffix,imkctl,imkdata,retrieval,gesanl,little_endian,rad_area,netcdf
+
+  external              :: create_ctl_time
+  external              :: errexit
 
   data luname,lungrd,lunctl,lndiag / 5, 51, 52, 21 /
   data rmiss /-999./
