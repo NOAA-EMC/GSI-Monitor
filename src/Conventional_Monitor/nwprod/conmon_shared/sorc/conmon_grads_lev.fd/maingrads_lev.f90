@@ -39,7 +39,7 @@
    real(4),dimension(6) :: pacft 
    real(4),dimension(4) :: pupair
    real(4),dimension(10) :: palllev
-   character(10) :: levcard,fileo,stype 
+   character(10) :: levcard,stype 
    character(3) :: intype
    character(3) :: subtype
    integer nreal,iscater,igrads 
@@ -47,8 +47,6 @@
    real hint
 
    type(list_node_t), pointer   :: list => null()
-   type(list_node_t), pointer   :: next => null()
-   type(data_ptr)               :: ptr
 
    !--- namelist with defaults
    logical               :: netcdf              = .false.

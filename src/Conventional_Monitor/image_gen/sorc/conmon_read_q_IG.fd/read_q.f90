@@ -8,6 +8,9 @@ subroutine read_q( nreal, dtype, fname, fileo, gtross, rlev, grads_info_file )
 
    implicit none
 
+   external ::  hist
+   external ::  rm_dups
+
    integer, intent(in)                 :: nreal
    character*200, intent(in)           :: fname
    character*50, intent(in)            :: fileo
@@ -18,14 +21,13 @@ subroutine read_q( nreal, dtype, fname, fileo, gtross, rlev, grads_info_file )
    real(4),dimension(3,3000000)        :: rpress
    integer,dimension(3)                :: ncount,ncount_vqc,ncount_gros
 
-   real*4     tiny,real
+   real*4     tiny
    real       rlev,rgtross,gtross,weight,ddf
-   integer    nobs,ntotal,ngross,nreal_in,nlev
+   integer    nobs,ntotal,nreal_in,nlev
    integer    ilat,ilon,ipres,itime,iqc,iuse,imuse,iweight,ierr,ierr2,ierr3,iobs,iogs,iqsges
    integer    i,ndup,ioges,igos
 
    real(4)    :: rmiss,vqclmt,vqclmte
-   real(4)    :: rlat, rlon, rtim
 
    data rmiss / -999.0 / 
    data tiny / 1.0e-6 /

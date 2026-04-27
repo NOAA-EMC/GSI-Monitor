@@ -1,11 +1,12 @@
 !   intype  : the observarion type like t for tem., uv for wind
 !   stype   : the observation sub type, like t120 uv220
 
-!   use conmon_read_time_diag
    use conmon_process_time_data
 
    implicit none
 
+   external ::  creatstas_ctl
+   external ::  convinfo
 
    integer np,mregion,nobs, np_gps
    integer ntype_ps,ntype_q,ntype_t,ntype_uv,ntype_gps
@@ -24,10 +25,7 @@
    character(40),dimension(mregion):: region
 
    real,dimension(mregion):: rlatmin,rlatmax,rlonmin,rlonmax
-   integer lunin,lunot,nregion
-
-   data lunin / 11 /
-   data lunot / 21 /
+   integer nregion
 
    character(100)        :: input_file          = "conv_diag"
    logical               :: netcdf              = .false.

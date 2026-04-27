@@ -8,11 +8,14 @@
 
    implicit none
 
+   external ::  convinfo_read
+   external ::  read_ps
+   external ::  read_ps_mor
+
    character*200 fname
    character*50 fileo, grads_info_file
-   character*15 mtype,dtype 
+   character*15 mtype
 
-!   real*4 tiny,huge,real
    integer nreal,insubtype
 
    integer(4):: ituse,ntumgrp,ntgroup,ntmiter
@@ -21,7 +24,7 @@
    real(4) :: ttwind,gtross,etrmax,etrmin,vtar_b,vtar_pg
    real rlev,rpress
 
-   real(4) :: rmiss,vqclmt,vqclmte
+   real(4) :: rmiss
 
    data rmiss/-999.0/ 
 
@@ -36,12 +39,10 @@
    ncount_vgc = 0
    ncount_gros = 0
 
-!   print *,mtype,nreal
 
    call convinfo_read(mtype,15,insubtype,ituse,ntumgrp,ntgroup,ntmiter,isubtype,&
                       ttwind,gtross,etrmax,etrmin,vtar_b,vtar_pg)
 
-!   print *,'ituse=',ituse,gtross
    write(6, *) 'ituse, gtross = ', ituse, gtross
 
    if (ituse >0) call read_ps(nreal,mtype,fname,fileo,gtross,rlev, grads_info_file ) 

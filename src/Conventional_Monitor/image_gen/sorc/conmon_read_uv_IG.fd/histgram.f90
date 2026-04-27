@@ -28,12 +28,11 @@ subroutine hist( mtype, rmodnbc, nchan, nxdata, ndata, rmin, rmax, rlev, &
    real sqr2
 
    real,dimension(nchan) :: rmean,rstd 
-   integer,dimension(nchan) :: nmean,nobs
+   integer,dimension(nchan) :: nobs
 
    real,dimension(nchan,400) :: ys
    real,dimension(400) :: xs
    real,dimension(401) :: xs2
-   real maxf
 
 
    sqr2=1.414213562

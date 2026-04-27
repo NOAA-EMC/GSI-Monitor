@@ -25,13 +25,13 @@ subroutine histuv( dtype, rmodnbc, nchan, nxdata, ndata, rmin, rmax, &
    ! local vars
    !
    real,dimension(nchan) :: rmean,rstd 
-   integer,dimension(nchan) :: nmean,nobs,ndata
+   integer,dimension(nchan) :: nobs,ndata
    integer i,j,k,nlev
 
    real,dimension(nchan,400) :: ys
    real,dimension(400) :: xs
    real,dimension(401) :: xs2
-   real maxf,sqr2
+   real sqr2
 
    character*20        :: grads_info_file 
 

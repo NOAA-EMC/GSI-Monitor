@@ -5,6 +5,10 @@
 subroutine read_uv_mor( nreal, dtype, fname, fileo, gtross, rlev, grads_info_file )
 
    implicit none
+   
+   external ::  hist
+   external ::  histuv
+   external ::  rm_dups
 
    !-------------
    !  interface 
@@ -29,10 +33,10 @@ subroutine read_uv_mor( nreal, dtype, fname, fileo, gtross, rlev, grads_info_fil
    character*50 fileu,filev,fileou2,fileov2
 
    real rgtross
-   integer nobs,ntotal,ngross,nreal_in,nlev
-   integer i,ndup,nlat,nlon,npres,ntime
+   integer nobs,ntotal,nreal_in,nlev
+   integer i,ndup
    integer ilat,ilon,ipres,itime,iqc,iuse,imuse,iweight,ierr,ierr2,ierr3,iobu,iogu,iobv,iogv
-   real(4) :: rmiss,vqclmt,vqclmte
+   real(4) :: rmiss
 
    data rmiss/-999.0/ 
 
