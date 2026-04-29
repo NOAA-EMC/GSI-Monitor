@@ -4,6 +4,10 @@ program bcoef
   use kinds, only: r_kind,i_kind,r_quad
 
   implicit none
+
+  external :: create_ctl_bcoef
+  external :: errexit
+
   integer ntype,maxpred
   parameter (ntype=13)
   parameter (maxpred=12)
@@ -11,7 +15,7 @@ program bcoef
   logical eof
 
   character(10),dimension(ntype):: ftype
-  character(20) dum,satname,stringd,satsis,isis,mod_satname
+  character(20) satname,stringd,satsis,isis,mod_satname
   character(10) satype,dplat
   character(80) string,data_file,ctl_file
   character(500) diag_rad
@@ -24,8 +28,8 @@ program bcoef
   integer npred_radiag
   integer(i_kind) angord,ntlapupdate, istatus
 
-  real pen,rmiss,weight,rread
-  real,allocatable,dimension(:):: wavenumbr,count,error,&
+  real pen,rmiss,rread
+  real,allocatable,dimension(:):: wavenumbr,count,&
        use,frequency,penalty,predr
   real,allocatable,dimension(:,:):: coefs
   real(r_kind)  tlapm, tsum

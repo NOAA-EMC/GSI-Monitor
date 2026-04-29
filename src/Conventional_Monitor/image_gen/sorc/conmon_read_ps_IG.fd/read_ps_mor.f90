@@ -6,6 +6,9 @@ subroutine read_ps_mor(nreal,mtype,fname,fileo,gtross,rlev, grads_info_file)
 
    implicit none
 
+   external ::  hist
+   external ::  rm_dups
+
    !-------------
    !  interface
    !
@@ -25,10 +28,10 @@ subroutine read_ps_mor(nreal,mtype,fname,fileo,gtross,rlev, grads_info_file)
    real(4),dimension(3,3000000) :: rpress
    integer,dimension(3) :: ncount,ncount_vqc,ncount_gros
 
-   integer nobs,ntotal,ngross,nreal_in,nlev
+   integer nobs,ntotal,nreal_in,nlev
    integer i,ilat,ilon,ipres,itime,iqc,iuse,imuse,iweight,ierr,ierr2,ierr3,iobs,iogs
-   integer nlat,nlon,npres,ntime,ndup
-   real(4) :: bmiss,vqclmt,vqclmte
+   integer ndup
+   real(4) :: bmiss
    real rgtross
 
    data bmiss/-999.0/ 

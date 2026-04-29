@@ -17,11 +17,10 @@ program gatime
 
    implicit none
 
-   character(5)  str_chan
-   character(10) pdate,ndate
-   character(20) stringd,str_nchanl,str_ncycle
-   character(60) data_file, sat_chan_file, sat_out_file
-   character(200) outstr
+   external ::  avgsdv
+
+   character(20) str_nchanl,str_ncycle
+   character(60) data_file, sat_chan_file
 
    character(60) cnt_out_file, pen_out_file, omgnbc_out_file, totcor_out_file
    character(60) omgbc_out_file
@@ -31,13 +30,12 @@ program gatime
    character(len=5), allocatable,dimension(:)::chan_nums
   
    integer luname,ldname,lpname,lsatchan,lsatout
-   integer cyc,ii,jj,iflag,j,k,res,chan,ftyp,open_status
+   integer cyc,ii,jj,j,k,chan,ftyp,open_status
    integer max_region
 
    logical exist
 
    real rmiss
-   real chan_cnt, chan_tot, chan_omgbc, chan_omgbc2
    real tot_pen, tot_cnt
 
    real,allocatable,dimension(:,:,:,:):: cnt,pen,avg_pen

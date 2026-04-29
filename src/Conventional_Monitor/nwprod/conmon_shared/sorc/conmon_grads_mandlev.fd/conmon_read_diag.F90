@@ -232,9 +232,7 @@ module conmon_read_diag
       type(list_node_t), pointer :: list
 
       !--- local vars
-      type(list_node_t), pointer :: next => null()
-      type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, istatus, ftin, total_obs, id, idx
+      integer                    :: ii, ierr, istatus, ftin, id
 
       data ftin / 11 /
 
@@ -332,7 +330,7 @@ module conmon_read_diag
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, istatus, total_obs, idx
+      integer                    :: ii, ierr, total_obs, idx
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -359,7 +357,6 @@ module conmon_read_diag
       real(r_single), dimension(:), allocatable    :: Observation                     !  (obs)
       real(r_single), dimension(:), allocatable    :: Obs_Minus_Forecast_adjusted     !  (obs)
       real(r_single), dimension(:), allocatable    :: Obs_Minus_Forecast_unadjusted   !  (obs)
-      integer(i_kind)                              :: idate 
 
       print *, ' '
       print *, '      --> read_diag_file_ps_nc'
@@ -535,7 +532,7 @@ module conmon_read_diag
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, istatus, total_obs, idx
+      integer                    :: ii, ierr, total_obs, idx
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -563,7 +560,6 @@ module conmon_read_diag
       real(r_single), dimension(:), allocatable    :: Obs_Minus_Forecast_adjusted     !  (obs)
       real(r_single), dimension(:), allocatable    :: Obs_Minus_Forecast_unadjusted   !  (obs)
       real(r_single), dimension(:), allocatable    :: Forecast_Saturation_Spec_Hum    !  (obs)
-      integer(i_kind)                              :: idate 
 
       print *, ' '
       print *, '      --> read_diag_file_q_nc'
@@ -750,7 +746,7 @@ module conmon_read_diag
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, istatus, total_obs, idx
+      integer                    :: ii, ierr, total_obs, idx
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -781,7 +777,6 @@ module conmon_read_diag
       real(r_single), dimension(:), allocatable    :: DiurnalWarming_at_zob           !  (obs)
       real(r_single), dimension(:), allocatable    :: SkinLayerCooling_at_zob         !  (obs)
       real(r_single), dimension(:), allocatable    :: Sensitivity_Tzob_Tr             !  (obs)
-      integer(i_kind)                              :: idate 
 
       print *, ' '
       print *, '      --> read_diag_file_sst_nc'
@@ -980,7 +975,7 @@ module conmon_read_diag
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, istatus, total_obs, idx, bcor_terms
+      integer                    :: ii, ierr, total_obs, idx, bcor_terms
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -1010,7 +1005,6 @@ module conmon_read_diag
       real(r_single), dimension(:), allocatable    :: Data_Pof                        !  (obs) 
       real(r_single), dimension(:), allocatable    :: Data_Vertical_Velocity          !  (obs)
       real(r_single), dimension(:,:), allocatable  :: Bias_Correction_Terms           !  (nobs, Bias_Correction_Terms_arr_dim)
-      integer(i_kind)                              :: idate 
       integer(i_kind)                              :: jj
 
       print *, ' '
@@ -1218,7 +1212,7 @@ module conmon_read_diag
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, istatus, total_obs, idx
+      integer                    :: ii, ierr, total_obs, idx
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -1250,7 +1244,6 @@ module conmon_read_diag
       real(r_single), dimension(:), allocatable    :: v_Observation                   !  (obs)
       real(r_single), dimension(:), allocatable    :: v_Obs_Minus_Forecast_adjusted   !  (obs)
       real(r_single), dimension(:), allocatable    :: v_Obs_Minus_Forecast_unadjusted !  (obs)
-      integer(i_kind)                              :: idate 
 
       print *, ' '
       print *, '      --> read_diag_file_uv_nc'
@@ -1449,7 +1442,7 @@ module conmon_read_diag
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, istatus, total_obs, idx
+      integer                    :: ii, ierr, total_obs, idx
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -1481,8 +1474,6 @@ module conmon_read_diag
       real(r_single), dimension(:), allocatable    :: GPS_Type                          !  (obs)
       real(r_single), dimension(:), allocatable    :: Temperature_at_Obs_Location       !  (obs)
       real(r_single), dimension(:), allocatable    :: Specific_Humidity_at_Obs_Location !  (obs)
-
-      integer(i_kind)                              :: idate 
 
 
 
@@ -1699,11 +1690,9 @@ module conmon_read_diag
       character(8),allocatable,dimension(:)  :: cdiag 
 
       character(3)   :: dtype
-      character(10)  :: otype
-      character(15)  :: fileo,fileo_subtyp
 
-      integer nchar,file_nreal,i,ii,mype,idate,iflag,file_itype,iscater,igrads
-      integer lunin,lunot,ldtype,file_subtype
+      integer nchar,file_nreal,i,ii,mype,idate,iflag,file_itype
+      integer lunin,file_subtype
       integer idx,ioff02
 
       data lunin / 11 /

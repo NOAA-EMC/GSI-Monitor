@@ -5,7 +5,10 @@
 subroutine read_t(nreal,dtype,fname,fileo,gtross,rlev, grads_info_file )
 
    implicit none
-  
+ 
+   external ::  rm_dups
+   external ::  hist
+
    !-------------
    !  interface 
    !
@@ -24,9 +27,9 @@ subroutine read_t(nreal,dtype,fname,fileo,gtross,rlev, grads_info_file )
    real(4),dimension(3,3000000) :: rpress
    integer,dimension(3) :: ncount,ncount_vqc,ncount_gros
 
-   real*4 tiny,real
-   integer nobs,ntotal,ngross,nreal_in,nlev
-   integer nint,igos,ioges,i,j,ndup
+   real*4 tiny
+   integer nobs,ntotal,nreal_in,nlev
+   integer nint,igos,ioges,i,ndup
    integer ilat,ilon,ipres,itime,iqc,iuse,imuse,iweight,ierr,ierr2,ierr3,iobs,iogs
    real rgtross,ddf,weight
 

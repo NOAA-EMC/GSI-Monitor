@@ -4,6 +4,8 @@ subroutine create_ctl_bcoef(ntype,ftype,n_chan,iyy,imm,idd,ihh,idhh,&
 
   implicit none
 
+  external ::  w3movdat
+
   integer, intent(in)                        :: ntype,n_chan,iyy,imm,idd,ihh,idhh
   character(10),dimension(ntype),intent(in)  :: ftype
   integer, intent(in)                        :: lunctl,incr,little_endian
@@ -16,13 +18,11 @@ subroutine create_ctl_bcoef(ntype,ftype,n_chan,iyy,imm,idd,ihh,idhh,&
 
 
   character(3),dimension(12):: mon
-  character(3):: clatmin,clatmax
-  character(4):: clonmin,clonmax
   character(13) stringd
   character(40) grad_file
   character(80) string
 
-  integer iuse,j,i
+  integer iuse,i
   integer iyy2,imm2,idd2,ihh2,ntime
   integer,dimension(8):: ida,jda
 

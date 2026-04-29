@@ -34,15 +34,13 @@ program maingrads_mandlev
 
 
    real(4),dimension(13) :: pmand 
-   character(10) :: fileo,stype 
+   character(10) :: stype 
    character(3) :: intype
    character(3) :: subtype
-   integer nreal,nreal_m2,iscater,igrads,isubtype,itype
-   integer n_alllev,n_acft,n_lowlev,n_upair,nobs,lstype
+   integer nreal,iscater,igrads,isubtype,itype
+   integer nobs,lstype
 
    type(list_node_t), pointer   :: list => null()
-   type(list_node_t), pointer   :: next => null()
-   type(data_ptr)               :: ptr
 
    !--- namelist with defaults
    logical               :: netcdf              = .false.

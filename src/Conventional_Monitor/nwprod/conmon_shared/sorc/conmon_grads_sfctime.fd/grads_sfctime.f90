@@ -13,7 +13,9 @@ subroutine grads_sfctime(fileo,ifileo,nobs,nreal,nlev,plev,iscater,&
    use data
 
    implicit none
- 
+
+   external ::  rm_dups
+
    type(list_node_t), pointer   :: list
    type(list_node_t), pointer   :: next => null()
    type(data_ptr)               :: ptr
@@ -53,10 +55,9 @@ subroutine grads_sfctime(fileo,ifileo,nobs,nreal,nlev,plev,iscater,&
    character(8),allocatable,dimension(:) :: stid
 
    character(8) :: stidend
-   character(30) :: files,filein,filegrads, file_nobs
-   integer :: nlfag,nflag0,nlev0,getlev
+   character(30) :: files,filegrads, file_nobs
+   integer :: nflag0,nlev0,getlev
    real(4) :: rmiss,rtim,xlat0,xlon0,rtime
-   integer      :: first, second
  
    integer nt,k,i,ii,j,nflag,obs_ctr
    integer ilat,ilon,ipres,itime,iweight,ndup

@@ -29,12 +29,14 @@ subroutine create_ctl_time(ntype,ftype,n_chan,iyy,imm,idd,ihh,idhh,&
   character(80),dimension(nregion):: stringr
 
   integer iuse
-  integer j,i
+  integer i
   integer iyy2,imm2,idd2,ihh2,ntime
   integer,dimension(8):: ida,jda
 
   real wavelength
   real,dimension(5):: fha
+
+  external ::  w3movdat
 
   data stringd / '.%y4%m2%d2%h2' /
   data mon / 'jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', &

@@ -43,6 +43,8 @@ module read_diag
   use nc_diag_read_mod, only: nc_diag_read_init, nc_diag_read_close
   implicit none
 
+  external :: abort
+
 ! Declare public and private
   private
 

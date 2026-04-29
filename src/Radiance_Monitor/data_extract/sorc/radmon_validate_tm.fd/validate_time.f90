@@ -19,14 +19,13 @@ program time
   character(20) satname,stringd
   character(8) date,cycle
   character(80) data_file
-  integer luname,lungrd,lunctl,lndiag,nregion
-  integer iyy,imm,idd,ihh,idhh,incr,iread,iflag
+  integer luname,lungrd
+  integer iyy,imm,idd,ihh
   integer j,k
   integer :: ios = 0
   integer :: iret 
 
   real bound, avg_cnt
-  real rmiss
   real,allocatable,dimension(:,:):: count,penalty
   real,allocatable,dimension(:):: test_pen
 
@@ -42,8 +41,7 @@ program time
   namelist /iuseflg/ test_iuse
   namelist /ichannum/ test_chan
 
-  data luname,lungrd,lunctl,lndiag / 5, 51, 52, 21 /
-  data rmiss /-999./
+  data luname,lungrd / 5, 51 /
   data stringd / '.%y4%m2%d2%h2' /
 
 

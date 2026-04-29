@@ -13,7 +13,9 @@ subroutine grads_mandlev(fileo,ifileo,nobs,nreal,nlev,plev,iscater,igrads,&
    use data
 
    implicit none
- 
+
+   external :: rm_dups
+
    type(list_node_t), pointer   :: list
    type(list_node_t), pointer   :: next => null()
    type(data_ptr)               :: ptr
@@ -21,8 +23,6 @@ subroutine grads_mandlev(fileo,ifileo,nobs,nreal,nlev,plev,iscater,igrads,&
    real(4),allocatable,dimension(:,:)  :: rdiag_m2
    character(8),allocatable,dimension(:) :: cdiag
   
-   real(4),dimension(nreal) :: rdummy
-   character(8) cdummy 
    real(4),dimension(nlev) :: plev
 
    real(4) rlat,rlon,rp
@@ -32,11 +32,11 @@ subroutine grads_mandlev(fileo,ifileo,nobs,nreal,nlev,plev,iscater,igrads,&
    character(ifileo) :: fileo 
    character(30)  :: files,filegrads 
    character(8)  :: stidend
-   integer nobs,nreal,nlfag,nflag0,nlev,nlev0,getlev,iscater,igrads,nflg0
+   integer nobs,nreal,nreal_m2,nflag0,nlev,nlev0,getlev,iscater,igrads,nflg0
    real*4               :: rtim,xlat0,xlon0
-   character(30)        :: filein, file_nobs
+   character(30)        :: file_nobs
 
-   integer              :: i,j,ii,k,nreal_m2,ctr,obs_ctr
+   integer              :: i,j,ii,k,ctr,obs_ctr
    integer              :: ilat,ilon,ipres,itime,iweight,ndup
    integer(4)           :: isubtype
  

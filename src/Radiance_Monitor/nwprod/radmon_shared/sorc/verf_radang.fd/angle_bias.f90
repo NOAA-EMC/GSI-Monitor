@@ -4,6 +4,9 @@ program angle
 
   implicit none
 
+  external :: create_ctl_angle
+  external :: errexit
+
   integer ntype,mregion,mstep,surf_nregion,max_surf_region
   parameter (ntype=35,mregion=25,mstep=150,max_surf_region=5)
   integer iglobal, iland, iwater, isnowice, imixed
@@ -18,9 +21,9 @@ program angle
   character(40),dimension(max_surf_region):: surf_region
   character(8)  date,suffix,cycle
 
-  integer luname,lungrd,lndiag,lunang,lunctl
+  integer luname,lungrd,lndiag,lunctl
   integer iyy,imm,idd,ihh,idhh,incr,iread,iflag,ipos
-  integer n_chan,j,i,k,ii,nsub,jiter,jj
+  integer n_chan,j,i,k,ii,nsub,jiter
   integer,dimension(mregion):: jsub
   integer,allocatable,dimension(:):: io_chan,nu_chan
   integer npred_radiag, angord
@@ -30,7 +33,7 @@ program angle
   integer nstep,iscan
   character(1) cflg
   real rang,pen
-  real weight,rlat,rlon,rmiss,obs,biascor,obsges,obsgesnbc,rread
+  real rlat,rlon,rmiss,rread
   real,dimension(2):: cor_tot,nbc_omg,bc_omg
   real,dimension(2):: cor_fixang,cor_lapse,cor_lapse2,cor_const,cor_scangl,cor_clw
   real,dimension(2):: cor_cos,cor_sin,cor_emiss
@@ -69,7 +72,6 @@ program angle
        rad_area,netcdf
 
   data luname,lungrd,lunctl,lndiag,iscan / 5, 51, 52, 21, 31 /
-  data lunang / 22 /
   data rmiss /-999./
   data stringd / '.%y4%m2%d2%h2' /
   data ftype / 'satang', 'count', 'penalty', &

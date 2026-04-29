@@ -34,16 +34,14 @@ program maingrads_sig
 
 
    real(4),dimension(46) :: psig 
-   character(10) :: fileo,stype,time
+   character(10) :: stype,time
    character(3) :: intype
    character(3) :: subtype
-   integer nreal,nreal_m2,iscater,igrads,isubtype 
-   integer n_alllev,n_acft,n_lowlev,n_upair,nobs,lstype
-   integer itype,n_sig,ii
+   integer nreal,iscater,igrads,isubtype
+   integer nobs,lstype
+   integer itype,n_sig
 
-   type(list_node_t), pointer   :: list => null() 
-   type(list_node_t), pointer   :: next => null() 
-   type(data_ptr)               :: ptr
+   type(list_node_t), pointer   :: list => null()
 
 
    !--- namelist with defaults
