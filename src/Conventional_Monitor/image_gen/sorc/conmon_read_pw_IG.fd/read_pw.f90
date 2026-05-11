@@ -6,6 +6,9 @@ subroutine read_pw(nreal,mtype,fname,fileo,gtross,rlev)
 
    implicit none
 
+   external ::  rm_dups
+   external ::  hist
+
    real(4),allocatable,dimension(:,:)  :: rdiag
    real(4),dimension(3,3000000) :: rpress
    integer,dimension(3) :: ncount,ncount_vqc,ncount_gros
@@ -14,10 +17,10 @@ subroutine read_pw(nreal,mtype,fname,fileo,gtross,rlev)
    character*50 fileo
    character*15 mtype 
 
-   real(4) :: tiny,huge
+   real(4) :: tiny
    real rlev,rgtross,gtross,weight,ddf
 
-   integer nobs,nreal,ntotal,ngross,nreal_in,nlev
+   integer nobs,nreal,ntotal,nreal_in,nlev
    integer ilat,ilon,ipres,itime,iqc,iuse,imuse,iweight,ierr,ierr2,ierr3,iobs,iogs
    integer i,ndup,ioges,igos
 
@@ -25,7 +28,6 @@ subroutine read_pw(nreal,mtype,fname,fileo,gtross,rlev)
 
    data rmiss/-999.0/ 
    data tiny / 1.0e-6 /
-   data huge / 1.0e6 /
  
 
 !  print *,'nreal=',nreal

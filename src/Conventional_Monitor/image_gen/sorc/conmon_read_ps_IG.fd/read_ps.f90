@@ -6,6 +6,9 @@ subroutine read_ps(nreal,mtype,fname,fileo,gtross,rlev, grads_info_file )
 
    implicit none
 
+   external ::  rm_dups
+   external ::  hist
+
    !-------------
    !  interface
    !
@@ -26,7 +29,7 @@ subroutine read_ps(nreal,mtype,fname,fileo,gtross,rlev, grads_info_file )
 
 
    real(4) :: tiny
-   integer nobs,ntotal,ngross,nreal_in,nlev
+   integer nobs,ntotal,nreal_in,nlev
    real(4) :: rmiss,vqclmt,vqclmte
 
    data rmiss / -999.0 / 

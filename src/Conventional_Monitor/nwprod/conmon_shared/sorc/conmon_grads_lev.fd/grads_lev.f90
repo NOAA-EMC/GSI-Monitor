@@ -15,6 +15,8 @@ subroutine grads_lev(fileo,ifileo,nobs,nreal,nlev,plev,iscater,igrads,&
 
    implicit none
 
+   external :: rm_dups
+
    type(list_node_t), pointer   :: list
    type(list_node_t), pointer   :: next => null()
    type(data_ptr)               :: ptr

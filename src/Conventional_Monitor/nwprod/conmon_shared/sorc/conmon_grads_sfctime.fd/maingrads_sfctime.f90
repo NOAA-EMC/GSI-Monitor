@@ -34,12 +34,10 @@ program maingrads_sfctime
 
 
    type(list_node_t), pointer   :: list => null()
-   type(list_node_t), pointer   :: next => null()
-   type(data_ptr)               :: ptr
 
    real(4),dimension(11) :: ptime11 
    real(4),dimension(7) :: ptime7
-   character(10) :: fileo,stype,timecard 
+   character(10) :: stype,timecard 
    character(3) :: intype
    character(3) :: subtype
    integer nreal,iscater,igrads,isubtype 

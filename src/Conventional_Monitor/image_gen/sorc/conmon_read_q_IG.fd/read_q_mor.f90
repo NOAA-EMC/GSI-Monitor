@@ -7,6 +7,9 @@ subroutine read_q_mor( nreal, dtype, fname, fileo, gtross, rlev, grads_info_file
 
    implicit none
 
+   external ::  hist
+   external ::  rm_dups
+
    integer,       intent( in )         :: nreal
    character*15,  intent( in )         :: dtype 
    character*200, intent( in )         :: fname
@@ -21,10 +24,10 @@ subroutine read_q_mor( nreal, dtype, fname, fileo, gtross, rlev, grads_info_file
 
    real(4) :: rgtross
 
-   integer nobs,ntotal,ngross,nreal_in,nlev
-   integer i,nlat,nlon,npres,ntime,ndup
+   integer nobs,ntotal,nreal_in,nlev
+   integer i,ndup
    integer ilat,ilon,ipres,itime,iqc,iuse,imuse,iweight,ierr,ierr2,ierr3,iobs,iogs,iqsges
-   real(4) :: rmiss,vqclmt,vqclmte,rlev
+   real(4) :: rmiss,rlev
 
    data rmiss/-999.0/ 
 

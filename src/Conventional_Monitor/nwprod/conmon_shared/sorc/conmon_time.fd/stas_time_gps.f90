@@ -20,8 +20,8 @@ subroutine stascal_gps(dtype,rdiag,nreal,n,iotype,varqc,ntype,work,&
    integer iobsu,iobsv,i,nregion,mregion,np,n,nreal,k,j
    integer ltype,ntype,intype,insubtype,nn, test_height
    real cg_term,pi,tiny
-   real valu,valv,val,val2,gesu,gesv,spdb,exp_arg,arg
-   real ress,ressu,ressv,valqc,term,wgross,cg_t,wnotgross
+   real val,val2,exp_arg,arg
+   real ress,valqc,term,wgross,cg_t,wnotgross
    real cvar_pg,cvar_b,rat_err2
 
    itype=1;isubtype=2;ilat=3;ilon=4;iheight=7;iqc=9;iuse=11;imuse=12

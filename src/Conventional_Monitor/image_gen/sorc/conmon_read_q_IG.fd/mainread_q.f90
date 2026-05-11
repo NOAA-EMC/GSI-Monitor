@@ -5,18 +5,22 @@
 
    implicit none
 
+   external ::  convinfo_read
+   external ::  read_q
+   external ::  read_q_mor
+
    character*200 fname
    character*50 fileo, grads_info_file
-   character*15 dtype,mtype 
+   character*15 mtype 
   
    real rlev,rpress
 
-   integer nobs,nreal,ntotal,ngross,nreal_in,insubtype
+   integer nreal,insubtype
    integer isubtype,ncount,ncount_vgc,ncount_gros
 
-   integer(4):: ittype,ituse,ntumgrp,ntgroup,ntmiter,iflag
+   integer(4):: ituse,ntumgrp,ntgroup,ntmiter
    real(4) :: ttwind,gtross,etrmax,etrmin,vtar_b,vtar_pg
-   real(4) :: rmiss,vqclmt,vqclmte
+   real(4) :: rmiss
 
    data rmiss/-999.0/ 
 

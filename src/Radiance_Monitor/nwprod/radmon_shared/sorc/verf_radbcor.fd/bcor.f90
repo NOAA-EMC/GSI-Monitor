@@ -7,6 +7,11 @@ program bcor
   use kinds, only : i_kind
 
   implicit none
+
+  external :: avgsdv
+  external :: create_ctl_bcor
+  external :: errexit
+
   integer ntype,mregion,surf_nregion,max_surf_region
   parameter (ntype=30,mregion=25,max_surf_region=5)
   integer iglobal, iland, iwater, isnowice, imixed
@@ -14,7 +19,7 @@ program bcor
 
   character(10),dimension(ntype):: ftype
   character(20) satname,stringd,satsis,mod_satname
-  character(10) dum,satype,dplat
+  character(10) satype,dplat
   character(80) string,data_file,ctl_file
   character(500) diag_rad
   character(40),dimension(max_surf_region):: region
@@ -22,14 +27,14 @@ program bcor
 
   integer luname,lungrd,lunctl,lndiag
   integer iyy,imm,idd,ihh,idhh,incr,iread,iflag
-  integer n_chan,j,idsat,i,k,ii,nsub
+  integer n_chan,j,i,k,ii,nsub
   integer,dimension(mregion):: jsub
   integer,allocatable,dimension(:):: io_chan,nu_chan
   integer npred_radiag,angord
   integer(i_kind)       :: istatus
 
   real pen,rread
-  real weight,rlat,rlon,rmiss,obs,biascor,obsges,obsgesnbc,rterm
+  real rlat,rlon,rmiss
   real,dimension(2):: cor_total,cor_fixang,cor_lapse,cor_lapse2,&
        cor_const,cor_scangl,cor_clw,cor_cos_ssmis,cor_sin_ssmis,&
        cor_emiss,cor_ordang4,cor_ordang3,cor_ordang2,cor_ordang1
@@ -41,8 +46,6 @@ program bcor
   real,allocatable,dimension(:,:,:):: total_cor,fixang_cor,lapse_cor,&
        lapse2_cor,const_cor,scangl_cor,clw_cor,cos_ssmis_cor,sin_ssmis_cor,&
        emiss_cor,ordang4_cor,ordang3_cor,ordang2_cor,ordang1_cor
-
-  logical no_obs
 
 ! Variables for reading satellite data
   type(diag_header_fix_list )             :: header_fix

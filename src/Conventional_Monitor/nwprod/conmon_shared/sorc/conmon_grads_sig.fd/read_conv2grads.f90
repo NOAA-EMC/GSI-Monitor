@@ -13,7 +13,7 @@
 !        stype   : the observation sub type, like t120 uv220
 !----------------------------------------------------------------------
 
-subroutine read_conv2grads(ctype,stype,intype,target_nreal,nobs,isubtype,subtype,list)
+subroutine read_conv2grads(ctype,intype,target_nreal,nobs,isubtype,list)
 
    use generic_list
    use data
@@ -28,12 +28,9 @@ subroutine read_conv2grads(ctype,stype,intype,target_nreal,nobs,isubtype,subtype
    character(8),allocatable,dimension(:)  :: cdiag 
 
    character(3)   :: dtype,ctype
-   character(3)   :: subtype 
-   character(10)  :: stype,otype
-   character(15)  :: fileo,fileo_subtyp
 
-   integer nchar,file_nreal,i,ii,mype,idate,iflag,itype,iscater,igrads
-   integer lunin,lunot,target_nreal,ldtype,intype,isubtype,jsubtype
+   integer nchar,file_nreal,i,ii,mype,idate,iflag,itype
+   integer lunin,target_nreal,intype,isubtype,jsubtype
    integer nobs,idx,ioff02
 
    data lunin / 11 /

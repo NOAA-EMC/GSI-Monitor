@@ -6,6 +6,9 @@ subroutine read_pw_mor(nreal,mtype,fname,fileo,gtross,rlev)
 
    implicit none
 
+   external :: rm_dups
+   external :: hist
+
    real(4),allocatable,dimension(:,:)  :: rdiag
    real(4),dimension(3,3000000) :: rpress
    integer,dimension(3) :: ncount,ncount_vqc,ncount_gros
@@ -15,11 +18,11 @@ subroutine read_pw_mor(nreal,mtype,fname,fileo,gtross,rlev)
    character*15 mtype 
 
    real rgtross,gtross
-   integer nobs,nreal,ntotal,ngross,nreal_in,nlev
-   integer i,nlat,nlon,npres,ntime,ndup
+   integer nobs,nreal,ntotal,nreal_in,nlev
+   integer i,ndup
    integer ilat,ilon,ipres,itime,iqc,iuse,imuse,iweight,ierr,ierr2,ierr3,iobs,iogs
 
-   real(4) :: rmiss,vqclmt,vqclmte,rlev
+   real(4) :: rmiss,rlev
 
    data rmiss/-999.0/ 
 

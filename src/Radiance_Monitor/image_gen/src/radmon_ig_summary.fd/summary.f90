@@ -17,17 +17,17 @@ program summary
 
    implicit none
 
-   character(10) pdate,ndate
-   character(20) stringd,str_nchanl
+   external ::  avgsdv
+
+   character(20) str_nchanl
    character(60) data_file,out_file
-   character(200) outstr
    character(len=10),allocatable,dimension(:)::times
    character(len=2), allocatable,dimension(:)::use
 
    integer,allocatable,dimension(:)::chan_nums
 
    integer luname,ldname,loname,lpname
-   integer cyc,ii,iflag,j,k,res,chan,ftyp,open_status
+   integer cyc,ii,j,k,ftyp,open_status
    integer period_one
 
    logical exist

@@ -5,6 +5,8 @@ subroutine create_ctl_bcor(ntype,ftype,n_chan,iyy,imm,idd,ihh,idhh,&
 
   implicit none
 
+  external :: w3movdat
+
   integer,intent(in)                        :: ntype,lunctl,nregion,little_endian
   character(10),dimension(ntype),intent(in) :: ftype
   integer,intent(in)                        :: n_chan,iyy,imm,idd,ihh,idhh,incr
@@ -27,7 +29,7 @@ subroutine create_ctl_bcor(ntype,ftype,n_chan,iyy,imm,idd,ihh,idhh,&
   character(80) string
   character(80),dimension(nregion):: stringr
 
-  integer iyy2,imm2,idd2,ihh2,ntime,j,i,iuse
+  integer iyy2,imm2,idd2,ihh2,ntime,i,iuse
   integer,dimension(8):: ida,jda
 
   real wavelength

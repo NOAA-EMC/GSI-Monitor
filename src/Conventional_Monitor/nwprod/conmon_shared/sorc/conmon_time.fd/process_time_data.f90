@@ -44,6 +44,9 @@ module conmon_process_time_data
    !--- implicit ---!
    implicit none
 
+   external ::  stascal
+   external ::  stascal_gps
+
    !--- public & private ---!
    private 
 
@@ -168,15 +171,14 @@ module conmon_process_time_data
       character(3)             :: dtype
 
       integer nchar,nreal,ii,mype,idate,iflag,itype
-      integer lunin,lunot,nreal1,nreal2,ldtype,intype
+      integer lunin
       integer ilat,ilon,ipress,iqc,iuse,imuse,iwgt,ierr1
-      integer ierr2,ierr3,ipsobs,iqobs,ioff02
-      integer i,j,k,ltype,iregion,ntype_uv
+      integer ierr2,ierr3,ioff02
+      integer ntype_uv
       integer iobg,iobgu,iobgv
       integer nobs
 
       data lunin / 11 /
-      data lunot / 21 /
 
 
       twork=0.0;qwork=0.0;uwork=0.0;vwork=0.0;uvwork=0.0
@@ -268,7 +270,7 @@ module conmon_process_time_data
       real,dimension(mregion),intent(in)     :: rlatmin,rlatmax,rlonmin,rlonmax
       integer,dimension(100),intent(in)      :: iotype_ps,iotype_q,iotype_t,iotype_uv,iotype_gps
       real(4),dimension(100,2),intent(in)    :: varqc_ps,varqc_q,varqc_t,varqc_uv,varqc_gps
-      integer, intent(in)                    :: ntype_ps,ntype_q,ntype_t,ntype_gps
+      integer, intent(in)                    :: ntype_uv,ntype_ps,ntype_q,ntype_t,ntype_gps
       integer,dimension(100),intent(in)      :: iosubtype_ps,iosubtype_q,iosubtype_uv,iosubtype_t,iosubtype_gps
 
       !========================================================================
@@ -286,11 +288,9 @@ module conmon_process_time_data
       type(data_ptr)                         :: ptr
 
       real(4),allocatable,dimension(:,:)     :: rdiag 
-      character(8),allocatable,dimension(:)  :: cdiag 
       integer                                :: nobs = 0
-      character(3)                           :: dtype
 
-      integer jj, obs_ctr, k,ltype,iregion,ntype_uv
+      integer jj, obs_ctr
 
 
       print *, '--> process_conv_nc'
@@ -795,7 +795,8 @@ module conmon_process_time_data
       integer, parameter                                    :: outfile = 61
       integer, parameter                                    :: nobsfile = 62
       character(100)                                        :: nobs_outfile
-                              
+      logical                                               :: file_exists
+
       write(6,*) '--> output_data_gps'
 
       do iregion=1,nregion
@@ -860,14 +861,22 @@ module conmon_process_time_data
       !--------------------
       !  write nobs file
       !
-      nobs_outfile='gps.nobs.ges'
-      open( nobsfile, file=nobs_outfile, form='formatted', status='new' )
+      write(6,*) 'ntype_gps = ', ntype_gps
 
-      do ltype=1,ntype_gps
-         write(nobsfile,910) ' gps', iotype_gps(ltype), ',00,', int( gpswork(1,ltype,1,1,1) + gpswork(1,ltype,1,1,2) + gpswork(1,ltype,1,1,3) )
-         910 format(A,I0,A,I6)
-      enddo
-      close( nobsfile )
+      nobs_outfile='gps.nobs.ges'
+      inquire(file=trim(nobs_outfile), exist=file_exists)
+
+      if (.not. file_exists) then
+         write(6,*) 'opening nobs_outfile = ', nobs_outfile
+         open( nobsfile, file=nobs_outfile, form='formatted', status='new' )
+
+         do ltype=1,ntype_gps
+            write(nobsfile,910) ' gps', iotype_gps(ltype), ',00,', int( gpswork(1,ltype,1,1,1) + gpswork(1,ltype,1,1,2) + gpswork(1,ltype,1,1,3) )
+            910 format(A,I0,A,I6)
+         enddo
+
+         close( nobsfile )
+      end if
 
 
       write(6,*) '<-- output_data_gps'

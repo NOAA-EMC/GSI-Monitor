@@ -13,12 +13,11 @@ subroutine hist(mtype,rmodnbc,nchan,nxdata,ndata,rmin,rmax,rlev,fileo,ncount_vqc
 
    real,dimension(nchan,nxdata) :: rmodnbc
    real,dimension(nchan) :: rmean,rstd 
-   integer,dimension(nchan) :: nmean,nobs,ndata,ncount_vqc,ncount_gros
+   integer,dimension(nchan) :: nobs,ndata,ncount_vqc,ncount_gros
 
    real,dimension(nchan,400) :: ys
    real,dimension(400) :: xs
    real,dimension(401) :: xs2
-   real maxf
 
    character*50 fileo
    character*15 mtype

@@ -7,7 +7,11 @@
 subroutine read_uv( nreal, dtype, fname, fileo, gtross, rlev, grads_info_file )
 
    implicit none
-  
+ 
+   external :: hist
+   external :: histuv
+   external :: rm_dups
+
    !--------------
    !  interface 
    !
@@ -31,7 +35,7 @@ subroutine read_uv( nreal, dtype, fname, fileo, gtross, rlev, grads_info_file )
    real*4 tiny
    real weight,ddf,rgtross
 
-   integer nobs,ntotal,ngross,nreal_in,nlev
+   integer nobs,ntotal,nreal_in,nlev
    integer i,ndup
    integer ilat,ilon,ipres,itime,iqc,iuse,imuse,iweight,ierr,ierr2,ierr3,iobu,iogu,iobv,iogv
 

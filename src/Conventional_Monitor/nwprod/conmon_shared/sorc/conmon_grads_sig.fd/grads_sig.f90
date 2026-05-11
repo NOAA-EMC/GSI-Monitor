@@ -12,6 +12,8 @@ subroutine grads_sig(fileo,ifileo,nobs,nreal,nlev,plev,iscater,igrads,isubtype,s
 
    implicit none
 
+   external ::  rm_dups
+
    type(list_node_t), pointer   :: list
    type(list_node_t), pointer   :: next => null()
    type(data_ptr)               :: ptr 
@@ -27,10 +29,10 @@ subroutine grads_sig(fileo,ifileo,nobs,nreal,nlev,plev,iscater,igrads,isubtype,s
    character(ifileo) :: fileo
    character(30) :: files,filegrads, file_nobs
 
-   integer :: nobs,nreal,nlfag,nflag0,nlev,nlev0,getpro,iscater,igrads,obs_ctr
+   integer :: nobs,nreal,nflag0,nlev,nlev0,getpro,iscater,igrads,obs_ctr
    real(4) :: rtim,xlat0,xlon0
    integer(4):: isubtype,ctr,nreal_m2
-   integer i,j,k,ilat,ilon,ipres,itime,iweight,ndup,nflag
+   integer i,k,ilat,ilon,ipres,itime,iweight,ndup,nflag
  
 
    stdid='        '

@@ -75,7 +75,7 @@ module valid
       character(20) test_satname
       character(10) base_date
 
-      integer fios, multiply_by
+      integer fios
       integer chan, region
 
       logical fexist 
@@ -158,7 +158,7 @@ module valid
       integer, intent( out )		:: iret
 
       !--- vars
-      real cnt, hi, lo, sdv2
+      real cnt, lo, sdv2
 
       write(*,*) '--> validate_count, channel, region, count ', channel, region, count
       !--- initialize vars
