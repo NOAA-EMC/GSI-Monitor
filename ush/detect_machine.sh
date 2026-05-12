@@ -37,7 +37,7 @@ case $(hostname -f) in
 
   s4-submit.ssec.wisc.edu) MACHINE_ID=s4 ;; ### s4
 
-  ip-*) MACHINE_ID=aws-ec2 ;; ### s4
+  ip-*) MACHINE_ID=aws-ec2 ;; ### aws-ec2
   compute-dy-*) MACHINE_ID=aws-ec2 ;; ### aws-ec2
   processing-dy-*) MACHINE_ID=aws-ec2 ;; ### aws-ec2
 
