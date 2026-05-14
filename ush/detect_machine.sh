@@ -37,6 +37,13 @@ case $(hostname -f) in
 
   s4-submit.ssec.wisc.edu) MACHINE_ID=s4 ;; ### s4
 
+  ip-*|compute-dy-*|processing-dy-*)
+    case ${PW_CSP:-} in
+      "aws" | "google" | "azure") MACHINE_ID=noaacloud ;;
+      *) MACHINE_ID=aws-ec2 ;;
+    esac
+    ;;
+
   Orion-login-[1-4].HPC.MsState.Edu) MACHINE_ID=orion ;; ### orion1-4
 
   [Hh]ercules-login-[1-4].[Hh][Pp][Cc].[Mm]s[Ss]tate.[Ed]du) MACHINE_ID=hercules ;; ### hercules1-4
@@ -65,9 +72,12 @@ if [[ "${MACHINE_ID}" != "UNKNOWN" ]]; then
 fi
 
 # Try searching based on paths since hostname may not match on compute nodes
-if [[ -d /opt/spack-stack ]]; then
+if [[ -v SINGULARITY_NAME ]]; then
   # We are  in a container
   MACHINE_ID=container
+elif [[ -d /opt/spack-stack && -d /lustre ]]; then
+  # We are on AWS ec2
+  MACHINE_ID=aws-ec2
 elif [[ -d /lfs/h3 ]]; then
   # We are on NOAA Cactus or Dogwood
   MACHINE_ID=wcoss2
