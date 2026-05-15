@@ -43,8 +43,6 @@ module read_diag
   use nc_diag_read_mod, only: nc_diag_read_init, nc_diag_read_close
   implicit none
 
-  external ::  abort
-
 ! Declare public and private
   private
 
@@ -1045,7 +1043,8 @@ subroutine read_radiag_data_nc_init(ftin, diag_status, header_fix, retrieval, if
         print *,'irecord=',ir
         print *,'clat,clon=',clat,clon
         print *,'lat/lon(datum)=',Latitude(cdatum), Longitude(cdatum)
-        call abort
+        write(6,*) 'FATAL ERROR: terminate execution'
+        stop 99
       endif
       cch = Channel_Index(cdatum)
       if (allocated(diag_status%all_data_chan(ir,cch)%bifix)) deallocate(diag_status%all_data_chan(ir,cch)%bifix )
