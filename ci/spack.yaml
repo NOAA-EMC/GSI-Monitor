@@ -3,6 +3,7 @@ spack:
   packages:
     all:
       compiler: [intel, gcc@10:10]
+      target: [x86_64]
   specs:
   - netcdf-c@4.9.2
   - netcdf-fortran@4.6.0
