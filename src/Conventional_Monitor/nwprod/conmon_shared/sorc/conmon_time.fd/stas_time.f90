@@ -1,5 +1,13 @@
 !! the subroutine is to calculate the statistics
 
+module stas_time_mod
+
+   implicit none
+   private
+   public :: stascal
+
+contains
+
 subroutine stascal(dtype,rdiag,nreal,n,iotype,varqc,ntype,work,worku,&
                    workv,np,ptop,pbot,nregion,mregion,&
                    rlatmin,rlatmax,rlonmin,rlonmax,iosubtype)
@@ -7,18 +15,18 @@ subroutine stascal(dtype,rdiag,nreal,n,iotype,varqc,ntype,work,worku,&
    implicit none
 
    real(4),dimension(nreal,n) :: rdiag
-   real(4),dimension(100,2) :: varqc
-   real(4),dimension(np,100,6,nregion,3) :: work,worku,workv
+   real(4),dimension(:,:) :: varqc
+   real(4),dimension(:,:,:,:,:) :: work,worku,workv
    real(4),dimension(np) :: ptop,pbot
    real(4),dimension(mregion):: rlatmin,rlatmax,rlonmin,rlonmax
 
    character(3) :: dtype
   
-   integer,dimension(100) :: iotype,iosubtype
    integer itype,isubtype,ilat,ilon,ipress,iqc,iuse,imuse
    integer iwgt,ierr1,ierr2,ierr3,iobg,iobgu,iobgv,iqsges
    integer iobsu,iobsv,i,nregion,mregion,np,n,nreal,k,j
-   integer ltype,ntype,intype,insubtype,nn
+   integer ltype,ntype,intype,insubtype,nn,ntype_eff
+   integer,dimension(:) :: iotype,iosubtype
    real cg_term,pi,tiny
    real valu,valv,val,val2,gesu,gesv,spdb,exp_arg,arg
    real ress,ressu,ressv,valqc,term,wgross,cg_t,wnotgross
@@ -31,7 +39,8 @@ subroutine stascal(dtype,rdiag,nreal,n,iotype,varqc,ntype,work,worku,&
    pi=acos(-1.0)
    cg_term=sqrt(2.0*pi)/2.0
    tiny=1.0e-10
-
+   ntype_eff = min( ntype, size(iotype), size(iosubtype), size(varqc,1), &
+                    size(work,2), size(worku,2), size(workv,2) )
  
    do i=1,n
       if(trim(dtype) ==  ' uv') then
@@ -63,7 +72,7 @@ subroutine stascal(dtype,rdiag,nreal,n,iotype,varqc,ntype,work,worku,&
       endif
 
 !     print *,rdiag(itype,i),rdiag(ierr1,i),rdiag(ierr3,i),rdiag(imuse,i),nn
-      do ltype=1,ntype
+      do ltype=1,ntype_eff
          intype=int(rdiag(itype,i))
          insubtype=int(rdiag(isubtype,i))
           
@@ -124,4 +133,6 @@ subroutine stascal(dtype,rdiag,nreal,n,iotype,varqc,ntype,work,worku,&
 
 
    return
-end
+end subroutine stascal
+
+end module stas_time_mod

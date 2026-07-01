@@ -1,24 +1,22 @@
 !! the subroutine is to calculate the statistics for gps data
 
-subroutine stascal_gps(dtype,rdiag,nreal,n,iotype,varqc,ntype,work,&
+subroutine stascal_gps(rdiag,nreal,n,iotype,varqc,ntype,work,&
                    np,htop,hbot,nregion,mregion,&
                    rlatmin,rlatmax,rlonmin,rlonmax,iosubtype)
 
    implicit none
 
    real(4),dimension(nreal,n) :: rdiag
-   real(4),dimension(100,2) :: varqc
-   real(4),dimension(np,100,6,nregion,3) :: work
+   real(4),dimension(:,:) :: varqc
+   real(4),dimension(:,:,:,:,:) :: work
    real(4),dimension(np) :: htop,hbot
    real(4),dimension(mregion):: rlatmin,rlatmax,rlonmin,rlonmax
-
-   character(3) :: dtype
   
-   integer,dimension(100) :: iotype,iosubtype
+   integer,dimension(:) :: iotype,iosubtype
    integer itype,isubtype,ilat,ilon,iheight,iqc,iuse,imuse
    integer iwgt,ierr1,ierr2,ierr3,iobg,iobgu,iobgv,iqsges
    integer iobsu,iobsv,i,nregion,mregion,np,n,nreal,k,j
-   integer ltype,ntype,intype,insubtype,nn, test_height
+   integer ltype,ntype,intype,insubtype,nn, test_height, ntype_eff
    real cg_term,pi,tiny
    real val,val2,exp_arg,arg
    real ress,valqc,term,wgross,cg_t,wnotgross
@@ -31,6 +29,7 @@ subroutine stascal_gps(dtype,rdiag,nreal,n,iotype,varqc,ntype,work,&
    pi=acos(-1.0)
    cg_term=sqrt(2.0*pi)/2.0
    tiny=1.0e-10
+   ntype_eff = min( ntype, size(iotype), size(iosubtype), size(varqc,1), size(work,2) )
 
  
    print *,'--> stascal_gps'
@@ -53,7 +52,7 @@ subroutine stascal_gps(dtype,rdiag,nreal,n,iotype,varqc,ntype,work,&
          if(rdiag(ierr3,i) >tiny) nn=3
       endif
 
-      do ltype=1,ntype
+      do ltype=1,ntype_eff
          intype=int(rdiag(itype,i))
          insubtype=int(rdiag(isubtype,i))
           

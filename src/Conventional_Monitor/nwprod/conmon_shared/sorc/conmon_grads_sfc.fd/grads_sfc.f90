@@ -5,7 +5,7 @@
 !       horizontal GrADS data files.
 !------------------------------------------------------------------------
 
-subroutine grads_sfc(fileo,ifileo,nobs,nreal,iscater,igrads,isubtype,subtype,list,run)
+subroutine grads_sfc(fileo,ifileo,nobs,nreal,iscater,igrads,subtype,list,run)
 
    use generic_list
    use data
@@ -28,7 +28,6 @@ subroutine grads_sfc(fileo,ifileo,nobs,nreal,iscater,igrads,isubtype,subtype,lis
    integer nobs,nreal,nflg0,nlev0,iscater,igrads
    real(4) rtim,xlat0,xlon0,rlat,rlon
  
-   integer(4):: isubtype
    integer i,j,ilat,ilon,ipres,itime,iweight,ndup
 
    rtim=0.0

@@ -197,6 +197,16 @@ if [[ -e ${C_TANKDIR}/info/gdas_conmon_base.txt ]]; then
    export conmon_base=${C_TANKDIR}/info/gdas_conmon_base.txt
 fi
 
+if [ ! -s $cnvstat ]; then
+   echo "unable to access $cnvstat"
+fi
+
+if [ ! -s $pgrbf00 ]; then
+   echo "unable to access $pgrbf00"
+fi
+if [ ! -s $pgrbf06 ]; then
+   echo "unable to access $pgrbf06"
+fi
 
 exit_value=0
 if [ -s $cnvstat  -a -s $pgrbf00 -a -s $pgrbf06 ]; then
@@ -205,7 +215,6 @@ if [ -s $cnvstat  -a -s $pgrbf00 -a -s $pgrbf06 ]; then
    #------------------------------------------------------------------
    if [ -s $pgrbf06 ]; then
 
-      echo "Ok to proceed with DE"
       logdir=${C_LOGDIR}
       if [[ ! -d ${logdir} ]]; then
          mkdir -p ${logdir}
@@ -220,6 +229,11 @@ if [ -s $cnvstat  -a -s $pgrbf00 -a -s $pgrbf06 ]; then
             $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
          $SUB -A $ACCOUNT --ntasks=1 --time=00:30:00 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o $C_LOGDIR/DE.${PDY}.${CYC}.log \
+		${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON
+     
+      elif [[ $MY_MACHINE = "ursa" ]]; then
+         $SUB -A $ACCOUNT --ntasks=1 --time=01:30:00 \
+		-J ${jobname} -o $C_LOGDIR/DE.${PDY}.${CYC}.log \
 		${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON
 
       elif [[ $MY_MACHINE = "jet" ]]; then

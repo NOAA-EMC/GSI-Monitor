@@ -108,16 +108,16 @@
                  iosubtype_ps,iosubtype_q,iosubtype_t,iosubtype_uv, iosubtype_gps) 
    
 
-   call creatstas_ctl(dtype_ps,iotype_ps,ituse_ps,100,ntype_ps,1,nregion,18,region,&
+   call creatstas_ctl(dtype_ps,iotype_ps,ituse_ps,ntype_ps,1,nregion,18,region,&
                      rlatmin,rlatmax,rlonmin,rlonmax,iosubtype_ps) 
-   call creatstas_ctl(dtype_q,iotype_q,ituse_q,100,ntype_q,np,nregion,18,region,&
+   call creatstas_ctl(dtype_q,iotype_q,ituse_q,ntype_q,np,nregion,18,region,&
                      rlatmin,rlatmax,rlonmin,rlonmax,iosubtype_q) 
-   call creatstas_ctl(dtype_t,iotype_t,ituse_t,100,ntype_t,np,nregion,18,&
+   call creatstas_ctl(dtype_t,iotype_t,ituse_t,ntype_t,np,nregion,18,&
                      region,rlatmin,rlatmax,rlonmin,rlonmax,iosubtype_t) 
-   call creatstas_ctl(dtype_uv,iotype_uv,ituse_uv,100,ntype_uv,np,nregion,18,&
+   call creatstas_ctl(dtype_uv,iotype_uv,ituse_uv,ntype_uv,np,nregion,18,&
                      region,rlatmin,rlatmax,rlonmin,rlonmax,iosubtype_uv) 
 
-   call creatstas_ctl(dtype_gps,iotype_gps,ituse_gps,100,ntype_gps,np,nregion,18,region,&
+   call creatstas_ctl(dtype_gps,iotype_gps,ituse_gps,ntype_gps,np,nregion,18,region,&
                      rlatmin,rlatmax,rlonmin,rlonmax,iosubtype_gps) 
 
    stop

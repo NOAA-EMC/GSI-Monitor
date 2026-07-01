@@ -39,13 +39,26 @@ module conmon_process_time_data
    use ncdr_vars, only:    nc_diag_read_check_var
 
    use conmon_read_diag
- 
+   use stas_time_mod, only: stascal
  
    !--- implicit ---!
    implicit none
 
-   external ::  stascal
-   external ::  stascal_gps
+   interface
+      subroutine stascal_gps(rdiag,nreal,n,iotype,varqc,ntype,work,&
+                   np,htop,hbot,nregion,mregion,&
+                   rlatmin,rlatmax,rlonmin,rlonmax,iosubtype)
+         implicit none
+         character(3) :: dtype
+         integer :: nreal,n,ntype,np,nregion,mregion
+         real(4),dimension(nreal,n) :: rdiag
+         integer,dimension(:) :: iotype,iosubtype
+         real(4),dimension(:,:) :: varqc
+         real(4),dimension(:,:,:,:,:) :: work
+         real(4),dimension(np) :: htop,hbot
+         real(4),dimension(mregion):: rlatmin,rlatmax,rlonmin,rlonmax
+      end subroutine stascal_gps
+   end interface
 
    !--- public & private ---!
    private 
@@ -96,23 +109,50 @@ module conmon_process_time_data
       integer                     mregion,nregion,np
       real(4),dimension(np)    :: ptop,pbot,ptopq,pbotq,htop_gps,hbot_gps
       real,dimension(mregion)  :: rlatmin,rlatmax,rlonmin,rlonmax
-      integer,dimension(100)   :: iotype_ps,iotype_q,iotype_t,iotype_uv,iotype_gps
-      real(4),dimension(100,2) :: varqc_ps,varqc_q,varqc_t,varqc_uv,varqc_gps
+      integer,dimension(:)     :: iotype_ps,iotype_q,iotype_t,iotype_uv,iotype_gps
+      real(4),dimension(:,:)   :: varqc_ps,varqc_q,varqc_t,varqc_uv,varqc_gps
       integer                     ntype_ps,ntype_q,ntype_t,ntype_uv,ntype_gps
-      integer,dimension(100)   :: iosubtype_ps,iosubtype_q,iosubtype_t,iosubtype_uv, iosubtype_gps
+      integer,dimension(:)     :: iosubtype_ps,iosubtype_q,iosubtype_t,iosubtype_uv, iosubtype_gps
+      integer                     ntype_ps_use,ntype_q_use,ntype_t_use,ntype_uv_use,ntype_gps_use
+      integer                     ntype_ps_dim,ntype_q_dim,ntype_t_dim,ntype_uv_dim,ntype_gps_dim
 
-      real(4),dimension(np,100,6,nregion,3)  :: twork,qwork,uwork,vwork,uvwork
-      real(4),dimension(1,100,6,nregion,3)   :: pswork
+      real(4),allocatable,dimension(:,:,:,:,:)  :: twork,qwork,uwork,vwork,uvwork
+      real(4),allocatable,dimension(:,:,:,:,:)  :: pswork
+
+        ! Arrays are dimensioned to 100 in the type slot and use ntype+1 for totals,
+        ! so the maximum safe number of concrete types is 99.
+      ntype_ps_use  = max( 0, min( ntype_ps,  min(size(iotype_ps), min(size(iosubtype_ps), size(varqc_ps,1))) ))
+      ntype_q_use   = max( 0, min( ntype_q,   min(size(iotype_q),  min(size(iosubtype_q),  size(varqc_q,1))) ))
+      ntype_t_use   = max( 0, min( ntype_t,   min(size(iotype_t),  min(size(iosubtype_t),  size(varqc_t,1))) ))
+      ntype_uv_use  = max( 0, min( ntype_uv,  min(size(iotype_uv), min(size(iosubtype_uv), size(varqc_uv,1))) ))
+      ntype_gps_use = max( 0, min( ntype_gps, min(size(iotype_gps),min(size(iosubtype_gps),size(varqc_gps,1))) ))
+
+      ntype_ps_dim  = max( 1, ntype_ps_use + 1 )
+      ntype_q_dim   = max( 1, ntype_q_use  + 1 )
+      ntype_t_dim   = max( 1, ntype_t_use  + 1 )
+      ntype_uv_dim  = max( 1, ntype_uv_use + 1 )
+      ntype_gps_dim = max( 1, ntype_gps_use+ 1 )
+
+      if( ntype_ps_use /= ntype_ps .or. ntype_q_use /= ntype_q .or. ntype_t_use /= ntype_t .or. &
+           ntype_uv_use /= ntype_uv .or. ntype_gps_use /= ntype_gps ) then
+         write(6,*) 'WARNING: ntype exceeds available metadata array sizes; truncating where needed.'
+          write(6,*) 'ntype_ps, ntype_q, ntype_t, ntype_uv, ntype_gps = ', &
+                  ntype_ps_use, ntype_q_use, ntype_t_use, ntype_uv_use, ntype_gps_use
+        end if
+
+      allocate( twork(np,ntype_t_dim,6,nregion,3), qwork(np,ntype_q_dim,6,nregion,3), &
+                uwork(np,ntype_uv_dim,6,nregion,3), vwork(np,ntype_uv_dim,6,nregion,3), &
+                uvwork(np,ntype_uv_dim,6,nregion,3), pswork(1,ntype_ps_dim,6,nregion,3) )
 
       write(6,*) 'input_file = ', input_file
 
       if( netcdf ) then
          write(6,*) ' call nc read subroutine'
-         call process_conv_nc( input_file, ctype, mregion,nregion,np,ptop,pbot,ptopq,pbotq,&
+         call process_conv_nc( input_file, ctype, mregion,nregion,np,ptop,pbot,&
                                htop_gps, hbot_gps,&
                  rlatmin,rlatmax,rlonmin,rlonmax,iotype_ps,iotype_q,&
                  iotype_t,iotype_uv,iotype_gps,varqc_ps,varqc_q,varqc_t,varqc_uv,varqc_gps,&
-                 ntype_ps,ntype_q,ntype_t,ntype_uv,ntype_gps,&
+                 ntype_ps_use,ntype_q_use,ntype_t_use,ntype_uv_use,ntype_gps_use,&
                  iosubtype_ps,iosubtype_q,iosubtype_t,iosubtype_uv,iosubtype_gps,&
                  twork,uwork,vwork,uvwork )
       else
@@ -120,13 +160,20 @@ module conmon_process_time_data
          call process_conv_bin( input_file,mregion,nregion,np,ptop,pbot,ptopq,pbotq,&
                  rlatmin,rlatmax,rlonmin,rlonmax,iotype_ps,iotype_q,&
                  iotype_t,iotype_uv,varqc_ps,varqc_q,varqc_t,varqc_uv,&
-                 ntype_ps,ntype_q,ntype_t,ntype_uv,&
+                  ntype_ps_use,ntype_q_use,ntype_t_use,ntype_uv_use,&
                  iosubtype_ps,iosubtype_q,iosubtype_t,iosubtype_uv, &
                  twork,qwork,uwork,vwork,uvwork, pswork )
 
          call output_data( twork, qwork, uwork, vwork, uvwork, pswork, &
-                        ntype_ps, ntype_q, ntype_t, ntype_uv, nregion, np )
+                     ntype_ps_use, ntype_q_use, ntype_t_use, ntype_uv_use, nregion, np )
       end if 
+
+         if( allocated(twork) ) deallocate(twork)
+         if( allocated(qwork) ) deallocate(qwork)
+         if( allocated(uwork) ) deallocate(uwork)
+         if( allocated(vwork) ) deallocate(vwork)
+         if( allocated(uvwork) ) deallocate(uvwork)
+         if( allocated(pswork) ) deallocate(pswork)
 
 
    end subroutine process_conv_diag
@@ -155,13 +202,13 @@ module conmon_process_time_data
       integer, intent(in)                    :: np
       real(4),dimension(np),intent(in)       :: ptop,pbot,ptopq,pbotq
       real,dimension(mregion),intent(in)     :: rlatmin,rlatmax,rlonmin,rlonmax
-      integer,dimension(100),intent(in)      :: iotype_ps,iotype_q,iotype_t,iotype_uv
-      real(4),dimension(100,2),intent(in)    :: varqc_ps,varqc_q,varqc_t,varqc_uv
+      integer,dimension(:),intent(in)        :: iotype_ps,iotype_q,iotype_t,iotype_uv
+      real(4),dimension(:,:),intent(in)      :: varqc_ps,varqc_q,varqc_t,varqc_uv
       integer, intent(in)                    :: ntype_ps,ntype_q,ntype_t
-      integer,dimension(100),intent(in)      :: iosubtype_ps,iosubtype_q,iosubtype_uv,iosubtype_t
+      integer,dimension(:),intent(in)        :: iosubtype_ps,iosubtype_q,iosubtype_uv,iosubtype_t
 
-      real(4),dimension(np,100,6,nregion,3), intent(out)  :: twork,qwork,uwork,vwork,uvwork
-      real(4),dimension(1,100,6,nregion,3), intent(out)   :: pswork
+      real(4),dimension(:,:,:,:,:), intent(out)           :: twork,qwork,uwork,vwork,uvwork
+      real(4),dimension(:,:,:,:,:), intent(out)           :: pswork
 
 
 
@@ -249,7 +296,7 @@ module conmon_process_time_data
    !  tar file contains 4 ges and 4 anl diag files.
    !-----------------------------------------------------------
    subroutine process_conv_nc( input_file, ctype, mregion, nregion, np, &
-           ptop, pbot, ptopq, pbotq, htop_gps, hbot_gps, rlatmin, rlatmax, rlonmin, rlonmax, &
+           ptop, pbot, htop_gps, hbot_gps, rlatmin, rlatmax, rlonmin, rlonmax, &
            iotype_ps, iotype_q, iotype_t, iotype_uv, iotype_gps, varqc_ps, varqc_q, &
            varqc_t, varqc_uv, varqc_gps, ntype_ps, ntype_q, ntype_t, ntype_uv, ntype_gps,&
            iosubtype_ps, iosubtype_q, iosubtype_t, iosubtype_uv, iosubtype_gps,&
@@ -266,21 +313,21 @@ module conmon_process_time_data
       integer, intent(in)                    :: mregion
       integer, intent(in)                    :: nregion
       integer, intent(in)                    :: np
-      real(4),dimension(np),intent(in)       :: ptop,pbot,ptopq,pbotq,htop_gps,hbot_gps
+      real(4),dimension(np),intent(in)       :: ptop,pbot,htop_gps,hbot_gps
       real,dimension(mregion),intent(in)     :: rlatmin,rlatmax,rlonmin,rlonmax
-      integer,dimension(100),intent(in)      :: iotype_ps,iotype_q,iotype_t,iotype_uv,iotype_gps
-      real(4),dimension(100,2),intent(in)    :: varqc_ps,varqc_q,varqc_t,varqc_uv,varqc_gps
+      integer,dimension(:),intent(in)        :: iotype_ps,iotype_q,iotype_t,iotype_uv,iotype_gps
+      real(4),dimension(:,:),intent(in)      :: varqc_ps,varqc_q,varqc_t,varqc_uv,varqc_gps
       integer, intent(in)                    :: ntype_uv,ntype_ps,ntype_q,ntype_t,ntype_gps
-      integer,dimension(100),intent(in)      :: iosubtype_ps,iosubtype_q,iosubtype_uv,iosubtype_t,iosubtype_gps
+      integer,dimension(:),intent(in)        :: iosubtype_ps,iosubtype_q,iosubtype_uv,iosubtype_t,iosubtype_gps
 
       !========================================================================
       !  NOTE:  I think the *work arrays don't need to be params -- they are
       !  just used here and can then be deallocated w/o issue.
       !========================================================================
       
-      real(4),dimension(np,100,6,nregion,3), intent(out)  :: twork,uwork,vwork,uvwork
-      real(4),dimension(np,100,6,nregion,3)  :: qwork, gpswork
-      real(4),dimension(1,100,6,nregion,3)   :: pswork
+      real(4),dimension(:,:,:,:,:), intent(out)           :: twork,uwork,vwork
+      real(4),dimension(:,:,:,:,:), intent(out)           :: uvwork
+      real(4),allocatable,dimension(:,:,:,:,:)            :: qwork, gpswork, pswork
 
 
       type(list_node_t), pointer             :: list => null()
@@ -296,6 +343,9 @@ module conmon_process_time_data
       print *, '--> process_conv_nc'
       print *, '      input_file = ', input_file
       print *, '      ctype      = ', ctype     
+
+      allocate( qwork(np,max(1,ntype_q+1),6,nregion,3), gpswork(np,max(1,ntype_gps+1),6,nregion,3), &
+             pswork(1,max(1,ntype_ps+1),6,nregion,3) )
 
       twork=0.0; qwork=0.0; uwork=0.0; vwork=0.0; uvwork=0.0; pswork=0.0; gpswork=0.0
 
@@ -334,7 +384,7 @@ module conmon_process_time_data
 
             print *, 'found nobs in list = ', obs_ctr
 
-            call output_data_ps( pswork, ntype_ps, nregion, 1 )
+            call output_data_ps( pswork, ntype_ps, nregion )
 
          case ( 'q' )
             print *, ' select, case q'
@@ -426,7 +476,7 @@ module conmon_process_time_data
             print *, 'found nobs in list = ', obs_ctr
             call list_free( list )
       
-            call stascal_gps(ctype, rdiag, max_rdiag_reals, nobs, iotype_gps, varqc_gps, ntype_gps, &
+            call stascal_gps(rdiag, max_rdiag_reals, nobs, iotype_gps, varqc_gps, ntype_gps, &
                          gpswork, np, htop_gps, hbot_gps, nregion, mregion, &
                          rlatmin, rlatmax, rlonmin, rlonmax, iosubtype_gps)
 
@@ -436,6 +486,9 @@ module conmon_process_time_data
 
 
       if( allocated( rdiag )) deallocate( rdiag )
+      if( allocated( qwork )) deallocate( qwork )
+      if( allocated( gpswork )) deallocate( gpswork )
+      if( allocated( pswork )) deallocate( pswork )
 
       print *, '<-- process_conv_nc'
 
@@ -443,10 +496,10 @@ module conmon_process_time_data
 
 
 
-   subroutine output_data_ps( pswork, ntype_ps, nregion, np )
+   subroutine output_data_ps( pswork, ntype_ps, nregion )
 
-      real(4),dimension(1,100,6,nregion,3), intent(inout)   :: pswork
-      integer, intent(in)                                   :: ntype_ps, nregion, np
+      real(4),dimension(:,:,:,:,:), intent(inout)            :: pswork
+      integer, intent(in)                                   :: ntype_ps, nregion
 
       integer                                               :: ii, jj, ltype, iregion
       integer, parameter                                    :: outfile = 21
@@ -476,7 +529,7 @@ module conmon_process_time_data
                   pswork(1,ltype,3,iregion,jj)= &
                         pswork(1,ltype,3,iregion,jj)/pswork(1,ltype,1,iregion,jj)
                   pswork(1,ltype,4,iregion,jj)= &
-                        sqrt(pswork(1,ltype,4,iregion,jj)/pswork(1,ltype,1,iregion,jj))
+                        sqrt(max(0.0, pswork(1,ltype,4,iregion,jj))/pswork(1,ltype,1,iregion,jj))
                   pswork(1,ltype,5,iregion,jj)= &
                         pswork(1,ltype,5,iregion,jj)/pswork(1,ltype,1,iregion,jj)
                   pswork(1,ltype,6,iregion,jj)= &
@@ -490,7 +543,7 @@ module conmon_process_time_data
             if(pswork(1,ntype_ps+1,1,iregion,jj) >=1.0) then
                pswork(1,ntype_ps+1,3,iregion,jj) = pswork(1,ntype_ps+1,3,iregion,jj)/&
                                        pswork(1,ntype_ps+1,1,iregion,jj)
-               pswork(1,ntype_ps+1,4,iregion,jj) = sqrt(pswork(1,ntype_ps+1,4,iregion,jj)&
+               pswork(1,ntype_ps+1,4,iregion,jj) = sqrt(max(0.0, pswork(1,ntype_ps+1,4,iregion,jj))&
                                     /pswork(1,ntype_ps+1,1,iregion,jj))
                pswork(1,ntype_ps+1,5,iregion,jj) = pswork(1,ntype_ps+1,5,iregion,jj)/&
                                     pswork(1,ntype_ps+1,1,iregion,jj)
@@ -518,7 +571,7 @@ module conmon_process_time_data
 
    subroutine output_data_q( qwork, ntype_q, nregion, np )
 
-      real(4),dimension(np,100,6,nregion,3), intent(inout)  :: qwork
+      real(4),dimension(:,:,:,:,:), intent(inout)           :: qwork
       integer, intent(in)                                   :: ntype_q, nregion, np
 
       integer                                               :: ii, jj, kk, ltype, iregion
@@ -546,7 +599,7 @@ module conmon_process_time_data
                      qwork(kk,ltype,3,iregion,jj) = &
                            qwork(kk,ltype,3,iregion,jj)/qwork(kk,ltype,1,iregion,jj)
                      qwork(kk,ltype,4,iregion,jj) = &
-                           sqrt(qwork(kk,ltype,4,iregion,jj)/qwork(kk,ltype,1,iregion,jj))
+                           sqrt(max(0.0, qwork(kk,ltype,4,iregion,jj))/qwork(kk,ltype,1,iregion,jj))
                      qwork(kk,ltype,5,iregion,jj) = &
                            qwork(kk,ltype,5,iregion,jj)/qwork(kk,ltype,1,iregion,jj)
                      qwork(kk,ltype,6,iregion,jj) = &
@@ -557,7 +610,7 @@ module conmon_process_time_data
                if(qwork(kk,ntype_q+1,1,iregion,jj) >=1.0) then
                   qwork(kk,ntype_q+1,3,iregion,jj)=qwork(kk,ntype_q+1,3,iregion,jj)/&
                                     qwork(kk,ntype_q+1,1,iregion,jj)
-                  qwork(kk,ntype_q+1,4,iregion,jj)=sqrt(qwork(kk,ntype_q+1,4,iregion,jj)/&
+                  qwork(kk,ntype_q+1,4,iregion,jj)=sqrt(max(0.0,qwork(kk,ntype_q+1,4,iregion,jj))/&
                                     qwork(kk,ntype_q+1,1,iregion,jj))
                   qwork(kk,ntype_q+1,5,iregion,jj)=qwork(kk,ntype_q+1,5,iregion,jj)/&
                                     qwork(kk,ntype_q+1,1,iregion,jj)
@@ -592,7 +645,7 @@ module conmon_process_time_data
 
    subroutine output_data_t( twork, ntype_t, nregion, np )
 
-      real(4),dimension(np,100,6,nregion,3), intent(inout)  :: twork
+      real(4),dimension(:,:,:,:,:), intent(inout)           :: twork
       integer, intent(in)                                   :: ntype_t, nregion, np
 
       integer                                               :: ii, jj, kk, ltype, iregion
@@ -621,7 +674,7 @@ module conmon_process_time_data
                      twork(kk,ltype,3,iregion,jj) = &
                            twork(kk,ltype,3,iregion,jj)/twork(kk,ltype,1,iregion,jj)
                      twork(kk,ltype,4,iregion,jj) = &
-                           sqrt(twork(kk,ltype,4,iregion,jj)/twork(kk,ltype,1,iregion,jj))
+                           sqrt(max(0.0, twork(kk,ltype,4,iregion,jj))/twork(kk,ltype,1,iregion,jj))
                      twork(kk,ltype,5,iregion,jj) = &
                            twork(kk,ltype,5,iregion,jj)/twork(kk,ltype,1,iregion,jj)
                      twork(kk,ltype,6,iregion,jj) = &
@@ -632,7 +685,7 @@ module conmon_process_time_data
                if(twork(kk,ntype_t+1,1,iregion,jj) >=1.0) then
                   twork(kk,ntype_t+1,3,iregion,jj) = twork(kk,ntype_t+1,3,iregion,jj)/&
                                     twork(kk,ntype_t+1,1,iregion,jj)
-                  twork(kk,ntype_t+1,4,iregion,jj)=sqrt(twork(kk,ntype_t+1,4,iregion,jj)/&
+                  twork(kk,ntype_t+1,4,iregion,jj)=sqrt(max(0.0, twork(kk,ntype_t+1,4,iregion,jj))/&
                                     twork(kk,ntype_t+1,1,iregion,jj))
                   twork(kk,ntype_t+1,5,iregion,jj)=twork(kk,ntype_t+1,5,iregion,jj)/&
                                     twork(kk,ntype_t+1,1,iregion,jj)
@@ -666,7 +719,7 @@ module conmon_process_time_data
 
    subroutine output_data_uv( uvwork, uwork, vwork, ntype_uv, nregion, np )
 
-      real(4),dimension(np,100,6,nregion,3), intent(inout)  :: uvwork, uwork, vwork
+      real(4),dimension(:,:,:,:,:), intent(inout)           :: uvwork, uwork, vwork
       integer, intent(in)                                   :: ntype_uv, nregion, np
 
       integer                                               :: ii, jj, kk, ltype, iregion
@@ -703,7 +756,7 @@ module conmon_process_time_data
                      uvwork(kk,ltype,3,iregion,jj) = &
                            uvwork(kk,ltype,3,iregion,jj)/uvwork(kk,ltype,1,iregion,jj)
                      uvwork(kk,ltype,4,iregion,jj) = &
-                           sqrt(uvwork(kk,ltype,4,iregion,jj)/uvwork(kk,ltype,1,iregion,jj))
+                           sqrt(max(0.0, uvwork(kk,ltype,4,iregion,jj))/uvwork(kk,ltype,1,iregion,jj))
                      uvwork(kk,ltype,5,iregion,jj) = &
                            uvwork(kk,ltype,5,iregion,jj)/uvwork(kk,ltype,1,iregion,jj)
                      uvwork(kk,ltype,6,iregion,jj) = &
@@ -715,18 +768,18 @@ module conmon_process_time_data
                      uwork(kk,ltype,3,iregion,jj) = &
                            uwork(kk,ltype,3,iregion,jj)/uvwork(kk,ltype,1,iregion,jj)
                      uwork(kk,ltype,4,iregion,jj) = &
-                           sqrt(uwork(kk,ltype,4,iregion,jj)/uvwork(kk,ltype,1,iregion,jj))
+                           sqrt(max(0.0, uwork(kk,ltype,4,iregion,jj))/uvwork(kk,ltype,1,iregion,jj))
                      vwork(kk,ltype,3,iregion,jj) = &
                            vwork(kk,ltype,3,iregion,jj)/uvwork(kk,ltype,1,iregion,jj)
                      vwork(kk,ltype,4,iregion,jj) = &
-                           sqrt(vwork(kk,ltype,4,iregion,jj)/uvwork(kk,ltype,1,iregion,jj))
+                           sqrt(max(0.0, vwork(kk,ltype,4,iregion,jj))/uvwork(kk,ltype,1,iregion,jj))
                   endif
                enddo
 
                if(uvwork(kk,ntype_uv+1,1,iregion,jj) >=1.0) then
                   uvwork(kk,ntype_uv+1,3,iregion,jj)=uvwork(kk,ntype_uv+1,3,iregion,jj)&
                                   /uvwork(kk,ntype_uv+1,1,iregion,jj)
-                  uvwork(kk,ntype_uv+1,4,iregion,jj)=sqrt(uvwork(kk,ntype_uv+1,4,iregion,jj)&
+                  uvwork(kk,ntype_uv+1,4,iregion,jj)=sqrt(max(0.0, uvwork(kk,ntype_uv+1,4,iregion,jj))&
                                   /uvwork(kk,ntype_uv+1,1,iregion,jj))
                   uvwork(kk,ntype_uv+1,5,iregion,jj)=uvwork(kk,ntype_uv+1,5,iregion,jj)&
                                   /uvwork(kk,ntype_uv+1,1,iregion,jj)
@@ -739,11 +792,11 @@ module conmon_process_time_data
    
                   uwork(kk,ntype_uv+1,3,iregion,jj)=uwork(kk,ntype_uv+1,3,iregion,jj)&
                                   /uwork(kk,ntype_uv+1,1,iregion,jj)
-                  uwork(kk,ntype_uv+1,4,iregion,jj)=sqrt(uwork(kk,ntype_uv+1,4,iregion,jj)&
+                  uwork(kk,ntype_uv+1,4,iregion,jj)=sqrt(max(0.0, uwork(kk,ntype_uv+1,4,iregion,jj))&
                                   /uwork(kk,ntype_uv+1,1,iregion,jj))
                   vwork(kk,ntype_uv+1,3,iregion,jj)=vwork(kk,ntype_uv+1,3,iregion,jj)&
                                   /vwork(kk,ntype_uv+1,1,iregion,jj)
-                  vwork(kk,ntype_uv+1,4,iregion,jj)=sqrt(vwork(kk,ntype_uv+1,4,iregion,jj)&
+                  vwork(kk,ntype_uv+1,4,iregion,jj)=sqrt(max(0.0, vwork(kk,ntype_uv+1,4,iregion,jj))&
                                   /vwork(kk,ntype_uv+1,1,iregion,jj))
                endif
    
@@ -788,9 +841,9 @@ module conmon_process_time_data
 
    subroutine output_data_gps( gpswork, ntype_gps, nregion, np, iotype_gps )
 
-      real(4),dimension(np,100,6,nregion,3), intent(inout)  :: gpswork
+      real(4),dimension(:,:,:,:,:), intent(inout)           :: gpswork
       integer, intent(in)                                   :: ntype_gps, nregion, np
-      integer,dimension(100), intent(in)                    :: iotype_gps
+      integer,dimension(:), intent(in)                      :: iotype_gps
       integer                                               :: ii, jj, kk, ltype, iregion
       integer, parameter                                    :: outfile = 61
       integer, parameter                                    :: nobsfile = 62
@@ -820,7 +873,7 @@ module conmon_process_time_data
                      gpswork(kk,ltype,3,iregion,jj) = &
                            gpswork(kk,ltype,3,iregion,jj)/gpswork(kk,ltype,1,iregion,jj)
                      gpswork(kk,ltype,4,iregion,jj) = &
-                           sqrt(gpswork(kk,ltype,4,iregion,jj)/gpswork(kk,ltype,1,iregion,jj))
+                           sqrt(max(0.0, gpswork(kk,ltype,4,iregion,jj))/gpswork(kk,ltype,1,iregion,jj))
                      gpswork(kk,ltype,5,iregion,jj) = &
                            gpswork(kk,ltype,5,iregion,jj)/gpswork(kk,ltype,1,iregion,jj)
                      gpswork(kk,ltype,6,iregion,jj) = &
@@ -831,7 +884,7 @@ module conmon_process_time_data
                if(gpswork(kk,ntype_gps+1,1,iregion,jj) >=1.0) then
                   gpswork(kk,ntype_gps+1,3,iregion,jj)=gpswork(kk,ntype_gps+1,3,iregion,jj)/&
                                     gpswork(kk,ntype_gps+1,1,iregion,jj)
-                  gpswork(kk,ntype_gps+1,4,iregion,jj)=sqrt(gpswork(kk,ntype_gps+1,4,iregion,jj)/&
+                  gpswork(kk,ntype_gps+1,4,iregion,jj)=sqrt(max(0.0, gpswork(kk,ntype_gps+1,4,iregion,jj))/&
                                     gpswork(kk,ntype_gps+1,1,iregion,jj))
                   gpswork(kk,ntype_gps+1,5,iregion,jj)=gpswork(kk,ntype_gps+1,5,iregion,jj)/&
                                     gpswork(kk,ntype_gps+1,1,iregion,jj)
@@ -892,8 +945,8 @@ module conmon_process_time_data
    subroutine output_data( twork, qwork, uwork, vwork, uvwork, pswork, &
                            ntype_ps, ntype_q, ntype_t, ntype_uv, nregion, np )
 
-      real(4),dimension(np,100,6,nregion,3), intent(inout)  :: twork,qwork,uwork,vwork,uvwork
-      real(4),dimension(1,100,6,nregion,3), intent(inout)   :: pswork
+      real(4),dimension(:,:,:,:,:), intent(inout)           :: twork,qwork,uwork,vwork,uvwork
+      real(4),dimension(:,:,:,:,:), intent(inout)           :: pswork
       integer, intent(in)                                   :: ntype_ps,ntype_q,ntype_t,ntype_uv,nregion,np
 
       integer                                               :: i,j,k,ltype,iregion
@@ -920,7 +973,7 @@ module conmon_process_time_data
                   pswork(1,ltype,3,iregion,j)= &
                         pswork(1,ltype,3,iregion,j)/pswork(1,ltype,1,iregion,j)
                   pswork(1,ltype,4,iregion,j)= &
-                        sqrt(pswork(1,ltype,4,iregion,j)/pswork(1,ltype,1,iregion,j))
+                        sqrt(max(0.0, pswork(1,ltype,4,iregion,j))/pswork(1,ltype,1,iregion,j))
                   pswork(1,ltype,5,iregion,j)= &
                         pswork(1,ltype,5,iregion,j)/pswork(1,ltype,1,iregion,j)
                   pswork(1,ltype,6,iregion,j)= &
@@ -934,7 +987,7 @@ module conmon_process_time_data
             if(pswork(1,ntype_ps+1,1,iregion,j) >=1.0) then
                pswork(1,ntype_ps+1,3,iregion,j) = pswork(1,ntype_ps+1,3,iregion,j)/&
                                        pswork(1,ntype_ps+1,1,iregion,j)
-               pswork(1,ntype_ps+1,4,iregion,j) = sqrt(pswork(1,ntype_ps+1,4,iregion,j)&
+               pswork(1,ntype_ps+1,4,iregion,j) = sqrt(max(0.0, pswork(1,ntype_ps+1,4,iregion,j))&
                                     /pswork(1,ntype_ps+1,1,iregion,j))
                pswork(1,ntype_ps+1,5,iregion,j) = pswork(1,ntype_ps+1,5,iregion,j)/&
                                     pswork(1,ntype_ps+1,1,iregion,j)
@@ -961,7 +1014,7 @@ module conmon_process_time_data
                      qwork(k,ltype,3,iregion,j) = &
                            qwork(k,ltype,3,iregion,j)/qwork(k,ltype,1,iregion,j)
                      qwork(k,ltype,4,iregion,j) = &
-                           sqrt(qwork(k,ltype,4,iregion,j)/qwork(k,ltype,1,iregion,j))
+                           sqrt(max(0.0, qwork(k,ltype,4,iregion,j))/qwork(k,ltype,1,iregion,j))
                      qwork(k,ltype,5,iregion,j) = &
                            qwork(k,ltype,5,iregion,j)/qwork(k,ltype,1,iregion,j)
                      qwork(k,ltype,6,iregion,j) = &
@@ -972,7 +1025,7 @@ module conmon_process_time_data
                if(qwork(k,ntype_q+1,1,iregion,j) >=1.0) then
                   qwork(k,ntype_q+1,3,iregion,j)=qwork(k,ntype_q+1,3,iregion,j)/&
                                     qwork(k,ntype_q+1,1,iregion,j)
-                  qwork(k,ntype_q+1,4,iregion,j)=sqrt(qwork(k,ntype_q+1,4,iregion,j)/&
+                  qwork(k,ntype_q+1,4,iregion,j)=sqrt(max(0.0, qwork(k,ntype_q+1,4,iregion,j))/&
                                     qwork(k,ntype_q+1,1,iregion,j))
                   qwork(k,ntype_q+1,5,iregion,j)=qwork(k,ntype_q+1,5,iregion,j)/&
                                     qwork(k,ntype_q+1,1,iregion,j)
@@ -998,7 +1051,7 @@ module conmon_process_time_data
                      twork(k,ltype,3,iregion,j) = &
                            twork(k,ltype,3,iregion,j)/twork(k,ltype,1,iregion,j)
                      twork(k,ltype,4,iregion,j) = &
-                           sqrt(twork(k,ltype,4,iregion,j)/twork(k,ltype,1,iregion,j))
+                           sqrt(max(0.0, twork(k,ltype,4,iregion,j))/twork(k,ltype,1,iregion,j))
                      twork(k,ltype,5,iregion,j) = &
                            twork(k,ltype,5,iregion,j)/twork(k,ltype,1,iregion,j)
                      twork(k,ltype,6,iregion,j) = &
@@ -1009,7 +1062,7 @@ module conmon_process_time_data
                if(twork(k,ntype_t+1,1,iregion,j) >=1.0) then
                   twork(k,ntype_t+1,3,iregion,j) = twork(k,ntype_t+1,3,iregion,j)/&
                                     twork(k,ntype_t+1,1,iregion,j)
-                  twork(k,ntype_t+1,4,iregion,j)=sqrt(twork(k,ntype_t+1,4,iregion,j)/&
+                  twork(k,ntype_t+1,4,iregion,j)=sqrt(max(0.0, twork(k,ntype_t+1,4,iregion,j))/&
                                     twork(k,ntype_t+1,1,iregion,j))
                   twork(k,ntype_t+1,5,iregion,j)=twork(k,ntype_t+1,5,iregion,j)/&
                                     twork(k,ntype_t+1,1,iregion,j)
@@ -1043,7 +1096,7 @@ module conmon_process_time_data
                      uvwork(k,ltype,3,iregion,j) = &
                            uvwork(k,ltype,3,iregion,j)/uvwork(k,ltype,1,iregion,j)
                      uvwork(k,ltype,4,iregion,j) = &
-                           sqrt(uvwork(k,ltype,4,iregion,j)/uvwork(k,ltype,1,iregion,j))
+                           sqrt(max(0.0, uvwork(k,ltype,4,iregion,j))/uvwork(k,ltype,1,iregion,j))
                      uvwork(k,ltype,5,iregion,j) = &
                            uvwork(k,ltype,5,iregion,j)/uvwork(k,ltype,1,iregion,j)
                      uvwork(k,ltype,6,iregion,j) = &
@@ -1055,18 +1108,18 @@ module conmon_process_time_data
                      uwork(k,ltype,3,iregion,j) = &
                            uwork(k,ltype,3,iregion,j)/uvwork(k,ltype,1,iregion,j)
                      uwork(k,ltype,4,iregion,j) = &
-                           sqrt(uwork(k,ltype,4,iregion,j)/uvwork(k,ltype,1,iregion,j))
+                           sqrt(max(0.0, uwork(k,ltype,4,iregion,j))/uvwork(k,ltype,1,iregion,j))
                      vwork(k,ltype,3,iregion,j) = &
                            vwork(k,ltype,3,iregion,j)/uvwork(k,ltype,1,iregion,j)
                      vwork(k,ltype,4,iregion,j) = &
-                           sqrt(vwork(k,ltype,4,iregion,j)/uvwork(k,ltype,1,iregion,j))
+                           sqrt(max(0.0, vwork(k,ltype,4,iregion,j))/uvwork(k,ltype,1,iregion,j))
                   endif
                enddo
 
                if(uvwork(k,ntype_uv+1,1,iregion,j) >=1.0) then
                   uvwork(k,ntype_uv+1,3,iregion,j)=uvwork(k,ntype_uv+1,3,iregion,j)&
                                   /uvwork(k,ntype_uv+1,1,iregion,j)
-                  uvwork(k,ntype_uv+1,4,iregion,j)=sqrt(uvwork(k,ntype_uv+1,4,iregion,j)&
+                  uvwork(k,ntype_uv+1,4,iregion,j)=sqrt(max(0.0, uvwork(k,ntype_uv+1,4,iregion,j))&
                                   /uvwork(k,ntype_uv+1,1,iregion,j))
                   uvwork(k,ntype_uv+1,5,iregion,j)=uvwork(k,ntype_uv+1,5,iregion,j)&
                                   /uvwork(k,ntype_uv+1,1,iregion,j)
@@ -1079,11 +1132,11 @@ module conmon_process_time_data
    
                   uwork(k,ntype_uv+1,3,iregion,j)=uwork(k,ntype_uv+1,3,iregion,j)&
                                   /uwork(k,ntype_uv+1,1,iregion,j)
-                  uwork(k,ntype_uv+1,4,iregion,j)=sqrt(uwork(k,ntype_uv+1,4,iregion,j)&
+                  uwork(k,ntype_uv+1,4,iregion,j)=sqrt(max(0.0, uwork(k,ntype_uv+1,4,iregion,j))&
                                   /uwork(k,ntype_uv+1,1,iregion,j))
                   vwork(k,ntype_uv+1,3,iregion,j)=vwork(k,ntype_uv+1,3,iregion,j)&
                                   /vwork(k,ntype_uv+1,1,iregion,j)
-                  vwork(k,ntype_uv+1,4,iregion,j)=sqrt(vwork(k,ntype_uv+1,4,iregion,j)&
+                  vwork(k,ntype_uv+1,4,iregion,j)=sqrt(max(0.0, vwork(k,ntype_uv+1,4,iregion,j))&
                                   /vwork(k,ntype_uv+1,1,iregion,j))
                endif
    
