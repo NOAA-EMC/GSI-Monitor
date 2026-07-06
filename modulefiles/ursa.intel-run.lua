@@ -11,7 +11,7 @@ local grads_ver=os.getenv("grads_ver") or "2.2.3"
 local tar_ver=os.getenv("tar_ver") or "1.34"
 
 load(pathJoin("stack-oneapi", stack_oneapi_ver))
-load(pathJoin("stack-intel-oneapi-mpi", stack_intel_oneapi_mpiver))
+load(pathJoin("stack-intel-oneapi-mpi", stack_intel_oneapi_mpi_ver))
 
 load(pathJoin("grads", grads_ver))
 load(pathJoin("tar", tar_ver))

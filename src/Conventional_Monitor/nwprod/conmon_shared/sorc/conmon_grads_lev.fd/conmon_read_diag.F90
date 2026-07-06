@@ -1458,7 +1458,7 @@ module conmon_read_diag
       real(r_single), dimension(:), allocatable    :: Model_Elevation                   !  (obs)
       real(r_single), dimension(:), allocatable    :: Setup_QC_Mark                     !  (obs)
       real(r_single), dimension(:), allocatable    :: Prep_Use_Flag                     !  (obs)
-      !jjjjjjreal(r_single), dimension(:), allocatable    :: Nonlinear_QC_Var_Jb               !  (obs)
+      !real(r_single), dimension(:), allocatable    :: Nonlinear_QC_Var_Jb               !  (obs)
       real(r_single), dimension(:), allocatable    :: Nonlinear_QC_Rel_Wgt              !  (obs)
       real(r_single), dimension(:), allocatable    :: Analysis_Use_Flag                 !  (obs)
       real(r_single), dimension(:), allocatable    :: Errinv_Input                      !  (obs)

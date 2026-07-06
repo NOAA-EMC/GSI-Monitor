@@ -49,7 +49,6 @@ module conmon_process_time_data
                    np,htop,hbot,nregion,mregion,&
                    rlatmin,rlatmax,rlonmin,rlonmax,iosubtype)
          implicit none
-         character(3) :: dtype
          integer :: nreal,n,ntype,np,nregion,mregion
          real(4),dimension(nreal,n) :: rdiag
          integer,dimension(:) :: iotype,iosubtype
