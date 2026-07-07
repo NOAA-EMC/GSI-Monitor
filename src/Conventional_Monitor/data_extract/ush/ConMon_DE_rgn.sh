@@ -259,16 +259,11 @@ if [[ -e ${cnvstat} ]]; then
       rm -f ${logfile}
    fi
 
-   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" || ${MY_MACHINE} = "orion" ]]; then
+   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "orion" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:30:00 \
   		-p ${SERVICE_PARTITION} -J ${jobname} -o ${C_LOGDIR}/DE.${PDY}.${CYC}.log \
 		${HOMEnam_conmon}/jobs/JNAM_CONMON
 
-   elif [[ ${MY_MACHINE} = "jet" ]]; then
-      ${SUB} -A ${ACCOUNT} -ntasks=1 --time=00:30:00 --mem=5000 \
-		-p ${SERVICE_PARTITION} -J ${jobname} -o ${C_LOGDIR}/DE.${PDY}.${CYC}.log \
-		${HOMEnam_conmon}/jobs/JNAM_CONMON
-      
    elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
       ${SUB} -V -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${logfile} -l walltime=30:00 \
   	      -N ${jobname} -l select=1:mem=5000M ${HOMEnam_conmon}/jobs/JNAM_CONMON

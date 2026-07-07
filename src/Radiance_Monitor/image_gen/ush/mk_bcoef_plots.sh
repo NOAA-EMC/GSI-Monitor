@@ -160,17 +160,13 @@ if [[ -e ${logfile} ]]; then
    rm ${logfile}
 fi
 
-if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
+if [[ $MY_MACHINE = "hera" ]]; then
    $SUB --account $ACCOUNT --ntasks=1 --mem=5g --time=1:00:00 -J ${jobname} \
         -o ${logfile} -D . $IG_SCRIPTS/plot_bcoef.sh 
 
 elif [[ $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
    $SUB --account $ACCOUNT --ntasks=1 --mem=5g --time=20 -J ${jobname} \
         -p ${SERVICE_PARTITION} -o ${logfile} -D . $IG_SCRIPTS/plot_bcoef.sh 
-
-elif [[ $MY_MACHINE = "jet" ]]; then
-   $SUB --account $ACCOUNT --ntasks=1 --mem=5g --time=1:00:00 -J ${jobname} \
-        -p ${BATCH_PARTITION} -o ${logfile} -D . $IG_SCRIPTS/plot_bcoef.sh
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
    $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e $R_LOGDIR/plot_bcoef.err -V \

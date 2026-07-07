@@ -35,8 +35,6 @@ case $(hostname -f) in
   der*) MACHINE_ID=derecho ;; ### derecho[1-8]
   dec*) MACHINE_ID=derecho ;; ### decxxxx computing node
 
-  s4-submit.ssec.wisc.edu) MACHINE_ID=s4 ;; ### s4
-
   ip-*|compute-dy-*|processing-dy-*)
     case ${PW_CSP:-} in
       "aws" | "google" | "azure") MACHINE_ID=noaacloud ;;
