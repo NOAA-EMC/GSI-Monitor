@@ -336,9 +336,6 @@ for sat in ${big_satlist}; do
          $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
               -p ${SERVICE_PARTITION} --mem=0 --wrap "srun -l --multi-prog ${cmdfile}"
 
-      else
-         $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
-              -p ${SERVICE_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
       fi
 
    fi

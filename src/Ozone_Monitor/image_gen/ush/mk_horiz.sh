@@ -74,7 +74,7 @@ for dsrc in ${data_source}; do
    fi
 
 
-   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "orion" ]]; then
+   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "orion" || ${MY_MACHINE} = "hercules" ]]; then
 
       $SUB --account ${ACCOUNT} -n $ctr  -o ${logf} -D . -J ${job} \
            --time=10 --wrap "srun -l --multi-prog ${cmdfile}"

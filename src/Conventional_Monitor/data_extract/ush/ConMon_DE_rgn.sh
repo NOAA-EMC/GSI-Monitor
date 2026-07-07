@@ -259,7 +259,7 @@ if [[ -e ${cnvstat} ]]; then
       rm -f ${logfile}
    fi
 
-   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "orion" ]]; then
+   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "orion" || ${MY_MACHINE} = "hercules" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:30:00 \
   		-p ${SERVICE_PARTITION} -J ${jobname} -o ${C_LOGDIR}/DE.${PDY}.${CYC}.log \
 		${HOMEnam_conmon}/jobs/JNAM_CONMON

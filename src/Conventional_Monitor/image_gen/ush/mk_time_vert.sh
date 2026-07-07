@@ -97,7 +97,7 @@ echo "--> mk_time_vert.sh"
          rm -f $errfile
       fi
 
-      if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} = "orion" || ${MY_MACHINE} == "hercules" ]]; then
+      if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} == "orion" || ${MY_MACHINE} == "hercules" ]]; then
          if [[ ${type} == "uv" || ${type} == "u" || ${type} == "v" ]]; then
             walltime="00:50:00"
          else
