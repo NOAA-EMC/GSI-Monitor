@@ -4,12 +4,12 @@
 !     Create the GrADS control file 
 !==========================================================
 
-subroutine creatstas_ctl(dtype,itype,ituse,nt,nc,nlev,nregion,nvar,&
+subroutine creatstas_ctl(dtype,itype,ituse,nc,nlev,nregion,nvar,&
                               region,rlatmin,rlatmax,rlonmin,rlonmax,isubtype)
    implicit none
 
-   integer nregion,nt,nlev,nc,i,icc,nvar
-   integer,dimension(nt):: itype,ituse,isubtype
+   integer nregion,nlev,nc,i,icc,nvar
+   integer,dimension(nc):: itype,ituse,isubtype
    character(7) dtype
    character(20) fileo
    character(40),dimension(nregion) :: region

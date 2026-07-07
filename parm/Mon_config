@@ -31,7 +31,8 @@ export MY_MACHINE=$machine_id
 #         then I'll open an issue for the change to those machines.
 #
 if [[ $MY_MACHINE = "wcoss2" || $MY_MACHINE = "hera" || $MY_MACHINE = "orion" || \
-      $MY_MACHINE = "hercules" || $MY_MACHINE = "s4" || $MY_MACHINE = "jet" ]]; then
+      $MY_MACHINE = "hercules" || $MY_MACHINE = "s4" || $MY_MACHINE = "jet" || \
+      $MY_MACHINE = "ursa" ]]; then
    source $DIR_ROOT/ush/module-setup.sh
    module use $DIR_ROOT/modulefiles
    module load ${MACHINE_ID}.${COMPILER}-run
@@ -77,6 +78,17 @@ case $MY_MACHINE in
       tankdir="/scratch1/NCEPDEV/da/$USER/save/nbns"
       ptmp="/scratch2/NCEPDEV/stmp3/$USER"
       stmp="/scratch2/NCEPDEV/stmp1/$USER"
+      queue=""
+      project=""
+      account="da-cpu"
+      ;;
+
+   ursa)
+      export SUB=/apps/slurm/default/bin/sbatch
+
+      tankdir="/scratch3/NCEPDEV/da/$USER/save/nbns"
+      ptmp="/scratch3/NCEPDEV/stmp/$USER"
+      stmp="/scratch3/NCEPDEV/stmp/$USER"
       queue=""
       project=""
       account="da-cpu"

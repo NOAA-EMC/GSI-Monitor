@@ -16,12 +16,12 @@ program maingrads_sfc
    interface
 
       subroutine grads_sfc(fileo,ifileo,nobs,nreal,iscater,igrads,&
-                           isubtype, subtype, list, run)
+                           subtype, list, run)
          use generic_list
 
          integer ifileo
          character(ifileo)              :: fileo
-         integer                        :: nobs,nreal,iscater,igrads,isubtype
+         integer                        :: nobs,nreal,iscater,igrads
          character(3)                   :: subtype
          type(list_node_t), pointer     :: list
          character(3)                   :: run
@@ -57,7 +57,7 @@ program maingrads_sfc
 
  
    if( nobs > 0 ) then
-      call grads_sfc(stype,lstype,nobs,nreal,iscater,igrads,isubtype,subtype,list,run) 
+      call grads_sfc(stype,lstype,nobs,nreal,iscater,igrads,subtype,list,run) 
    else
       print *, 'NOBS <= 0, NO OUTPUT GENERATED'
    end if

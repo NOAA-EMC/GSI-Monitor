@@ -16,14 +16,14 @@ program maingrads_mandlev
    interface
 
       subroutine grads_mandlev(fileo,ifileo,nobs,nreal,nlev,plev,iscater,igrads,&
-                isubtype,subtype,list,run)
+                subtype,list,run)
 
          use generic_list
 
          integer                :: ifileo
          character(ifileo)      :: fileo
          integer                        :: nobs,nreal,nlev
-         integer                        :: iscater,igrads,isubtype
+         integer                        :: iscater,igrads
          real(4),dimension(nlev)        :: plev
          character(3)                   :: subtype
          type(list_node_t), pointer     :: list
@@ -79,7 +79,7 @@ program maingrads_mandlev
 
    if( nobs > 0 ) then 
       call grads_mandlev(stype,lstype,nobs,nreal,n_mand,pmand,iscater,igrads,&
-                isubtype,subtype,list,run) 
+                subtype,list,run) 
    else
       print *, 'NOBS <= 0, NO OUTPUT GENERATED'
    end if

@@ -7,7 +7,7 @@
 !-------------------------------------------------------------
 
 subroutine grads_mandlev(fileo,ifileo,nobs,nreal,nlev,plev,iscater,igrads,&
-                isubtype,subtype,list,run)
+                subtype,list,run)
 
    use generic_list
    use data
@@ -15,6 +15,7 @@ subroutine grads_mandlev(fileo,ifileo,nobs,nreal,nlev,plev,iscater,igrads,&
    implicit none
 
    external :: rm_dups
+   external :: getlev
 
    type(list_node_t), pointer   :: list
    type(list_node_t), pointer   :: next => null()
@@ -38,7 +39,6 @@ subroutine grads_mandlev(fileo,ifileo,nobs,nreal,nlev,plev,iscater,igrads,&
 
    integer              :: i,j,ii,k,ctr,obs_ctr
    integer              :: ilat,ilon,ipres,itime,iweight,ndup
-   integer(4)           :: isubtype
  
    stid='        '
    nflag0=0

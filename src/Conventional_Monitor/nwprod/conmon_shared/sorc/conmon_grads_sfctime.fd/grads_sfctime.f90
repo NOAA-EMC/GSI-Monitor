@@ -7,7 +7,7 @@
 !---------------------------------------------------------------------------------
 
 subroutine grads_sfctime(fileo,ifileo,nobs,nreal,nlev,plev,iscater,&
-                         igrads,isubtype,subtype,list,run)
+                         igrads,subtype,list,run)
 
    use generic_list
    use data
@@ -15,6 +15,7 @@ subroutine grads_sfctime(fileo,ifileo,nobs,nreal,nlev,plev,iscater,&
    implicit none
 
    external ::  rm_dups
+   external ::  getlev
 
    type(list_node_t), pointer   :: list
    type(list_node_t), pointer   :: next => null()
@@ -22,7 +23,6 @@ subroutine grads_sfctime(fileo,ifileo,nobs,nreal,nlev,plev,iscater,&
 
    integer, intent(in)          :: ifileo, nobs, nreal, nlev
    integer, intent(in)          :: iscater, igrads
-   integer(4), intent(in)       :: isubtype
    character(ifileo),intent(in) :: fileo
    character(3), intent(in)     :: run, subtype
 

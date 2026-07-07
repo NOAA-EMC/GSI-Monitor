@@ -161,7 +161,7 @@ module conmon_read_diag
 
       if ( netcdf ) then
          write(6,*) ' call nc read subroutine'
-         call read_diag_file_nc( input_file, return_all, ctype, intype, expected_nreal, nobs, in_subtype, list )
+         call read_diag_file_nc( input_file, return_all, ctype, intype, nobs, in_subtype, list )
       else
          call read_diag_file_bin( input_file,return_all, ctype, intype, expected_nreal,nobs,in_subtype, list )
       end if
@@ -207,7 +207,7 @@ module conmon_read_diag
       !
       if ( netcdf ) then
          write(6,*) ' call nc retrieve all routine'
-         call read_diag_file_nc( input_file, return_all, ctype, intype, expected_nreal, nobs, in_subtype, list )
+         call read_diag_file_nc( input_file, return_all, ctype, intype, nobs, in_subtype, list )
       else
          write(6,*) ' call bin retrieve all routine'
          call read_diag_file_bin( input_file,return_all, ctype, intype, expected_nreal,nobs,in_subtype, list )
@@ -223,13 +223,13 @@ module conmon_read_diag
    !
    !  NetCDF read routine
    !-------------------------------
-   subroutine read_diag_file_nc( input_file, return_all, ctype, intype, expected_nreal, nobs, in_subtype, list )
+   subroutine read_diag_file_nc( input_file, return_all, ctype, intype, nobs, in_subtype, list )
 
       !--- interface 
       character(100), intent(in) :: input_file
       logical, intent(in)        :: return_all
       character(3), intent(in)   :: ctype
-      integer, intent(in)        :: intype, expected_nreal, in_subtype
+      integer, intent(in)        :: intype, in_subtype
       integer, intent(out)       :: nobs
       type(list_node_t), pointer :: list
 
@@ -269,22 +269,22 @@ module conmon_read_diag
       select case ( trim( adjustl( ctype ) ) )
    
          case ( 'gps' ) 
-            call read_diag_file_gps_nc( input_file, return_all, ftin, ctype, intype, expected_nreal, nobs, in_subtype, list )
+            call read_diag_file_gps_nc( return_all, ftin, ctype, intype, nobs, in_subtype, list )
 
          case ( 'ps' ) 
-            call read_diag_file_ps_nc(  input_file, return_all, ftin, ctype, intype, expected_nreal, nobs, in_subtype, list )
+            call read_diag_file_ps_nc(  return_all, ftin, ctype, intype, nobs, in_subtype, list )
 
          case ( 'q' ) 
-            call read_diag_file_q_nc(   input_file, return_all, ftin, ctype, intype, expected_nreal, nobs, in_subtype, list )
+            call read_diag_file_q_nc(   return_all, ftin, ctype, intype, nobs, in_subtype, list )
 
          case ( 'sst' )
-            call read_diag_file_sst_nc( input_file, return_all, ftin, ctype, intype, expected_nreal, nobs, in_subtype, list )
+            call read_diag_file_sst_nc( return_all, ftin, ctype, intype, nobs, in_subtype, list )
 
          case ( 't' ) 
-            call read_diag_file_t_nc(   input_file, return_all, ftin, ctype, intype, expected_nreal, nobs, in_subtype, list )
+            call read_diag_file_t_nc(   return_all, ftin, ctype, intype, nobs, in_subtype, list )
 
          case ( 'uv' ) 
-            call read_diag_file_uv_nc(  input_file, return_all, ftin, ctype, intype, expected_nreal, nobs, in_subtype, list )
+            call read_diag_file_uv_nc(  return_all, ftin, ctype, intype, nobs, in_subtype, list )
 
          case default
             print *, 'ERROR:  unmatched ctype :', ctype
@@ -317,21 +317,20 @@ module conmon_read_diag
    !--------------------------------------------------------- 
    !  netcdf read routine for ps data types in netcdf files
    !
-   subroutine read_diag_file_ps_nc( input_file, return_all, ftin, ctype, intype,expected_nreal,nobs,in_subtype, list )
+   subroutine read_diag_file_ps_nc( return_all, ftin, ctype, intype, nobs, in_subtype, list )
   
       !--- interface 
-      character(100), intent(in) :: input_file
       logical, intent(in)        :: return_all
       integer, intent(in)        :: ftin
       character(3), intent(in)   :: ctype
-      integer, intent(in)        :: intype, expected_nreal, in_subtype
+      integer, intent(in)        :: intype, in_subtype
       integer, intent(out)       :: nobs
       type(list_node_t), pointer :: list
 
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, total_obs, idx
+      integer                    :: ii, ierr, total_obs, idx, id
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -367,7 +366,8 @@ module conmon_read_diag
       !
       if( nc_diag_read_check_dim( 'nobs' )) then
          total_obs = nc_diag_read_get_dim(ftin,'nobs')
-         ncdiag_open_status(ii)%num_records = total_obs
+         id = find_ncdiag_id(ftin)
+         ncdiag_open_status(id)%num_records = total_obs
          print *, '          total_obs = ', total_obs
       else
          print *, 'ERROR:  unable to read nobs'
@@ -519,21 +519,20 @@ module conmon_read_diag
    !--------------------------------------------------------- 
    !  netcdf read routine for q data types in netcdf files
    !
-   subroutine read_diag_file_q_nc( input_file, return_all, ftin, ctype, intype,expected_nreal,nobs,in_subtype, list )
+   subroutine read_diag_file_q_nc( return_all, ftin, ctype, intype, nobs, in_subtype, list )
   
       !--- interface 
-      character(100), intent(in) :: input_file
       logical, intent(in)        :: return_all
       integer, intent(in)        :: ftin
       character(3), intent(in)   :: ctype
-      integer, intent(in)        :: intype, expected_nreal, in_subtype
+      integer, intent(in)        :: intype, in_subtype
       integer, intent(out)       :: nobs
       type(list_node_t), pointer :: list
 
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, total_obs, idx
+      integer                    :: ii, ierr, total_obs, idx, id
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -570,7 +569,8 @@ module conmon_read_diag
       !
       if( nc_diag_read_check_dim( 'nobs' )) then
          total_obs = nc_diag_read_get_dim(ftin,'nobs')
-         ncdiag_open_status(ii)%num_records = total_obs
+         id = find_ncdiag_id(ftin)
+         ncdiag_open_status(id)%num_records = total_obs
          print *, '          total_obs = ', total_obs
       else
          print *, 'ERROR:  unable to read nobs'
@@ -733,21 +733,20 @@ module conmon_read_diag
    !  NOTE2:  There are known discrepencies between the contents
    !          of sst obs in binary and NetCDF files. 
    !
-   subroutine read_diag_file_sst_nc( input_file, return_all, ftin, ctype, intype,expected_nreal,nobs,in_subtype, list )
+   subroutine read_diag_file_sst_nc( return_all, ftin, ctype, intype, nobs, in_subtype, list )
   
       !--- interface 
-      character(100), intent(in) :: input_file
       logical, intent(in)        :: return_all
       integer, intent(in)        :: ftin
       character(3), intent(in)   :: ctype
-      integer, intent(in)        :: intype, expected_nreal, in_subtype
+      integer, intent(in)        :: intype, in_subtype
       integer, intent(out)       :: nobs
       type(list_node_t), pointer :: list
 
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, total_obs, idx
+      integer                    :: ii, ierr, total_obs, idx, id
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -787,7 +786,8 @@ module conmon_read_diag
       !
       if( nc_diag_read_check_dim( 'nobs' )) then
          total_obs = nc_diag_read_get_dim(ftin,'nobs')
-         ncdiag_open_status(ii)%num_records = total_obs
+         id = find_ncdiag_id(ftin)
+         ncdiag_open_status(id)%num_records = total_obs
          print *, '          total_obs = ', total_obs
       else
          print *, 'ERROR:  unable to read nobs'
@@ -962,21 +962,20 @@ module conmon_read_diag
    !--------------------------------------------------------- 
    !  netcdf read routine for t data types in netcdf files
    !
-   subroutine read_diag_file_t_nc( input_file, return_all, ftin, ctype, intype, expected_nreal, nobs, in_subtype, list )
+   subroutine read_diag_file_t_nc( return_all, ftin, ctype, intype, nobs, in_subtype, list )
   
       !--- interface 
-      character(100), intent(in) :: input_file
       logical, intent(in)        :: return_all
       integer, intent(in)        :: ftin
       character(3), intent(in)   :: ctype
-      integer, intent(in)        :: intype, expected_nreal, in_subtype
+      integer, intent(in)        :: intype, in_subtype
       integer, intent(out)       :: nobs
       type(list_node_t), pointer :: list
 
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, total_obs, idx, bcor_terms
+      integer                    :: ii, ierr, total_obs, idx, bcor_terms, id
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -1011,11 +1010,9 @@ module conmon_read_diag
       print *, ' '
       print *, '      --> read_diag_file_t_nc'
 
-      print *, '            input_file = ', input_file
       print *, '            ftin       = ', ftin
       print *, '            ctype      = ', ctype
       print *, '            intype     = ', intype  
-      print *, '            expected_nreal = ', expected_nreal 
       print *, '            in_subtype = ', in_subtype
 
 
@@ -1023,7 +1020,8 @@ module conmon_read_diag
       !
       if( nc_diag_read_check_dim( 'nobs' )) then
          total_obs = nc_diag_read_get_dim(ftin,'nobs')
-         ncdiag_open_status(ii)%num_records = total_obs
+         id = find_ncdiag_id(ftin)
+         ncdiag_open_status(id)%num_records = total_obs
       else
          print *, 'ERROR:  unable to read nobs'
          ierr=1
@@ -1199,21 +1197,20 @@ module conmon_read_diag
    !--------------------------------------------------------- 
    !  netcdf read routine for uv data types in netcdf files
    !
-   subroutine read_diag_file_uv_nc( input_file, return_all, ftin, ctype, intype, expected_nreal, nobs, in_subtype, list )
+   subroutine read_diag_file_uv_nc( return_all, ftin, ctype, intype, nobs, in_subtype, list )
   
       !--- interface 
-      character(100), intent(in) :: input_file
       logical, intent(in)        :: return_all
       integer, intent(in)        :: ftin
       character(3), intent(in)   :: ctype
-      integer, intent(in)        :: intype, expected_nreal, in_subtype
+      integer, intent(in)        :: intype, in_subtype
       integer, intent(out)       :: nobs
       type(list_node_t), pointer :: list
 
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, total_obs, idx
+      integer                    :: ii, ierr, total_obs, idx, id
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -1254,7 +1251,8 @@ module conmon_read_diag
       !
       if( nc_diag_read_check_dim( 'nobs' )) then
          total_obs = nc_diag_read_get_dim(ftin,'nobs')
-         ncdiag_open_status(ii)%num_records = total_obs
+         id = find_ncdiag_id(ftin)
+         ncdiag_open_status(id)%num_records = total_obs
          print *, '          total_obs = ', total_obs
       else
          print *, 'ERROR:  unable to read nobs'
@@ -1429,21 +1427,20 @@ module conmon_read_diag
    !          in binary and NetCDF formatted diag files. See
    !          comments below.
    !
-   subroutine read_diag_file_gps_nc( input_file, return_all, ftin, ctype, intype,expected_nreal,nobs,in_subtype, list )
+   subroutine read_diag_file_gps_nc( return_all, ftin, ctype, intype, nobs, in_subtype, list )
  
       !--- interface 
-      character(100), intent(in) :: input_file
       logical, intent(in)        :: return_all
       integer, intent(in)        :: ftin
       character(3), intent(in)   :: ctype
-      integer, intent(in)        :: intype, expected_nreal, in_subtype
+      integer, intent(in)        :: intype, in_subtype
       integer, intent(out)       :: nobs
       type(list_node_t), pointer :: list
 
       !--- local vars
       type(list_node_t), pointer :: next => null()
       type(data_ptr)             :: ptr
-      integer                    :: ii, ierr, total_obs, idx
+      integer                    :: ii, ierr, total_obs, idx, id
       logical                    :: have_subtype = .true.
       logical                    :: add_obs
 
@@ -1456,14 +1453,14 @@ module conmon_read_diag
       real(r_single), dimension(:), allocatable    :: Latitude                          !  (obs)
       real(r_single), dimension(:), allocatable    :: Longitude                         !  (obs)
       real(r_single), dimension(:), allocatable    :: Incremental_Bending_Angle         !  (obs)
-      real(r_single), dimension(:), allocatable    :: Station_Elevation                 !  (obs)
+      !real(r_single), dimension(:), allocatable    :: Station_Elevation                 !  (obs)
       real(r_single), dimension(:), allocatable    :: Pressure                          !  (obs)
       real(r_single), dimension(:), allocatable    :: Height                            !  (obs)
       real(r_single), dimension(:), allocatable    :: Time                              !  (obs)
       real(r_single), dimension(:), allocatable    :: Model_Elevation                   !  (obs)
       real(r_single), dimension(:), allocatable    :: Setup_QC_Mark                     !  (obs)
       real(r_single), dimension(:), allocatable    :: Prep_Use_Flag                     !  (obs)
-      real(r_single), dimension(:), allocatable    :: Nonlinear_QC_Var_Jb               !  (obs)
+      !real(r_single), dimension(:), allocatable    :: Nonlinear_QC_Var_Jb               !  (obs)
       real(r_single), dimension(:), allocatable    :: Nonlinear_QC_Rel_Wgt              !  (obs)
       real(r_single), dimension(:), allocatable    :: Analysis_Use_Flag                 !  (obs)
       real(r_single), dimension(:), allocatable    :: Errinv_Input                      !  (obs)
@@ -1485,7 +1482,8 @@ module conmon_read_diag
       !
       if( nc_diag_read_check_dim( 'nobs' )) then
          total_obs = nc_diag_read_get_dim(ftin,'nobs')
-         ncdiag_open_status(ii)%num_records = total_obs
+         id = find_ncdiag_id(ftin)
+         ncdiag_open_status(id)%num_records = total_obs
          print *, '          total_obs = ', total_obs
       else
          print *, 'ERROR:  unable to read nobs'

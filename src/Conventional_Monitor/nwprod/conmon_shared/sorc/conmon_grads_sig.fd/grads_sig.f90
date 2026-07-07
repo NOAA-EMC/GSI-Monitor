@@ -13,6 +13,7 @@ subroutine grads_sig(fileo,ifileo,nobs,nreal,nlev,plev,iscater,igrads,isubtype,s
    implicit none
 
    external ::  rm_dups
+   external ::  getpro
 
    type(list_node_t), pointer   :: list
    type(list_node_t), pointer   :: next => null()

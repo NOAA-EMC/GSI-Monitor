@@ -17,13 +17,13 @@ program maingrads_sfctime
    interface
 
       subroutine grads_sfctime(fileo,ifileo,nobs,nreal,&
-                    nlev,plev,iscater,igrads,isubtype,subtype,list,run)
+                    nlev,plev,iscater,igrads,subtype,list,run)
 
          use generic_list
          integer                 :: ifileo,nobs,nreal,nlev 
          character(ifileo)       :: fileo
          real(4),dimension(nlev) :: plev
-         integer                 :: iscater,igrads,isubtype
+         integer                 :: iscater,igrads
          character(3)            :: subtype
          type(list_node_t),pointer   :: list
          character(3)            :: run
@@ -71,10 +71,10 @@ program maingrads_sfctime
 
       if( trim(timecard) == 'time11') then
          call grads_sfctime(stype,lstype,nobs,nreal,n_time11,&
-                            ptime11,iscater,igrads,isubtype,subtype, list, run) 
+                            ptime11,iscater,igrads,subtype, list, run) 
       else if( trim(timecard) == 'time7') then 
          call grads_sfctime(stype,lstype,nobs,nreal,n_time7,&
-                            ptime7,iscater,igrads,isubtype,subtype,list, run) 
+                            ptime7,iscater,igrads,subtype,list, run) 
       endif
    
    else
