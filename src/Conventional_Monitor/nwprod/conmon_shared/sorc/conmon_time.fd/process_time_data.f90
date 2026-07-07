@@ -135,9 +135,9 @@ module conmon_process_time_data
       if( ntype_ps_use /= ntype_ps .or. ntype_q_use /= ntype_q .or. ntype_t_use /= ntype_t .or. &
            ntype_uv_use /= ntype_uv .or. ntype_gps_use /= ntype_gps ) then
          write(6,*) 'WARNING: ntype exceeds available metadata array sizes; truncating where needed.'
-          write(6,*) 'ntype_ps, ntype_q, ntype_t, ntype_uv, ntype_gps = ', &
+         write(6,*) 'ntype_ps, ntype_q, ntype_t, ntype_uv, ntype_gps = ', &
                   ntype_ps_use, ntype_q_use, ntype_t_use, ntype_uv_use, ntype_gps_use
-        end if
+      end if
 
       allocate( twork(np,ntype_t_dim,6,nregion,3), qwork(np,ntype_q_dim,6,nregion,3), &
                 uwork(np,ntype_uv_dim,6,nregion,3), vwork(np,ntype_uv_dim,6,nregion,3), &
