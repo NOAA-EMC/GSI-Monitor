@@ -231,9 +231,7 @@ while [[ $ctr -le ${satarr_len} ]]; do
    # sbatch (slurm) requires a line number added
    # to the cmdfile
    #
-   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "jet" || 
-         ${MY_MACHINE} = "s4"   || ${MY_MACHINE} = "orion" ||
-         ${MY_MACHINE} = "hercules" ]]; then
+   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "orion" || ${MY_MACHINE} = "hercules" ]]; then
       echo "${itemctr} ${IG_SCRIPTS}/plot_angle.sh ${type} ${suffix} '${list}'" >> ${cmdfile}
    else
       echo "${IG_SCRIPTS}/plot_angle.sh ${type} ${suffix} '${list}'" >> ${cmdfile}
@@ -253,14 +251,9 @@ while [[ $ctr -le ${satarr_len} ]]; do
       errfile=${R_LOGDIR}/plot_angle_${suffix}_${jobctr}.err
 
       echo "TASKS= $tasks"
-      if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "s4" || ${MY_MACHINE} = "orion" ||
-            ${MY_MACHINE} = "hercules" ]]; then
+      if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "orion" || ${MY_MACHINE} = "hercules" ]]; then
          $SUB --account ${ACCOUNT} -n ${itemctr}  -o ${logfile} -D . -J ${jobname} --time=30:00 \
               --wrap "srun -l --multi-prog ${cmdfile}"
-
-      elif [[ ${MY_MACHINE} = "jet" ]]; then
-         $SUB --account ${ACCOUNT} -n ${itemctr}  -o ${logfile} -D . -J ${jobname} --time=30:00 \
-              -p ${BATCH_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
 
       elif [[ $MY_MACHINE = "wcoss2" ]]; then
 	 if [[ $NUM_CYCLES -gt 140 ]]; then
@@ -316,10 +309,8 @@ for sat in ${big_satlist}; do
            -V -l walltime=60:00 -N ${jobname} ${cmdfile}
 
    #---------------------------------------------------
-   #  hera|jet|s4|orion|hercules, submit 1 job for each sat/list item
-   elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "jet" || \
-           $MY_MACHINE = "s4"   || $MY_MACHINE = "orion" ||
-           $MY_MACHINE = "hercules" ]]; then		
+   #  hera|orion|hercules, submit 1 job for each sat/list item
+   elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then		
 
       ii=0
       logfile=${R_LOGDIR}/plot_angle_${sat}.log
@@ -345,17 +336,6 @@ for sat in ${big_satlist}; do
          $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
               -p ${SERVICE_PARTITION} --mem=0 --wrap "srun -l --multi-prog ${cmdfile}"
 
-      elif [[ $MY_MACHINE = "s4" ]]; then
-         $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
-              --wrap "srun -l --multi-prog ${cmdfile}"
-
-      elif [[ $MY_MACHINE = "jet" ]]; then
-         $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
-              -p ${BATCH_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
-
-      else
-         $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
-              -p ${SERVICE_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
       fi
 
    fi

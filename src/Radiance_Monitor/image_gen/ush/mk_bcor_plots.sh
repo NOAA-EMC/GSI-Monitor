@@ -186,9 +186,7 @@ rm -f ${logfile}
 
 ctr=0
 for sat in ${SATLIST}; do
-   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "jet" || 
-         $MY_MACHINE = "s4"   || $MY_MACHINE = "orion" ||
-         $MY_MACHINE = "hercules" ]]; then
+   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
       echo "${ctr} $IG_SCRIPTS/plot_bcor.sh $sat $suffix '$plot_list'" >> $cmdfile
    else   
       echo "$IG_SCRIPTS/plot_bcor.sh $sat $suffix '$plot_list'" >> $cmdfile
@@ -205,17 +203,13 @@ else
    wall_tm="0:45"
 fi
 
-if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
+if [[ $MY_MACHINE = "hera" ]]; then
    $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} \
         --time=2:00:00 --wrap "srun -l --multi-prog ${cmdfile}"
 
 elif [[ $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
    $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} --time=2:00:00 \
         -p ${SERVICE_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
-
-elif [[ $MY_MACHINE = "jet" ]]; then
-   $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} \
-        -p ${BATCH_PARTITION} --time=2:00:00 --wrap "srun -l --multi-prog ${cmdfile}"
 
 elif [[ $MY_MACHINE = "wcoss2" ]]; then
    $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_bcor_${suffix}.err \
@@ -245,9 +239,7 @@ for sat in ${bigSATLIST}; do
 
    ctr=0
    for var in $plot_list; do
-      if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "jet" || 
-            $MY_MACHINE = "s4"   || $MY_MACHINE = "orion" ||
-            $MY_MACHINE = "hercules" ]]; then
+      if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
          echo "$ctr $IG_SCRIPTS/plot_bcor.sh $sat $var $var" >> $cmdfile
       else
          echo "$IG_SCRIPTS/plot_bcor.sh $sat $var $var" >> $cmdfile
@@ -263,17 +255,13 @@ for sat in ${bigSATLIST}; do
       wall_tm="1:00"
    fi
 
-   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ]]; then
+   if [[ $MY_MACHINE = "hera" ]]; then
       $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} \
            --time=1:00:00 --wrap "srun -l --multi-prog ${cmdfile}"
 
    elif [[ $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
       $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} --time=1:00:00 \
            -p ${SERVICE_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
-
-   elif [[ $MY_MACHINE = "jet" ]]; then
-      $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} \
-           -p ${BATCH_PARTITION} --time=1:00:00 --wrap "srun -l --multi-prog ${cmdfile}"
 
    elif [[ $MY_MACHINE = "wcoss2" ]]; then
       $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_bcor_${suffix}.err \

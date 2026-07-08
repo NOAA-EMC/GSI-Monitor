@@ -225,8 +225,7 @@ if [ -s $cnvstat  -a -s $pgrbf00 -a -s $pgrbf06 ]; then
          rm -f ${logfile}
       fi
 
-      if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "s4" ||
-            $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
+      if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
          $SUB -A $ACCOUNT --ntasks=1 --time=00:30:00 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o $C_LOGDIR/DE.${PDY}.${CYC}.log \
 		${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON
@@ -236,11 +235,6 @@ if [ -s $cnvstat  -a -s $pgrbf00 -a -s $pgrbf06 ]; then
 		-J ${jobname} -o $C_LOGDIR/DE.${PDY}.${CYC}.log \
 		${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON
 
-      elif [[ $MY_MACHINE = "jet" ]]; then
-         $SUB -A $ACCOUNT -ntasks=1 --time=00:30:00 --mem=5000 \
-		-p ${SERVICE_PARTITION} -J ${jobname} -o $C_LOGDIR/DE.${PDY}.${CYC}.log \
-		${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON
-      
       elif [[ $MY_MACHINE = "wcoss2" ]]; then
         $SUB -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=2:15:00 -N ${jobname} \
 		-l select=1:mem=8gb ${HOMEgdas_conmon}/jobs/JGDAS_ATMOS_CONMON

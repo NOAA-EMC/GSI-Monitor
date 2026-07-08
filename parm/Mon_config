@@ -25,14 +25,8 @@ export MY_MACHINE=$machine_id
 #---------------------------------------------------
 #  Load modules from stack
 #
-#  Note:  I'm intentionally not including s4 and jet for the moment.
-#         I don't have access to those machines so I can't test the
-#         run-time modules.  If the run-time mod idea passes muster
-#         then I'll open an issue for the change to those machines.
-#
 if [[ $MY_MACHINE = "wcoss2" || $MY_MACHINE = "hera" || $MY_MACHINE = "orion" || \
-      $MY_MACHINE = "hercules" || $MY_MACHINE = "s4" || $MY_MACHINE = "jet" || \
-      $MY_MACHINE = "ursa" ]]; then
+      $MY_MACHINE = "hercules" || $MY_MACHINE = "ursa" ]]; then
    source $DIR_ROOT/ush/module-setup.sh
    module use $DIR_ROOT/modulefiles
    module load ${MACHINE_ID}.${COMPILER}-run
@@ -40,37 +34,6 @@ if [[ $MY_MACHINE = "wcoss2" || $MY_MACHINE = "hera" || $MY_MACHINE = "orion" ||
 fi
 
 case $MY_MACHINE in
-   s4)
-      export SUB=/usr/bin/sbatch
-      export SERVICE_PARTITION="serial"
-      tankdir="/data/users/$USER/monitor"
-      ptmp="/scratch/users/$USER"
-      stmp="/scratch/users/$USER"
-      queue=""
-      project=""
-      account="star"
-
-      #rstprod data is not allowed on S4
-      CHGRP_CMD=echo
-      ;;
-           
-   jet)
-      export SUB=/apps/slurm/default/bin/sbatch
-      export SERVICE_PARTITION="service"
-      account="nesdis-rdo2"
-
-      tankdir="/lfs1/NESDIS/nesdis-rdo2/$USER/monitor"
-      ptmp="/lfs1/NESDIS/nesdis-rdo2/$USER/para/ptmp"
-      stmp="/lfs1/NESDIS/nesdis-rdo2/$USER/para/stmp"
-      export BATCH_PARTITION="xjet"
-
-      export PARTITION_OZNMON=${PARTITION_OZNMON:-${BATCH_PARTITION}}
-
-      queue=""
-      project=""
-
-      ;;
-
    hera)
       export SUB=/apps/slurm/default/bin/sbatch
       export SERVICE_PARTITION="service"
