@@ -229,21 +229,21 @@
       #
       time_vert_work=${C_DATA}/time_vert.${PDATE}
       horz_hist_work=${C_DATA}/horz_hist.${PDATE}
-      rm -rf ${time_vert_work} ${horz_hist_work}
-      mkdir -p ${time_vert_work} ${horz_hist_work}
+      rm -rf "${time_vert_work}" "${horz_hist_work}"
+      mkdir -p "${time_vert_work}" "${horz_hist_work}"
 
-      ${NCP} ${convinfo} ${time_vert_work}/convinfo
-      ${NCP} ${convinfo} ${horz_hist_work}/convinfo
-      ${NCP} ./diag_conv* ${time_vert_work}/.
-      ${NCP} ./diag_conv* ${horz_hist_work}/.
+      ${NCP} "${convinfo}" "${time_vert_work}/convinfo"
+      ${NCP} "${convinfo}" "${horz_hist_work}/convinfo"
+      ${NCP} ./diag_conv* "${time_vert_work}/."
+      ${NCP} ./diag_conv* "${horz_hist_work}/."
 
       time_vert_log=${C_DATA}/time_vert.${PDATE}.log
       horz_hist_log=${C_DATA}/horz_hist.${PDATE}.log
 
-      ( cd ${time_vert_work}; ${USHconmon}/time_vert.sh ) > ${time_vert_log} 2>&1 &
+      ( cd "${time_vert_work}" && "${USHconmon}/time_vert.sh" ) > "${time_vert_log}" 2>&1 &
       pid_time_vert=$!
 
-      ( cd ${horz_hist_work}; ${USHconmon}/horz_hist.sh ) > ${horz_hist_log} 2>&1 &
+      ( cd "${horz_hist_work}" && "${USHconmon}/horz_hist.sh" ) > "${horz_hist_log}" 2>&1 &
       pid_horz_hist=$!
 
       wait ${pid_time_vert}
