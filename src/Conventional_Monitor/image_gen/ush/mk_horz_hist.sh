@@ -59,6 +59,9 @@
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_hist}
 
+   elif [[ $MY_MACHINE == "ursa" ]]; then
+      ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 -J ${jobname} -o ${logfile} ${plot_hist}
+
    elif [[ $MY_MACHINE == "wcoss2" ]]; then
       $SUB -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=30:00 -N ${jobname} \
                 -l select=1:mem=1G ${plot_hist}
@@ -85,6 +88,9 @@
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_horz}
 
+   elif [[ $MY_MACHINE == "ursa" ]]; then
+      ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 -J ${jobname} -o ${logfile} ${plot_horz}
+
    elif [[ $MY_MACHINE == "wcoss2" ]]; then
         $SUB -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=30:00 -N ${jobname} \
                 -l select=1:mem=800M ${plot_horz}
@@ -110,6 +116,9 @@
    if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} == "orion" || ${MY_MACHINE} == "hercules" ]]; then
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=01:30:00 \
 	     -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_horz_uv}
+
+   elif [[ ${MY_MACHINE} == "ursa" ]]; then
+      ${SUB} -A ${ACCOUNT} --ntasks=1 --time=01:30:00 -J ${jobname} -o ${logfile} ${plot_horz_uv}
 
    elif [[ ${MY_MACHINE} == "wcoss2" ]]; then
         $SUB -V -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${logfile} \

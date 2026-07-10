@@ -195,17 +195,17 @@ if compgen -G "${OZN_DATA_DIR}/time/*${PDATE}*.ieee_d*" > /dev/null; then
      rm -f ${errfile}
    fi
 
-   if [[ $MY_MACHINE = "wcoss2" ]]; then
-      $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${errfile} \
+   if [[ ${MY_MACHINE} = "wcoss2" ]]; then
+      ${SUB} -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${errfile} \
            -V -l select=1:mem=5000M -l walltime=20:00 -N ${jobname} ${job}
 
-   elif [[ $MY_MACHINE = "hera" ]]; then
-      $SUB --account=${ACCOUNT} --time=10 -J ${jobname} -D . \
+   elif [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "ursa" ]]; then
+      ${SUB} --account=${ACCOUNT} --time=10 -J ${jobname} -D . \
         -o ${logfile} --ntasks=1 --mem=5g ${job}
 
-   elif [[ $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
+   elif [[ ${MY_MACHINE} = "orion" || ${MY_MACHINE} = "hercules" ]]; then
       echo submit job on orion or hercules
-      $SUB --account=${ACCOUNT} --time=10 -J ${jobname} -D . \
+      ${SUB} --account=${ACCOUNT} --time=10 -J ${jobname} -D . \
         -o ${logfile} --ntasks=1 --mem=5g ${job}
    fi
 
