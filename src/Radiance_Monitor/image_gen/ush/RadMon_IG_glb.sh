@@ -322,9 +322,9 @@ ${IG_SCRIPTS}/rm_img_files.pl --dir ${TANKimg}/pngs --nfl 30
 #	None:  The $run_time is a one-hour delay to the Transfer job
 #  	       to ensure the plots are all finished prior to transfer.
 #----------------------------------------------------------------------
-if [[ $RUN_TRANSFER -eq 1 ]]; then
+if [[ ${RUN_TRANSFER} -eq 1 ]]; then
 
-   if [[ $MY_MACHINE = "wcoss2" || $MY_MACHINE = "hera" ]]; then
+   if [[ ${MY_MACHINE} = "wcoss2" || ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "ursa" ]]; then
       cmin=`date +%M`		# minute (MM)
       ctime=`date +%G%m%d%H`	# YYYYMMDDHH
       rtime=`$NDATE +1 $ctime`	# ctime + 1 hour
@@ -350,9 +350,9 @@ if [[ $RUN_TRANSFER -eq 1 ]]; then
       echo "${IG_SCRIPTS}/transfer.sh" >$cmdfile
       chmod 755 $cmdfile
 
-      if [[ ${MY_MACHINE} = "hera" ]]; then
+      if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "usra" ]]; then
          ${SUB} --account ${ACCOUNT}  --ntasks=1 --mem=500M --time=45:00 -J ${jobname} \
-	        --partition service -o ${transfer_log} --begin=${rhr}:${cmin} ${IG_SCRIPTS}/transfer.sh
+	        -o ${transfer_log} --begin=${rhr}:${cmin} ${IG_SCRIPTS}/transfer.sh
 
       elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
          run_time="$rhr$cmin"	# HHMM format for qsub

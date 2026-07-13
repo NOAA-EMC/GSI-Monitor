@@ -161,9 +161,12 @@ export CYC=`echo $PDATE|cut -c9-10`
 #  Set data and radstat locations     
 #---------------------------------------------------------------
 if [[ -n ${radstat_loc} ]]; then 
-   RADSTAT_LOCATION=${radstat_loc}
+   RADSTAT_LOCATION=${radstat_loc}/${RUN}.${PDY}/${CYC}/atmos
+   if [[ ! -d ${RADSTAT_LOCATION} ]]; then
+      RADSTAT_LOCATION=${radstat_loc}/${RUN}.${PDY}/${CYC}/products/atmos
+   fi
+   export RADSTAT_LOCATION=${RADSTAT_LOCATION}
 fi
-export RADSTAT_LOCATION=${RADSTAT_LOCATION}/${RUN}.${PDY}/${CYC}/atmos
 
 
 if [[ -n ${data_file_loc} ]]; then
@@ -182,12 +185,12 @@ if [[  -d ${DATA_LOCATION} ]]; then
    fi
 
 
-   if [[ $MY_MACHINE = "hera" ]]; then
-      $SUB --account=${ACCOUNT} --time=10 -J ${jobname} -D . \
+   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "ursa" ]]; then
+      ${SUB} --account=${ACCOUNT} --time=10 -J ${jobname} -D . \
         -o ${logfile} --ntasks=1 --mem=5g ${job}
 
-   elif [[ $MY_MACHINE = "wcoss2" ]]; then
-      $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/CP.${PDY}.${CYC}.err \
+   elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
+      ${SUB} -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${R_LOGDIR}/CP.${PDY}.${CYC}.err \
 	   -V -l select=1:mem=5000M -l walltime=20:00 -N ${jobname} ${job}
    fi
 else
