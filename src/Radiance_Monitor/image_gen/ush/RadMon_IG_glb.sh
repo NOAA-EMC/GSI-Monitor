@@ -350,7 +350,7 @@ if [[ ${RUN_TRANSFER} -eq 1 ]]; then
       echo "${IG_SCRIPTS}/transfer.sh" >$cmdfile
       chmod 755 $cmdfile
 
-      if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "usra" ]]; then
+      if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "ursa" ]]; then
          ${SUB} --account ${ACCOUNT}  --ntasks=1 --mem=500M --time=45:00 -J ${jobname} \
 	        -o ${transfer_log} --begin=${rhr}:${cmin} ${IG_SCRIPTS}/transfer.sh
 

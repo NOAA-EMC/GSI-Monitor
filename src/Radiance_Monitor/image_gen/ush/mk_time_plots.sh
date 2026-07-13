@@ -305,7 +305,7 @@ for sat in ${bigSATLIST}; do
       wall_tm="2:30"
    fi
 
-   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHNE} = "ursa" ]]; then
+   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "ursa" ]]; then
       ${SUB} --account ${ACCOUNT} -n ${ctr}  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
            --wrap "srun -l --multi-prog ${cmdfile}"
 
