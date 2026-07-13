@@ -232,7 +232,7 @@ while [[ $ctr -le ${satarr_len} ]]; do
    # to the cmdfile
    #
    if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "orion" || 
-	 ${MY_MACHINE} = "hercules" || ${MY_MACHINE} = "ursa" ]]; then
+         ${MY_MACHINE} = "hercules" || ${MY_MACHINE} = "ursa" ]]; then
       echo "${itemctr} ${IG_SCRIPTS}/plot_angle.sh ${type} ${suffix} '${list}'" >> ${cmdfile}
    else
       echo "${IG_SCRIPTS}/plot_angle.sh ${type} ${suffix} '${list}'" >> ${cmdfile}
@@ -313,7 +313,7 @@ for sat in ${big_satlist}; do
    #---------------------------------------------------
    #  hera|orion|hercules, submit 1 job for each sat/list item
    elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "orion" || 
-	   $MY_MACHINE = "hercules" || ${MY_MACHINE} = "ursa" ]]; then		
+           $MY_MACHINE = "hercules" || ${MY_MACHINE} = "ursa" ]]; then		
 
       ii=0
       logfile=${R_LOGDIR}/plot_angle_${sat}.log
