@@ -31,6 +31,9 @@ echo "--> mk_time_vert.sh"
       ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:15:00 \
                 -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${pltfile}
 
+   elif [[ ${MY_MACHINE} == "ursa"  ]]; then
+      ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:15:00 -J ${jobname} -o ${logfile} ${pltfile}
+
    elif [[ ${MY_MACHINE} == "wcoss2" ]]; then
       $SUB -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=50:00 -N ${jobname} \
                 -l select=1:mem=200M ${pltfile}
@@ -63,6 +66,15 @@ echo "--> mk_time_vert.sh"
  
          ${SUB} -A ${ACCOUNT} --ntasks=1 --time=${walltime} \
                 -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${pltfile}
+
+      elif [[ ${MY_MACHINE} == "ursa" ]]; then
+         if [[ ${type} == "uv" || ${type} == "u" || ${type} == "v" ]]; then
+            walltime="02:30:00"
+         else
+            walltime="00:40:00"
+         fi
+ 
+         ${SUB} -A ${ACCOUNT} --ntasks=1 --time=${walltime} -J ${jobname} -o ${logfile} ${pltfile}
 
       elif [[ ${MY_MACHINE} == "wcoss2" ]]; then
          if [[ ${type} == "uv" || ${type} == "u" || ${type} == "v" ]]; then
@@ -107,6 +119,15 @@ echo "--> mk_time_vert.sh"
          ${SUB} -A ${ACCOUNT} --ntasks=1 --time=${walltime} \
                 -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${pltfile}
      
+      elif [[ ${MY_MACHINE} == "ursa" ]]; then
+         if [[ ${type} == "uv" || ${type} == "u" || ${type} == "v" ]]; then
+            walltime="00:50:00"
+         else
+            walltime="00:30:00"
+         fi
+
+         ${SUB} -A ${ACCOUNT} --ntasks=1 --time=${walltime} -J ${jobname} -o ${logfile} ${pltfile}
+
       elif [[ ${MY_MACHINE} == "wcoss2" ]]; then
         ${SUB} -V -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${logfile} -l walltime=50:00 \
          	-N ${jobname} -l select=1:mem=500M ${pltfile}

@@ -231,7 +231,8 @@ while [[ $ctr -le ${satarr_len} ]]; do
    # sbatch (slurm) requires a line number added
    # to the cmdfile
    #
-   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "orion" || ${MY_MACHINE} = "hercules" ]]; then
+   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "orion" || 
+         ${MY_MACHINE} = "hercules" || ${MY_MACHINE} = "ursa" ]]; then
       echo "${itemctr} ${IG_SCRIPTS}/plot_angle.sh ${type} ${suffix} '${list}'" >> ${cmdfile}
    else
       echo "${IG_SCRIPTS}/plot_angle.sh ${type} ${suffix} '${list}'" >> ${cmdfile}
@@ -251,7 +252,8 @@ while [[ $ctr -le ${satarr_len} ]]; do
       errfile=${R_LOGDIR}/plot_angle_${suffix}_${jobctr}.err
 
       echo "TASKS= $tasks"
-      if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "orion" || ${MY_MACHINE} = "hercules" ]]; then
+      if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "orion" || 
+            ${MY_MACHINE} = "hercules" || ${MY_MACHINE} = "ursa" ]]; then
          $SUB --account ${ACCOUNT} -n ${itemctr}  -o ${logfile} -D . -J ${jobname} --time=30:00 \
               --wrap "srun -l --multi-prog ${cmdfile}"
 
@@ -310,7 +312,8 @@ for sat in ${big_satlist}; do
 
    #---------------------------------------------------
    #  hera|orion|hercules, submit 1 job for each sat/list item
-   elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then		
+   elif [[ $MY_MACHINE = "hera" || $MY_MACHINE = "orion" || 
+           $MY_MACHINE = "hercules" || ${MY_MACHINE} = "ursa" ]]; then		
 
       ii=0
       logfile=${R_LOGDIR}/plot_angle_${sat}.log
@@ -328,12 +331,12 @@ for sat in ${big_satlist}; do
       done
       echo "ii = $ii"
 
-      if [[ $MY_MACHINE = "hera" ]]; then
-         $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
+      if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "ursa" ]]; then
+         ${SUB} --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
               --mem=0 --wrap "srun -l --multi-prog ${cmdfile}"
 
-      elif [[ $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
-         $SUB --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
+      elif [[ ${MY_MACHINE} = "orion" || ${MY_MACHINE} = "hercules" ]]; then
+         ${SUB} --account ${ACCOUNT} -n $ii  -o ${logfile} -D . -J ${jobname} --time=4:00:00 \
               -p ${SERVICE_PARTITION} --mem=0 --wrap "srun -l --multi-prog ${cmdfile}"
 
       fi

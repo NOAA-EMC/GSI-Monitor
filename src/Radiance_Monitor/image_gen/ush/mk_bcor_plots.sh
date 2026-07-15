@@ -186,10 +186,11 @@ rm -f ${logfile}
 
 ctr=0
 for sat in ${SATLIST}; do
-   if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
-      echo "${ctr} $IG_SCRIPTS/plot_bcor.sh $sat $suffix '$plot_list'" >> $cmdfile
+   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "orion" || 
+         ${MY_MACHINE} = "hercules" || ${MY_MACHINE} = "ursa" ]]; then
+      echo "${ctr} ${IG_SCRIPTS}/plot_bcor.sh ${sat} ${suffix} '${plot_list}'" >> ${cmdfile}
    else   
-      echo "$IG_SCRIPTS/plot_bcor.sh $sat $suffix '$plot_list'" >> $cmdfile
+      echo "${IG_SCRIPTS}/plot_bcor.sh ${sat} ${suffix} '${plot_list}'" >> ${cmdfile}
    fi
    ((ctr=ctr+1))
 done
@@ -203,16 +204,16 @@ else
    wall_tm="0:45"
 fi
 
-if [[ $MY_MACHINE = "hera" ]]; then
-   $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} \
+if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "ursa" ]]; then
+   ${SUB} --account ${ACCOUNT} -n ${ctr}  -o ${logfile} -D . -J ${jobname} \
         --time=2:00:00 --wrap "srun -l --multi-prog ${cmdfile}"
 
-elif [[ $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
-   $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} --time=2:00:00 \
+elif [[ ${MY_MACHINE} = "orion" || ${MY_MACHINE} = "hercules" ]]; then
+   ${SUB} --account ${ACCOUNT} -n ${ctr}  -o ${logfile} -D . -J ${jobname} --time=2:00:00 \
         -p ${SERVICE_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
 
-elif [[ $MY_MACHINE = "wcoss2" ]]; then
-   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_bcor_${suffix}.err \
+elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
+   ${SUB} -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${R_LOGDIR}/plot_bcor_${suffix}.err \
         -V -l select=1:mem=1g -l walltime=1:00:00 -N ${jobname} ${cmdfile}
 
 fi
@@ -238,11 +239,12 @@ for sat in ${bigSATLIST}; do
 >$cmdfile
 
    ctr=0
-   for var in $plot_list; do
-      if [[ $MY_MACHINE = "hera" || $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
-         echo "$ctr $IG_SCRIPTS/plot_bcor.sh $sat $var $var" >> $cmdfile
+   for var in ${plot_list}; do
+      if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "orion" || 
+	    ${MY_MACHINE} = "hercules" || ${MY_MACHINE} = "ursa" ]]; then
+         echo "${ctr} ${IG_SCRIPTS}/plot_bcor.sh ${sat} ${var} ${var}" >> ${cmdfile}
       else
-         echo "$IG_SCRIPTS/plot_bcor.sh $sat $var $var" >> $cmdfile
+         echo "${IG_SCRIPTS}/plot_bcor.sh ${sat} ${var} ${var}" >> ${cmdfile}
       fi
       ((ctr=ctr+1))
    done
@@ -255,16 +257,16 @@ for sat in ${bigSATLIST}; do
       wall_tm="1:00"
    fi
 
-   if [[ $MY_MACHINE = "hera" ]]; then
-      $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} \
+   if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "ursa" ]]; then
+      ${SUB} --account ${ACCOUNT} -n ${ctr}  -o ${logfile} -D . -J ${jobname} \
            --time=1:00:00 --wrap "srun -l --multi-prog ${cmdfile}"
 
-   elif [[ $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
-      $SUB --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} --time=1:00:00 \
+   elif [[ ${MY_MACHINE} = "orion" || ${MY_MACHINE} = "hercules" ]]; then
+      ${SUB} --account ${ACCOUNT} -n $ctr  -o ${logfile} -D . -J ${jobname} --time=1:00:00 \
            -p ${SERVICE_PARTITION} --wrap "srun -l --multi-prog ${cmdfile}"
 
-   elif [[ $MY_MACHINE = "wcoss2" ]]; then
-      $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${R_LOGDIR}/plot_bcor_${suffix}.err \
+   elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
+      ${SUB} -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${R_LOGDIR}/plot_bcor_${suffix}.err \
 	   -V -l select=1:mem=1g -l walltime=1:00:00 -N ${jobname} ${cmdfile}
    fi
 
