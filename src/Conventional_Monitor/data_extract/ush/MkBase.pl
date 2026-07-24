@@ -6,9 +6,10 @@
 #    Arguments: 
 #       --dir     : Required string value containing  $TANKdir/$NET.
 #       --net     : Identifying name of data source (aka suffix)
-#       --typ     : Specific type of data to be processed (i.e. t120).
-#                   If not specified then all available data types
-#                   will be processed and written to the new base file.
+#       --typ     : Specific type of data to be processed in the form of
+#                   type_subtype (i.e. t120_00).  If not specified then 
+#                   all available data types will be processed and 
+#                   written to the new base file.
 #       --run     : Run name, generally 'gdas' or 'gfs'.  
 #		    If not specified 'gdas' will be used.
 #-----------------------------------------------------------------------
