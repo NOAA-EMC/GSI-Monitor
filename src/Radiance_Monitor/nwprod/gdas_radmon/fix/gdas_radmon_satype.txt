@@ -1,1 +1,1 @@
-abi_g18 ahi_himawari9 amsua_metop-b amsua_metop-c atms_n20 atms_n21 atms_npp avhrr_metop-b avhrr_metop-c cris-fsr_n20 cris-fsr_n21 gmi_gpm iasi_metop-b iasi_metop-c mhs_metop-b mhs_metop-c viirs-m_j1 viirs-m_j2 viirs-m_npp
+abi_g18 ahi_himawari9 amsua_metop-b amsua_metop-c atms_n20 atms_n21 atms_npp avhrr_metop-b avhrr_metop-c cris-fsr_n20 cris-fsr_n21 iasi_metop-b iasi_metop-c  mhs_metop-b mhs_metop-c ssmis_f17 ssmis_f18 viirs-m_j1 viirs-m_j2 viirs-m_npp
