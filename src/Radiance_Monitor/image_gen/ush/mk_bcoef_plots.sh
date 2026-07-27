@@ -160,17 +160,17 @@ if [[ -e ${logfile} ]]; then
    rm ${logfile}
 fi
 
-if [[ $MY_MACHINE = "hera" ]]; then
-   $SUB --account $ACCOUNT --ntasks=1 --mem=5g --time=1:00:00 -J ${jobname} \
-        -o ${logfile} -D . $IG_SCRIPTS/plot_bcoef.sh 
+if [[ ${MY_MACHINE} = "hera" || ${MY_MACHINE} = "ursa" ]]; then
+   ${SUB} --account ${ACCOUNT} --ntasks=1 --mem=5g --time=1:00:00 -J ${jobname} \
+        -o ${logfile} -D . ${IG_SCRIPTS}/plot_bcoef.sh 
 
-elif [[ $MY_MACHINE = "orion" || $MY_MACHINE = "hercules" ]]; then
-   $SUB --account $ACCOUNT --ntasks=1 --mem=5g --time=20 -J ${jobname} \
-        -p ${SERVICE_PARTITION} -o ${logfile} -D . $IG_SCRIPTS/plot_bcoef.sh 
+elif [[ ${MY_MACHINE} = "orion" || ${MY_MACHINE} = "hercules" ]]; then
+   ${SUB} --account ${ACCOUNT} --ntasks=1 --mem=5g --time=20 -J ${jobname} \
+        -p ${SERVICE_PARTITION} -o ${logfile} -D . ${IG_SCRIPTS}/plot_bcoef.sh 
 
-elif [[ $MY_MACHINE = "wcoss2" ]]; then
-   $SUB -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e $R_LOGDIR/plot_bcoef.err -V \
-        -l select=1:mem=1g -l walltime=1:00:00 -N ${jobname} $IG_SCRIPTS/plot_bcoef.sh
+elif [[ ${MY_MACHINE} = "wcoss2" ]]; then
+   ${SUB} -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${R_LOGDIR}/plot_bcoef.err -V \
+        -l select=1:mem=1g -l walltime=1:00:00 -N ${jobname} ${IG_SCRIPTS}/plot_bcoef.sh
 fi
 
 echo "End mk_bcoef_plots.sh"; echo
