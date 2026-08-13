@@ -50,19 +50,19 @@ FORMATTED_CUTOFF="${CUTOFF_DATE:0:4}-${CUTOFF_DATE:4:2}-${CUTOFF_DATE:6:2} ${CUT
 echo "FORMATTED_CUTOFF: ${FORMATTED_CUTOFF}"
 
 # Execute remotely via SSH
-ssh "${WEBUSER}@${WEBSVR}" bash -s << EOF
+[[ "$TARGET_DIR" != "/" ]] || { echo "Error: TARGET_DIR must not be '/'." >&2; exit 1; }
+ssh "${WEBUSER}@${WEBSVR}" bash -s -- "$TARGET_DIR" "$FORMATTED_CUTOFF" <<'EOF'
   set -euo pipefail
-  echo "in ssh command"
-  
-  cd ${TARGET_DIR}
+  TARGET_DIR="$1"
+  FORMATTED_CUTOFF="$2"
 
-  # 2. Create a temporary marker file set to the cutoff date
-  REF_FILE=\$(mktemp /tmp/ref_marker.XXXXXX)
-  touch -d "${FORMATTED_CUTOFF}" "\${REF_FILE}"
-  ls -l "\${REF_FILE}"
+  cd -- "$TARGET_DIR"
 
-  echo "Removing files modified before: ${FORMATTED_CUTOFF}"
-  find . -type f ! -newer "\${REF_FILE}" -delete
+  REF_FILE=$(mktemp /tmp/ref_marker.XXXXXX)
+  touch -d "$FORMATTED_CUTOFF" "$REF_FILE"
 
-  rm -f "\${REF_FILE}"
+  echo "Removing files modified before: $FORMATTED_CUTOFF"
+  find . -type f ! -newer "$REF_FILE" -delete
+
+  rm -f "$REF_FILE"
 EOF
