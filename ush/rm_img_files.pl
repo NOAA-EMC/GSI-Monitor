@@ -13,7 +13,7 @@ use File::Spec;
 #  in the file name.  All other files will be ignored.
 #
 #  Arguments:
-#    --dir    Directory fromw which files are to be removed.  
+#    --dir    Directory from which files are to be removed.  
 #               Note: if the --sdirs param is included then --dir 
 #               should be the parent directory to the specified sdirs.
 #    --ncyc   Number of cycles to retain.  All cycle times from 
