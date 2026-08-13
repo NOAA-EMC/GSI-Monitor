@@ -278,9 +278,9 @@ if [[ $RUN_TRANSFER -eq 1 ]]; then
 fi
 
 #--------------------------------------------------------------------
-#  remove all but the last 30 cycles of image files.
+#  remove all but the last 10 cycles of image files.
 #--------------------------------------------------------------------
-${IG_SCRIPTS}/rm_img_files.pl --dir ${TANKimg}/pngs --nfl 30
+${MON_USH}/rm_img_files.pl --dir ${TANKimg}/pngs/summary --ncyc 10
 
 echo "end RadMon_IG_rgn.sh"
 exit

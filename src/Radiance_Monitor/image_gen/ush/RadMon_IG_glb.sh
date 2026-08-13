@@ -311,9 +311,11 @@ fi
 
 
 #--------------------------------------------------------------------
-#  Remove all but the last 30 cycles worth of data image files.
+#  Remove all but the last 10 cycles worth of data image files.
+#  This only applies to the summary plots; all others are replaced
+#  with every cycle.
 #--------------------------------------------------------------------
-${IG_SCRIPTS}/rm_img_files.pl --dir ${TANKimg}/pngs --nfl 30
+${MON_USH}/rm_img_files.pl --dir ${TANKimg}/pngs/summary --ncyc 10
 
 
 #----------------------------------------------------------------------
