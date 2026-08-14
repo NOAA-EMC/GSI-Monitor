@@ -350,14 +350,6 @@ else
 fi
 
 #--------------------------------------------------------------------
-#  Remove old data files on the server, keeping the last 7 days
-#--------------------------------------------------------------------
-if [[ ${MY_MACHINE} = "wcoss2" ]]; then
-   CUTOFF_DATE=`$NDATE -168 ${PDATE}`
-   ${M_IG_SCRIPTS}/rm_remote_img_files.sh -c ${CUTOFF_DATE} -u ${WEBUSER} -s ${WEBSVR} -d ${WEBDIR}/${run_suffix}
-fi
-
-#--------------------------------------------------------------------
 #  Update the last_plot_time file if found
 #--------------------------------------------------------------------
 if [[ -e ${last_plot_time} ]]; then
