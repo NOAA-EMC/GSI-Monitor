@@ -49,7 +49,7 @@ while [[ $# -gt 0 ]]; do
             CUTOFF_DATE="$2"
             # --- Validate 10-Digit Format ---
             if [[ ! "$CUTOFF_DATE" =~ ^[0-9]{10}$ ]]; then
-                echo "Error: Invalid CUTOFF_DATE '$CUTOFF_DATE'. Must be exactly 10 digits (e.g., YYYYMMDDHH)." >&2
+                echo "Error: Invalid CUTOFF_DATE '$CUTOFF_DATE'. Must be 10 digits in YYYYMMDDHH format)." >&2
                 usage 1
             fi
             shift 2
@@ -59,12 +59,10 @@ while [[ $# -gt 0 ]]; do
             shift 1
             ;;
         -h|--help)
-            echo "Usage: $0 [--cdt YYYYMMDDHH] [--dry-run]"
             usage 0
             ;;
         *)
             echo "Unknown option: $1"
-            echo "Usage: $0 [--cdt YYYYMMDDHH] [--dry-run]"
             usage 1
             ;;
     esac
@@ -76,8 +74,22 @@ fi
 
 if [ "${CUTOFF_DATE}" = "" ]; then
    echo "No CUTOFF_DATE was input.  Unable to proceeed."
-   echo "Usage: $0 [--cdt YYYYMMDDHH] [--dry-run]"
-   exit 3
+   usage 1
+fi
+
+if [ "${REMOTE_USR}" = "" ]; then
+   echo "REMOTE_USR was not input.  Unable to proceeed."
+   usage 1
+fi
+
+if [ "${REMOTE_DIR} = "" ]; then
+   echo "REMOTE_DIR was not input.  Unable to proceed."
+   usage 1
+fi
+
+if [ "${REMOTE_HOST} = "" ]; then
+   echo "REMOTE_HOST was not input.  Unable to proceed."
+   usage 1
 fi
 
 echo "REMOTE_HOST: ${REMOTE_HOST}"
