@@ -106,7 +106,7 @@ foreach my $sdir ( @subdirs ) {
    }
 
    foreach my $del ( @del_list ) {
-      my $rm_cmd = "find $test_dir -type f -name '*$del*' -delete";
-      system( $rm_cmd ) == 0 or die "system $rm_cmd failed: $?";
+      my @cmd = ('find', $test_dir, '-type', 'f', '-name', "*$del*", '-delete');
+      system(@cmd) == 0 or die "system @cmd failed: $?";
    }
 }

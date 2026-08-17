@@ -9,9 +9,12 @@ usage() {
 Usage: $(basename "$0") [OPTIONS]
 
 Options:
-  -c, --cutoff-date <YYYYMMDDHH>  Required.  Remove files from cycles earlier than this date.
-  -d, --dry-run                   Optional.  Preview actions without deleting remote files
-  -h, --help                                 Display this help message and exit
+  --rh|--remote-host              Required.  Name of remote host.
+  --rd|--remote-dir               Required.  Target directory on remote host.
+  -u|--remote-usr                 Required.  User name on remote host.
+  -c|--cutoff-date <YYYYMMDDHH>   Required.  Remove files from cycles earlier than this date.
+  -d|--dry-run                    Optional.  Preview actions without deleting remote files
+  -h|--help                                  Display this help message and exit
 
 Examples:
   $(basename "$0") --cdt 2026081400 --dry-run
@@ -72,22 +75,22 @@ if [ "${DRY_RUN}" = true ]; then
     echo "=== DRY RUN MODE: No files will be deleted ==="
 fi
 
-if [ "${CUTOFF_DATE}" = "" ]; then
-   echo "No CUTOFF_DATE was input.  Unable to proceeed."
+if [ -z "${CUTOFF_DATE}" ]; then
+   echo "No CUTOFF_DATE was input.  Unable to proceed."
    usage 1
 fi
 
-if [ "${REMOTE_USR}" = "" ]; then
-   echo "REMOTE_USR was not input.  Unable to proceeed."
+if [ -z "${REMOTE_USR}" ]; then
+   echo "REMOTE_USR was not input.  Unable to proceed."
    usage 1
 fi
 
-if [ "${REMOTE_DIR} = "" ]; then
+if [ -z "${REMOTE_DIR}" ]; then
    echo "REMOTE_DIR was not input.  Unable to proceed."
    usage 1
 fi
 
-if [ "${REMOTE_HOST} = "" ]; then
+if [ -z "${REMOTE_HOST}" ]; then
    echo "REMOTE_HOST was not input.  Unable to proceed."
    usage 1
 fi
