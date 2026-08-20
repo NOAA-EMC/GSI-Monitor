@@ -76,7 +76,7 @@ export CLEAN_TANKDIR=${CLEAN_TANKDIR:-1}
 #
 #  Number of cycles worth of image data to be retained in tankdir
 #
-export NUM_IMG_CYCLES=${NUM_IMG_CYCLES:-4}
+export NUM_IMG_CYCLES=${NUM_IMG_CYCLES:-2}
 
 export WGRIB2=`which wgrib2`
 export GRADS=`which grads`

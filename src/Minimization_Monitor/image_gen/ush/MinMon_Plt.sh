@@ -357,6 +357,14 @@ if [[ -e ${last_plot_time} ]]; then
    echo ${PDATE} > ${last_plot_time}
 fi
 
+#--------------------------------------------------------------------
+#  Remove older image files from server, 
+#  keeping only the last 4 cycles
+#--------------------------------------------------------------------
+CUTOFF_DATE=`$NDATE -24 ${PDATE}`
+${M_IG_SCRIPTS}/rm_remote_imgs.sh -c ${CUTOFF_DATE} --rh ${WEBSVR} -u ${WEBUSER} --rd ${WEBDIR}/${run_suffix}
+
+
 cd ${WORKDIR}
 cd ..
 rm -rf ${WORKDIR}

@@ -206,7 +206,7 @@ if [[ $PDATE -le ${last_cycle} ]]; then
      fi
    fi
 
-   ${C_IG_SCRIPTS}/rm_img_files.pl --dir ${C_IMGNDIR}/pngs --nfl ${NUM_IMG_CYCLES}
+   ${MON_USH}/rm_img_files.pl --dir ${C_IMGNDIR}/pngs --ncyc ${NUM_IMG_CYCLES} --sdirs=horz,hist,time,vert
 
 else
    echo "UNABLE to plot ${PDATE}, last processed date is ${last_cycle}"
