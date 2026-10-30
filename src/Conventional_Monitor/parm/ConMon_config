@@ -64,11 +64,6 @@ export MAIL_CC=${MAIL_CC:=${cc_list}}
 export CONMON_RESTRICT_PLOT_AREAS=1
 
 #
-#  NUM_CYCLES is the number of cycles to be used time series plots.
-#
-export NUM_CYCLES=${NUM_CYCLES:-121}
-   
-#
 #  Automatically remove old, extracted data files
 #
 export CLEAN_TANKDIR=${CLEAN_TANKDIR:-1}

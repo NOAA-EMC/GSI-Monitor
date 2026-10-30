@@ -83,8 +83,8 @@ echo "--> mk_time_vert.sh"
             walltime="50:00"
          fi
 
-        $SUB -V -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${logfile} -l walltime=${walltime}\
-	       	-N ${jobname} -l select=1:mem=8gb ${pltfile}
+         $SUB -V -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${logfile} -l walltime=${walltime}\
+ 	      -N ${jobname} -l select=1:mem=8gb ${pltfile}
       fi
 
    done

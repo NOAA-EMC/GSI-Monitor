@@ -168,7 +168,6 @@ if [[ ! -d ${C_IMGNDIR} ]]; then
    mkdir -p ${C_IMGNDIR}
 fi
 
-
 #--------------------------------------------------------------------
 # Get date of cycle to process and/or previous cycle processed.
 #
@@ -187,9 +186,10 @@ hr=${CYC}
 rgnHH=''
 rgnTM=''
 use_next_day=0
-   
-set_hr_tm
 
+if [[ $CONMON_SUFFIX = 'nam' ]]; then
+   set_hr_tm
+fi
 
 if [[ ${#cnvstat_location} -le 0 ]]; then
    export cnvstat_location=${COMROOT}/nam/${nam_ver}
@@ -217,7 +217,11 @@ if [[ $use_next_day == 1 ]]; then
    pdate06=`${NDATE} +6 ${PDY}${CYC}`
    day=`echo ${pdate06} | cut -c1-8`
 fi
-export cnvstat=${cnvstat_location}/${CONMON_SUFFIX}.${day}/${CONMON_SUFFIX}.${rgnHH}.cnvstat.${rgnTM}
+if [[ ${CONMON_SUFFIX} = "rrfs" ]]; then
+   export cnvstat=${cnvstat_location}/satbias.${day}/${CONMON_SUFFIX}.prod.${pdate}_cnvstat
+else
+   export cnvstat=${cnvstat_location}/${CONMON_SUFFIX}.${day}/${CONMON_SUFFIX}.${rgnHH}.cnvstat.${rgnTM}
+fi
 
 if [[ -e ${cnvstat} ]]; then
    echo "cnvstat exists"

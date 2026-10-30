@@ -7,6 +7,7 @@
    echo "---> plot_time_ps.sh"
 
    workdir=${C_PLOT_WORKDIR}/plottime_ps
+
    if [[ -d ${workdir} ]]; then
       rm -rf ${workdir}
    fi
@@ -19,10 +20,8 @@
    #-------------------------------------------------------
    #  copy over surface pressure time-series GrADS scripts
    #-------------------------------------------------------
-
    ${NCP} ${C_IG_GSCRIPTS}/plotstas_time_count_ps.gs . 
    ${NCP} ${C_IG_GSCRIPTS}/plotstas_time_bias_ps.gs  . 
-   ${NCP} ${C_IG_GSCRIPTS}/plotstas_time_bias2_ps.gs  . 
 
    #---------------------------------------------------
    #  Link in the data files.
@@ -34,9 +33,14 @@
    while [[ $cdate -le $edate ]] ; do
       day=`echo $cdate | cut -c1-8 `
       dcyc=`echo $cdate | cut -c9-10 `
-      test_dir=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${cdate} \
-               --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
-      
+      if [[ ${AREA} = 'glb' ]]; then
+         test_dir=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${cdate} \
+                   --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
+      else
+         test_dir="${C_TANKDIR}/conmon.${day}"
+      fi
+      echo "test_dir: $test_dir"
+
       if [[ -d ${test_dir} ]]; then
 
          for cycle in ges anl; do
@@ -51,15 +55,20 @@
 
       fi
 
-      adate=`${NDATE} +6 ${cdate}`
+      adate=`${NDATE} +${CYCLE_INTERVAL} ${cdate}`
       cdate=${adate}
    done
 
    #---------------------------------------------------
    #  Copy over the ctl files, modify dset and tset
    #---------------------------------------------------
-   test_dir=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${PDATE} \
-               --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
+   if [[ ${AREA} = 'glb' ]]; then
+      test_dir=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${PDATE} \
+                  --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
+   else 
+      day=`echo $PDATE | cut -c1-8 `
+      test_dir="${C_TANKDIR}/conmon.${day}"
+   fi
 
    for cycle in ges anl; do
 
@@ -95,7 +104,6 @@
 
    grads -bpc "run ./plotstas_time_count_ps.gs"
    grads -bpc "run ./plotstas_time_bias_ps.gs"
-   grads -bpc "run ./plotstas_time_bias2_ps.gs"
 
    img_files=`ls *.png`
    for imgf in ${img_files}; do

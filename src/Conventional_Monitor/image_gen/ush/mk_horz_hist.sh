@@ -71,61 +71,62 @@
    #------------------------------
    # submit the plot_horz job
    #------------------------------
-   jobname="${JOBNAME}_horz"
-   plot_horz="${C_IG_SCRIPTS}/plot_horz.sh"
+   if [[ ${AREA} = "glb" ]]; then
+      jobname="${JOBNAME}_horz"
+      plot_horz="${C_IG_SCRIPTS}/plot_horz.sh"
 
-   logfile="${C_LOGDIR}/plothorz_${CONMON_SUFFIX}.${PDY}.${CYC}.log"
-   if [[ -e ${logfile} ]]; then
-      rm -f ${logfile}
-   fi
+      logfile="${C_LOGDIR}/plothorz_${CONMON_SUFFIX}.${PDY}.${CYC}.log"
+      if [[ -e ${logfile} ]]; then
+         rm -f ${logfile}
+      fi
 
-   errfile="${C_LOGDIR}/plothorz_${CONMON_SUFFIX}.${PDY}.${CYC}.err"
-   if [[ -e ${errfile} ]]; then
-      rm -f ${errfile}
-   fi
+      errfile="${C_LOGDIR}/plothorz_${CONMON_SUFFIX}.${PDY}.${CYC}.err"
+      if [[ -e ${errfile} ]]; then
+         rm -f ${errfile}
+      fi
 
-   if [[ $MY_MACHINE == "hera" || $MY_MACHINE == "orion" || $MY_MACHINE == "hercules" ]]; then
-      ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 \
+      if [[ $MY_MACHINE == "hera" || $MY_MACHINE == "orion" || $MY_MACHINE == "hercules" ]]; then
+         ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 \
 		-p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_horz}
 
-   elif [[ $MY_MACHINE == "ursa" ]]; then
-      ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 -J ${jobname} -o ${logfile} ${plot_horz}
+      elif [[ $MY_MACHINE == "ursa" ]]; then
+         ${SUB} -A ${ACCOUNT} --ntasks=1 --time=00:20:00 -J ${jobname} -o ${logfile} ${plot_horz}
 
-   elif [[ $MY_MACHINE == "wcoss2" ]]; then
-        $SUB -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=30:00 -N ${jobname} \
+      elif [[ $MY_MACHINE == "wcoss2" ]]; then
+         ${SUB} -V -q $JOB_QUEUE -A $ACCOUNT -o ${logfile} -e ${logfile} -l walltime=30:00 -N ${jobname} \
                 -l select=1:mem=800M ${plot_horz}
-   fi
+      fi
 
 
-   #------------------------------
-   # submit the plot_horz_uv job
-   #------------------------------
-   jobname="${JOBNAME}_horz_uv"
-   plot_horz_uv="${C_IG_SCRIPTS}/plot_horz_uv.sh"
+      #------------------------------
+      # submit the plot_horz_uv job
+      #------------------------------
+      jobname="${JOBNAME}_horz_uv"
+      plot_horz_uv="${C_IG_SCRIPTS}/plot_horz_uv.sh"
 
-   logfile="${C_LOGDIR}/plothorz_uv_${CONMON_SUFFIX}.${PDY}.${CYC}.log"
-   if [[ -e ${logfile} ]]; then
-      rm -f ${logfile}
-   fi
+      logfile="${C_LOGDIR}/plothorz_uv_${CONMON_SUFFIX}.${PDY}.${CYC}.log"
+      if [[ -e ${logfile} ]]; then
+         rm -f ${logfile}
+      fi
 
-   errfile="${C_LOGDIR}/plothorz_uv_${CONMON_SUFFIX}.${PDY}.${CYC}.err"
-   if [[ -e ${errfile} ]]; then
-      rm -f ${errfile}
-   fi
+      errfile="${C_LOGDIR}/plothorz_uv_${CONMON_SUFFIX}.${PDY}.${CYC}.err"
+      if [[ -e ${errfile} ]]; then
+         rm -f ${errfile}
+      fi
 
-   if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} == "orion" || ${MY_MACHINE} == "hercules" ]]; then
-      ${SUB} -A ${ACCOUNT} --ntasks=1 --time=01:30:00 \
-	     -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_horz_uv}
+      if [[ ${MY_MACHINE} == "hera" || ${MY_MACHINE} == "orion" || ${MY_MACHINE} == "hercules" ]]; then
+         ${SUB} -A ${ACCOUNT} --ntasks=1 --time=01:30:00 \
+   	        -p ${SERVICE_PARTITION} -J ${jobname} -o ${logfile} ${plot_horz_uv}
 
-   elif [[ ${MY_MACHINE} == "ursa" ]]; then
-      ${SUB} -A ${ACCOUNT} --ntasks=1 --time=01:30:00 -J ${jobname} -o ${logfile} ${plot_horz_uv}
+      elif [[ ${MY_MACHINE} == "ursa" ]]; then
+         ${SUB} -A ${ACCOUNT} --ntasks=1 --time=01:30:00 -J ${jobname} -o ${logfile} ${plot_horz_uv}
 
-   elif [[ ${MY_MACHINE} == "wcoss2" ]]; then
-        $SUB -V -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${logfile} \
+      elif [[ ${MY_MACHINE} == "wcoss2" ]]; then
+         ${SUB} -V -q ${JOB_QUEUE} -A ${ACCOUNT} -o ${logfile} -e ${logfile} \
                 -l walltime=30:00 -N ${jobname} \
                 -l select=1:mem=800M ${plot_horz_uv}
-   fi
-
+      fi
+    fi
 
 echo "<-- mk_horz_hist.sh"
 exit 
