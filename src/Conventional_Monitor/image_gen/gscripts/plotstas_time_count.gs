@@ -27,7 +27,19 @@ function time_cnt_ps (args)
    '!echo $CONMON_RESTRICT_PLOT_AREAS > rest.txt'
    rest=read(rest.txt)
    restrict=subwrd(rest,2)
-     
+
+
+*
+*  Limit regional sources to a single plot of all data.
+*
+   '!echo $AREA > area.txt'
+   area=subwrd(read(area.txt),2)
+   say 'exported AREA is: 'area
+
+   if (area = 'rgn')
+      say 'identified rgn source'
+      iyc=1
+   endif
 
    ix=1
    while(ix <=ixc)
@@ -58,11 +70,11 @@ function time_cnt_ps (args)
  
       iy=1
       while(iy <=iyc)
-
-*        In order to save space skip certain redundant regions.
-*           skipping region2, N. Hemisphere
+*
+*        Skip redundant regions to save space.
+*
          if ( restrict = 1 )
-            if ( iy = 2 )
+            if ( iy = 2 | iy = 4 | iy = 5 | iy = 7)
                iy=iy+1
                continue
             endif

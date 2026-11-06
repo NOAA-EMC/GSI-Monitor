@@ -26,15 +26,27 @@ function time_bias_ps (args)
    rest=read(rest.txt)
    restrict=subwrd(rest,2)
 
+
+*
+*  Limit regional sources to a single plot of all data.
+*
+   '!echo $AREA > area.txt'
+   area=subwrd(read(area.txt),2)
+   say 'exported AREA is: 'area
+
+   if (area = 'rgn')
+      say 'identified rgn source'
+      iyc=1
+   endif
+
    iy=1
    while(iy <=iyc)
-
 *         
-*     In order to save space skip regions N. Hemisphere(2)
+*     Skip redundant regions to save space.
 *        
       if ( restrict = 1 )
          say 'restrict true 'restrict
-         if ( iy = 2 )
+         if ( iy = 2 | iy = 4 | iy = 5 | iy = 7 )
             iy=iy+1
             continue
          endif

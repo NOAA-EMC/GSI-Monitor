@@ -26,20 +26,35 @@ function vert_count (args)
    'q file'
    size=sublin(result,5)
    nxc=subwrd(size,3)
+   say 'nxc is: 'nxc
    nyc=subwrd(size,6)
+   say 'nyc is: 'nyc
    nzc=subwrd(size,9)
+   say 'nzc is: 'nzc
 
    '!echo $CONMON_RESTRICT_PLOT_AREAS > rest.txt'
    rest=read(rest.txt)
    restrict=subwrd(rest,2)
 
+*
+*  Limit regional sources to a single plot of all data.
+*
+   '!echo $AREA > area.txt'
+   area=subwrd(read(area.txt),2)
+   say 'exported AREA is: 'area
+
+   if (area = 'rgn')
+      say 'identified rgn source'
+      nyc=1
+   endif
+
    iy=1
    while(iy <=nyc)
-
-*     In order to save space skip certain redundant regions.
-*       skipping region2, N. Hemisphere
+*
+*     Skip redundant regions to save space.
+*
       if ( restrict = 1 )
-         if ( iy = 2 )
+         if ( iy = 2 | iy = 4 | iy = 5 | iy = 7)
             iy=iy+1
             continue
          endif

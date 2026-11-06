@@ -27,13 +27,26 @@ function ps_time_count (args)
    rest=read(rest.txt)
    restrict=subwrd(rest,2)
 
+
+*
+*  Limit regional sources to a single plot of all data.
+*
+   '!echo $AREA > area.txt'
+   area=subwrd(read(area.txt),2)
+   say 'exported AREA is: 'area
+
+   if (area = 'rgn')
+      say 'identified rgn source'
+      iyc=1
+   endif
+
    iy=1
    while(iy <=iyc)
-
-*     In order to save space skip regions N. Hemisphere(2), S. Hemisphere(3), and Canada(6)
-*        skipping region2, N. Hemisphere
+*
+*     Skip redundant regions to save space.
+*
       if ( restrict = 1 )
-         if ( iy = 2 )
+         if ( iy = 2 | iy = 4 | iy = 5 | iy = 7 )
             iy=iy+1
             continue
          endif

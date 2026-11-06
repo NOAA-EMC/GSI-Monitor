@@ -199,8 +199,10 @@ if [[ ${PDATE} -le ${last_cycle} ]]; then
    #--------------------------------------------------------------------
    if [[ ${AREA} = 'glb' ]]; then
       export C_PLOT_WORKDIR=${C_PLOT_WORKDIR:-${MON_STMP}/${CONMON_SUFFIX}/${RUN}/conmon}
+      sdirs="horz,hist,time,vert"
    else
       export C_PLOT_WORKDIR=${C_PLOT_WORKDIR:-${MON_STMP}/${CONMON_SUFFIX}/conmon}
+      sdirs="hist,time,vert"
    fi
    rm -rf $C_PLOT_WORKDIR
    mkdir -p $C_PLOT_WORKDIR
@@ -231,7 +233,7 @@ if [[ ${PDATE} -le ${last_cycle} ]]; then
 #     fi
 #   fi
 
-#   ${MON_USH}/rm_img_files.pl --dir ${C_IMGNDIR}/pngs --ncyc ${NUM_IMG_CYCLES} --sdirs=horz,hist,time,vert
+   ${MON_USH}/rm_img_files.pl --dir ${C_IMGNDIR}/pngs --ncyc ${NUM_IMG_CYCLES} --sdirs ${sdirs}
 
 else
    echo "UNABLE to plot ${PDATE}, last processed date is ${last_cycle}"
