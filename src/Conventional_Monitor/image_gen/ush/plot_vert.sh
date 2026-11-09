@@ -18,19 +18,6 @@
    dday=`echo $PDATE|cut -c7-8`
    cyc=`echo ${PDATE}|cut -c9-10`
 
-#   tv_tankdir=${C_TANKDIR}/${RUN}.${pdy}/${cyc}/conmon/time_vert
-  
-#   echo "tv_tankdir: $tv_tankdir"
-
-#   if [[ ${AREA} = 'glb' ]]; then
-#      test_dir=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${PDATE} \
-#                --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
-#   else
-#      test_dir="${C_TANKDIR}/conmon.${pdy}"
-#   fi
-#   echo "test_dir: $test_dir"
-
-
    #---------------------------------------------------
    #  Link in the data files.
    #    going to need ndays worth here
@@ -48,14 +35,11 @@
       else
          test_dir="${C_TANKDIR}/conmon.${day}"
       fi
-      echo "test_dir: $test_dir"
 
       if [[ -d ${test_dir} ]]; then
-         echo "$test_dir exists" 
 
          for cycle in ges anl; do
             stas_file=${test_dir}/time_vert/${cycle}_${TYPE}_stas.${cdate}
-            echo "stas_file: $stas_file"
 
             if [[ -s ${stas_file}.${Z} ]]; then
                ${UNCOMPRESS} ${stas_file}.${Z}
@@ -81,7 +65,6 @@
    else
       test_dir="${C_TANKDIR}/conmon.${pdy}"
    fi
-   echo "test_dir: $test_dir"
 
    for cycle in ges anl; do
 

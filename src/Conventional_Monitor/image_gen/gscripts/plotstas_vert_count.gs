@@ -26,11 +26,8 @@ function vert_count (args)
    'q file'
    size=sublin(result,5)
    nxc=subwrd(size,3)
-   say 'nxc is: 'nxc
    nyc=subwrd(size,6)
-   say 'nyc is: 'nyc
    nzc=subwrd(size,9)
-   say 'nzc is: 'nzc
 
    '!echo $CONMON_RESTRICT_PLOT_AREAS > rest.txt'
    rest=read(rest.txt)

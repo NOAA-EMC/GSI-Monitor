@@ -90,7 +90,6 @@ done
 # Run config files to load environment variables,
 # set default plot conditions
 #--------------------------------------------------------------------
-#this_file=`basename $0`
 this_dir=`dirname $0`
 top_parm=${this_dir}/../../parm
 
@@ -116,13 +115,6 @@ if [[ ${AREA} = 'rgn' ]]; then
    CYCLE_INTERVAL=1
 fi
 export CYCLE_INTERVAL="${CYCLE_INTERVAL:-6}"
-
-echo "CONMON_SUFFIX  = $CONMON_SUFFIX"
-echo "AREA           = $AREA"
-echo "PDATE          = $PDATE"
-echo "RUN            = $RUN"
-echo "NUM_CYCLES     = $NUM_CYCLES"
-echo "CYCLE_INTERVAL = $CYCLE_INTERVAL"
 
 #--------------------------------------------------------------------
 #  Create LOGdir as needed
@@ -225,13 +217,17 @@ if [[ ${PDATE} -le ${last_cycle} ]]; then
    #--------------------------------------------------------------------
    #  Mail warning reports 
    #--------------------------------------------------------------------
-#   if [[ $DO_DATA_RPT = 1 ]]; then
-#     warn_file=${C_TANKDIR}/${RUN}.${pdy}/${cyc}/conmon/horz_hist/ges/err_rpt.ges.${PDATE}
-#     if [[ -e ${warn_file} ]]; then
-#       echo "mailing err_rpt"          
-#       /bin/mail -s "ConMon warning" -c "${MAIL_CC}" ${MAIL_TO} < ${warn_file} 
-#     fi
-#   fi
+   if [[ ${AREA} = 'rgn' ]]; then
+      DO_DATA_RPT=0
+   fi
+
+   if [[ $DO_DATA_RPT = 1 ]]; then
+     warn_file=${C_TANKDIR}/${RUN}.${pdy}/${cyc}/conmon/horz_hist/ges/err_rpt.ges.${PDATE}
+     if [[ -e ${warn_file} ]]; then
+       echo "mailing err_rpt"          
+       /bin/mail -s "ConMon warning" -c "${MAIL_CC}" ${MAIL_TO} < ${warn_file} 
+     fi
+   fi
 
    ${MON_USH}/rm_img_files.pl --dir ${C_IMGNDIR}/pngs --ncyc ${NUM_IMG_CYCLES} --sdirs ${sdirs}
 

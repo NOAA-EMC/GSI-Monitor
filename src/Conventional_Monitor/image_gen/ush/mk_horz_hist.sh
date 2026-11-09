@@ -69,7 +69,8 @@
 
 
    #------------------------------
-   # submit the plot_horz job
+   # submit the plot_horz job 
+   #   global sources only
    #------------------------------
    if [[ ${AREA} = "glb" ]]; then
       jobname="${JOBNAME}_horz"
