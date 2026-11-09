@@ -86,7 +86,7 @@ latest_dir=${latest_dir%/}
 if [[ ${monitor} = "conmon" ]]; then
    latest_datetime=$(ls "${latest_dir}"/time_vert/*.[0-9]* | grep -oE '[0-9]{10}(\.gz)?$' | cut -c1-10 | sort | tail -n 1)
 else
-   latest_datetime=$(ls "${latest_dir}"/*.[0-9]*.gz | grep -oE '[0-9]{10}\.gz$' | cut -c1-10 | sort | tail -n 1)
+   latest_datetime=$(ls "${latest_dir}"/*.[0-9]*.gz | grep -oE '[0-9]{10}(\.ieee_d)?\.gz$' | cut -c1-10 | sort | tail -n 1)
 fi
 
 echo ${latest_datetime}
