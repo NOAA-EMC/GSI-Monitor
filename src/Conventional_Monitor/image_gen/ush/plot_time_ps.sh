@@ -82,7 +82,7 @@
       fi
 
       new_dset=" dset ${cycle}_ps_stas.%y4%m2%d2%h2"
-      tdef=`${C_IG_SCRIPTS}/make_tdef.sh ${START_DATE} ${NUM_CYCLES} 06`
+      tdef=`${C_IG_SCRIPTS}/make_tdef.sh ${START_DATE} ${NUM_CYCLES} 0${CYCLE_INTERVAL}`
 
       sed -e "s/^dset*/${new_dset}/" tmp.ctl >tmp2.ctl
       sed -e "s/^tdef.*/${tdef}/" tmp2.ctl >${cycle}_ps_stas.ctl

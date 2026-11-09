@@ -84,9 +84,9 @@ latest_dir=$(printf '%s\n' ${tankdir}/${monitor}.[0-9][0-9][0-9][0-9][0-9][0-9][
 latest_dir=${latest_dir%/}
 
 if [[ ${monitor} = "conmon" ]]; then
-   latest_datetime=$(ls "${latest_dir}"/time_vert/*.[0-9]*.gz | sort | tail -n 1 | grep -oE '[0-9]{10}')
+   latest_datetime=$(ls "${latest_dir}"/time_vert/*.[0-9]* | grep -oE '[0-9]{10}(\.gz)?$' | cut -c1-10 | sort | tail -n 1)
 else
-   latest_datetime=$(ls "${latest_dir}"/*.[0-9]*.gz | sort | tail -n 1 | grep -oE '[0-9]{10}')
+   latest_datetime=$(ls "${latest_dir}"/*.[0-9]*.gz | grep -oE '[0-9]{10}\.gz$' | cut -c1-10 | sort | tail -n 1)
 fi
 
 echo ${latest_datetime}

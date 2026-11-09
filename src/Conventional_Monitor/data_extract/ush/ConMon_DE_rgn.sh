@@ -137,7 +137,7 @@ if [[ -e ${cnvstat} ]]; then
    echo "cnvstat exists"
 else
    echo "data not available -- missing $cnvstat file"
-   exit=4
+   exit 4
 fi
 
 #------------------------------------------------------------

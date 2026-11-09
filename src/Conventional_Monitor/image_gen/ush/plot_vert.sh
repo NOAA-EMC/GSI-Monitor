@@ -80,11 +80,7 @@
       new_dset=" dset ${cycle}_${TYPE}_stas.%y4%m2%d2%h2"
       num_cycles=${NUM_CYCLES}
 
-      if [[ ${CYCLE_INTERVAL} = 'glb' ]]; then
-         tdef=`${C_IG_SCRIPTS}/make_tdef.sh ${START_DATE} ${num_cycles} 06`
-      else
-         tdef=`${C_IG_SCRIPTS}/make_tdef.sh ${START_DATE} ${num_cycles} 01`
-      fi
+      tdef=`${C_IG_SCRIPTS}/make_tdef.sh ${START_DATE} ${num_cycles} 0${CYCLE_INTERVAL}`
 
       sed -e "s/^dset*/${new_dset}/" tmp.ctl >tmp2.ctl
       sed -e "s/^tdef.*/${tdef}/" tmp2.ctl >${cycle}_${TYPE}_stas.ctl
