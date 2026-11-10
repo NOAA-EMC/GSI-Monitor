@@ -106,7 +106,6 @@ module list
 
 export RUN="${RUN:-gdas}"
 export AREA="${AREA:-glb}"
-export NUM_CYCLES="${NUM_CYCLES:-120}"
 
 #--------------------------------------------------------------------
 # CYCLE_INTERVAL is 6 hrs for global (default) and 1 hr for regional
@@ -166,6 +165,7 @@ fi
 #--------------------------------------------------------------------
 # Set the START_DATE for the plot
 #--------------------------------------------------------------------
+echo "NUM_CYCLES = $NUM_CYCLES"
 ncycles=`expr $NUM_CYCLES - 1`
 hrs=`expr ${ncycles} \\* -${CYCLE_INTERVAL}`
 
@@ -229,7 +229,7 @@ if [[ ${PDATE} -le ${last_cycle} ]]; then
      fi
    fi
 
-   ${MON_USH}/rm_img_files.pl --dir ${C_IMGNDIR}/pngs --ncyc ${NUM_IMG_CYCLES} --sdirs ${sdirs}
+   ${MON_USH}/rm_img_files.pl --dir ${C_IMGNDIR}/pngs --ncyc ${NUM_IMG_CYCLES_TO_SAVE} --sdirs ${sdirs}
 
 else
    echo "UNABLE to plot ${PDATE}, last processed date is ${last_cycle}"

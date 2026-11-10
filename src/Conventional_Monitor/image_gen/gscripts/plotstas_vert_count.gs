@@ -32,16 +32,17 @@ function vert_count (args)
    '!echo $CONMON_RESTRICT_PLOT_AREAS > rest.txt'
    rest=read(rest.txt)
    restrict=subwrd(rest,2)
+   rcode=close(rest.txt)
 
 *
 *  Limit regional sources to a single plot of all data.
 *
    '!echo $AREA > area.txt'
    area=subwrd(read(area.txt),2)
+   rcode=close(area.txt)
    say 'exported AREA is: 'area
 
    if (area = 'rgn')
-      say 'identified rgn source'
       nyc=1
    endif
 

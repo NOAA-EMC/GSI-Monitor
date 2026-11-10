@@ -27,7 +27,7 @@ function time_cnt_ps (args)
    '!echo $CONMON_RESTRICT_PLOT_AREAS > rest.txt'
    rest=read(rest.txt)
    restrict=subwrd(rest,2)
-
+   rcode=close(rest.txt)
 
 *
 *  Limit regional sources to a single plot of all data.
@@ -35,9 +35,9 @@ function time_cnt_ps (args)
    '!echo $AREA > area.txt'
    area=subwrd(read(area.txt),2)
    say 'exported AREA is: 'area
+   rcode=close(area.txt)
 
    if (area = 'rgn')
-      say 'identified rgn source'
       iyc=1
    endif
 
@@ -80,14 +80,14 @@ function time_cnt_ps (args)
             endif
          endif
 
-         '!rm -f area.txt'
+         '!rm -f region.txt'
 
          if ( iy <10)
-            '!cat ges_'dtype'_stas.ctl |grep "region=  'iy' " > area.txt'
+            '!cat ges_'dtype'_stas.ctl |grep "region=  'iy' " > region.txt'
          else
-            '!cat ges_'dtype'_stas.ctl |grep "region= 'iy' " > area.txt'
+            '!cat ges_'dtype'_stas.ctl |grep "region= 'iy' " > region.txt'
          endif
-         result=read(area.txt)
+         result=read(region.txt)
          rc=sublin(result,1)
          area="unknown"
 
@@ -95,7 +95,7 @@ function time_cnt_ps (args)
             info=sublin(result,2)
             area=substr(info,14,25)
          endif
-         result=close(area.txt)
+         result=close(region.txt)
          iz=1
 
          while(iz <=izc)

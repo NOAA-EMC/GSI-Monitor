@@ -39,7 +39,6 @@
       else
          test_dir="${C_TANKDIR}/conmon.${day}"
       fi
-      echo "test_dir: $test_dir"
 
       if [[ -d ${test_dir} ]]; then
 
