@@ -25,29 +25,41 @@ function time_bias_ps (args)
    '!echo $CONMON_RESTRICT_PLOT_AREAS > rest.txt'
    rest=read(rest.txt)
    restrict=subwrd(rest,2)
+   rcode=close(rest.txt)
+
+*
+*  Limit regional sources to a single plot of all data.
+*
+   '!echo $AREA > area.txt'
+   area=subwrd(read(area.txt),2)
+   rcode=close(area.txt)
+   say 'exported AREA is: 'area
+
+   if (area = 'rgn')
+      iyc=1
+   endif
 
    iy=1
    while(iy <=iyc)
-
 *         
-*     In order to save space skip regions N. Hemisphere(2)
+*     Skip redundant regions to save space.
 *        
       if ( restrict = 1 )
          say 'restrict true 'restrict
-         if ( iy = 2 )
+         if ( iy = 2 | iy = 4 | iy = 5 | iy = 7 )
             iy=iy+1
             continue
          endif
       endif
 
-      '!rm -f area.txt'
+      '!rm -f region.txt'
       if ( iy <10)
-         '!cat ges_ps_stas.ctl |grep "region=  'iy' " > area.txt'
+         '!cat ges_ps_stas.ctl |grep "region=  'iy' " > region.txt'
       else
-         '!cat ges_ps_stas.ctl |grep "region= 'iy' " > area.txt'
+         '!cat ges_ps_stas.ctl |grep "region= 'iy' " > region.txt'
       endif
 
-      result=read(area.txt)
+      result=read(region.txt)
       rc=sublin(result,1)
       area="uknown"
 
@@ -56,7 +68,7 @@ function time_bias_ps (args)
          area=substr(info,14,25)
       endif
 
-      result=close(area.txt)
+      result=close(region.txt)
       ix=1
 
       while(ix <=ixc)

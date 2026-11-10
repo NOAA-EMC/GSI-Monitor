@@ -47,8 +47,12 @@ function large_mv () {
    while [[ $cdate -le $edate ]] ; do
       day=`echo $cdate | cut -c1-8 `
       dcyc=`echo $cdate |cut -c9-10`
-      test_dir=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${cdate} \
-               --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
+      if [[ ${AREA} = 'glb' ]]; then
+         test_dir=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${cdate} \
+                   --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
+      else
+         test_dir="${C_TANKDIR}/conmon.${day}"
+      fi
 
       if [[ -d ${test_dir} ]]; then
 
@@ -67,7 +71,7 @@ function large_mv () {
 
       fi
 
-      adate=`${NDATE} +6 ${cdate}`
+      adate=`${NDATE} +${CYCLE_INTERVAL} ${cdate}`
       cdate=${adate}
    done
 
@@ -76,8 +80,13 @@ function large_mv () {
    #---------------------------------------------------
    for cycle in ges anl; do
 
-      test_dir=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${PDATE} \
-               --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
+      if [[ ${AREA} = 'glb' ]]; then
+         test_dir=`$MON_USH/get_stats_path.sh --run $RUN --pdate ${PDATE} \
+                  --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
+      else
+         day=`echo $PDATE | cut -c1-8 `
+         test_dir="${C_TANKDIR}/conmon.${day}"
+      fi
 
       ctl_file=${test_dir}/time_vert/${cycle}_${TYPE}_stas.ctl
 
@@ -89,8 +98,8 @@ function large_mv () {
       fi
 
       new_dset="dset ${cycle}_${TYPE}_stas.%y4%m2%d2%h2"
-
-      tdef=`${C_IG_SCRIPTS}/make_tdef.sh ${START_DATE} ${NUM_CYCLES} 06`
+      
+      tdef=`${C_IG_SCRIPTS}/make_tdef.sh ${START_DATE} ${NUM_CYCLES} 0${CYCLE_INTERVAL}`
       echo "tdef = $tdef"
 
       sed -e "s/^dset*/${new_dset}/" tmp.ctl >tmp2.ctl
@@ -112,7 +121,7 @@ function large_mv () {
    #  copy plots scripts locally, modify, and run
    #---------------------------------------------------
 
-   for script in plotstas_time_count.gs plotstas_time_bias.gs plotstas_time_bias2.gs ;do
+   for script in plotstas_time_count.gs plotstas_time_bias.gs; do
       if [[ ${TYPE} = 'gps' && ${script} != 'plotstas_time_count.gs' ]]; then
          continue
       fi

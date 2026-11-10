@@ -68,8 +68,12 @@
    mkdir -p ${workdir}
    cd ${workdir}
 
-   hh_tankdir=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${PDATE} \
-                   --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
+   if [[ ${AREA} = 'glb' ]]; then
+      hh_tankdir=`${MON_USH}/get_stats_path.sh --run ${RUN} --pdate ${PDATE} \
+                      --net ${CONMON_SUFFIX} --tank ${TANKDIR} --mon conmon`
+   else
+      hh_tankdir="${C_TANKDIR}/conmon.${PDY}"
+   fi
    hh_tankdir=${hh_tankdir}/horz_hist
 
    $UNCOMPRESS ${hh_tankdir}/anl/*.scater.*.gz

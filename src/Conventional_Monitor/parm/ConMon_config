@@ -28,12 +28,13 @@ if [[ $AREA == 'rgn' ]]; then
    export C_TANKDIR=${TANKDIR}/stats/regional/${CONMON_SUFFIX}
    export C_IMGNDIR=${TANKDIR}/imgn/regional/${CONMON_SUFFIX}/conmon
    export C_LOGDIR=${MON_LOGDIR}/${CONMON_SUFFIX}/conmon
+   export NUM_CYCLES=${NUM_CYCLES:-480}
 else
    export C_TANKDIR=${TANKDIR}/stats/${CONMON_SUFFIX}
    export C_IMGNDIR=${TANKDIR}/imgn/${CONMON_SUFFIX}/${RUN}/conmon
    export C_LOGDIR=${MON_LOGDIR}/${CONMON_SUFFIX}/${RUN}/conmon
+   export NUM_CYCLES=${NUM_CYCLES:-121}
 fi
-
 
 #-----------------------------------------------------
 #  DO_DATA_RPT controls the generation of automated
@@ -64,11 +65,6 @@ export MAIL_CC=${MAIL_CC:=${cc_list}}
 export CONMON_RESTRICT_PLOT_AREAS=1
 
 #
-#  NUM_CYCLES is the number of cycles to be used time series plots.
-#
-export NUM_CYCLES=${NUM_CYCLES:-121}
-   
-#
 #  Automatically remove old, extracted data files
 #
 export CLEAN_TANKDIR=${CLEAN_TANKDIR:-1}
@@ -76,7 +72,7 @@ export CLEAN_TANKDIR=${CLEAN_TANKDIR:-1}
 #
 #  Number of cycles worth of image data to be retained in tankdir
 #
-export NUM_IMG_CYCLES=${NUM_IMG_CYCLES:-2}
+export NUM_IMG_CYCLES_TO_SAVE=${NUM_IMG_CYCLES_TO_SAVE:-2}
 
 export WGRIB2=`which wgrib2`
 export GRADS=`which grads`
