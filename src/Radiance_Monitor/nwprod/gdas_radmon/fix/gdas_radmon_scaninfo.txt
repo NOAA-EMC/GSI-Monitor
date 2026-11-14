@@ -63,6 +63,7 @@
  abi_g16                  0.00      1.00        90
  abi_g17                  0.00      1.00        90
  abi_g18                  0.00      1.00        90
+ abi_g19                  0.00      1.00        90
  ahi_himawari8            0.00      1.00        90
  ahi_himawari9            0.00      1.00        90
  atms_n21               -52.393     1.10        96
@@ -71,4 +72,5 @@
  viirs-m_npp            -56.280     1.265       90
  viirs-m_j1             -56.280     1.265       90
  viirs-m_j2             -56.280     1.265       90
+ mws_metop-sg-a1        -49.312     1.049       95
 !sat_sis                  start      step       nstep

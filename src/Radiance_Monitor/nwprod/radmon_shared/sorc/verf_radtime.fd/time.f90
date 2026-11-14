@@ -22,8 +22,11 @@ program time
   parameter (iglobal=1, iland=2, iwater=3, isnowice=4, imixed=5)
 
   character(10),dimension(ntype):: ftype
-  character(20) satname,stringd,satsis
-  character(10) satype,dplat
+  character(8) stid
+  character(20) stringd,satsis
+  character(22) satname
+  character(10) dum,satype
+  character(11) dplat
   character(80) string,data_file,dfile,ctl_file
   character(500) diag_rad
   character(40),dimension(max_surf_region):: region

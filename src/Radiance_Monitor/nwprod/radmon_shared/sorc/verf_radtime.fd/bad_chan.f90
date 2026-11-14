@@ -72,12 +72,12 @@ module bad_chan
     subroutine write_bad_chan( satname, channel )
 
       !--- interface
-      character(20), intent( in )       :: satname
+      character(*), intent( in )       :: satname
       integer, intent( in )		:: channel
       
       write(6,*) 'write_bad_chan, satname, channel', satname, channel
 
-      write(funit,*) satname, 'channel= ', channel
+      write(funit,*) trim(satname), ' channel= ', channel
 
     end subroutine write_bad_chan
 
