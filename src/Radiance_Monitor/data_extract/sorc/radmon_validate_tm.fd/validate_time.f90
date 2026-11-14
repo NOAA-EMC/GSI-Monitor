@@ -16,7 +16,8 @@ program time
   integer ntype,mregion,surf_nregion
   parameter (ntype=8,mregion=25, surf_nregion=5)
 
-  character(20) satname,stringd
+  character(20) stringd
+  character(22) satname
   character(8) date,cycle
   character(80) data_file
   integer luname,lungrd,lunctl,lndiag,nregion

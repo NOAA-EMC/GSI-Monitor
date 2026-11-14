@@ -67,12 +67,12 @@ module valid
      
 
       !--- interface
-      character(20), intent( in )	:: satname
+      character(*), intent( in )	:: satname
       integer, intent( out )		:: iret     
 
       !--- variables
-      character(20) fname
-      character(20) test_satname
+      character(80) fname
+      character(22) test_satname
       character(10) base_date
 
       integer fios, multiply_by

@@ -10,9 +10,11 @@ program angle
   parameter (iglobal=1, iland=2, iwater=3, isnowice=4, imixed=5)
  
   character(10),dimension(ntype):: ftype
-  character(20) satname,stringd
-  character(10) satype,dplat
-  character(20) satsis,satscan_sis
+  character(20) stringd,satsis
+  character(22) satname,satscan_sis
+  character(10) satype
+  character(11) dplat
+  character(256) scan_line
   character(80) string,data_file,dfile,ctl_file
   character(500) diag_rad
   character(40),dimension(max_surf_region):: surf_region
@@ -192,11 +194,21 @@ program angle
 !  open scan info file compiled in the source directory
    open(iscan,file='scaninfo.txt',form='formatted')
   do 
-   read(iscan,1000,IOSTAT=iflag) cflg,satscan_sis,start,step,nstep
-   if( iflag /= 0 ) exit
+   read(iscan,'(a)',IOSTAT=iflag) scan_line
+   if( iflag /= 0 ) then
+      write(6,*) '***ERROR*** scan information not found for ',trim(satname)
+      call errexit(94)
+   endif
+   cflg = scan_line(1:1)
+   if (cflg /= ' ' .or. len_trim(scan_line) == 0) cycle
+   read(scan_line(2:),*,IOSTAT=iflag) satscan_sis,start,step,nstep
+   if (iflag /= 0) then
+      write(6,*) '***ERROR*** invalid scan information: ',trim(scan_line)
+      call errexit(94)
+   endif
    if(trim(satname) == trim(satscan_sis)) exit
   enddo
-1000 format(a1,a20,2f10.3,i10)
+  close(iscan)
 
   write(6,*) 'satscan_sis,start,step,nstep=',satscan_sis,start,step,nstep
 

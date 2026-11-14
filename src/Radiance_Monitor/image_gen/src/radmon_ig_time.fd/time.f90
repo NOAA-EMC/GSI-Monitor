@@ -55,7 +55,7 @@ program gatime
 !************************************************************************
    integer               :: nchanl               = 19
    integer               :: ncycle               = 1
-   character(15)         :: satname              = 'ssmis_f18'  
+   character(22)         :: satname              = 'ssmis_f18'
    integer               :: nregion              = 5
    namelist /input/ satname, nchanl, ncycle, nregion
 
@@ -326,7 +326,7 @@ program gatime
 !
 !    Output file [satname].cnt.time.txt, (in CSV format).
 !*********************************************************************
-   70 FORMAT(A15,',',A5,',',A5)
+   70 FORMAT(A,',',A5,',',A5)
 
    72 FORMAT(A5,',',A3,',',F9.3,',',F9.3,',',F9.2,',',F9.2)
 

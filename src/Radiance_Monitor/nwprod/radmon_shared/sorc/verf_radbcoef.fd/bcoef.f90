@@ -11,8 +11,11 @@ program bcoef
   logical eof
 
   character(10),dimension(ntype):: ftype
-  character(20) dum,satname,stringd,satsis,isis,mod_satname
-  character(10) satype,dplat
+  character(20) dum,stringd,satsis,isis
+  character(22) satname
+  character(26) mod_satname
+  character(10) satype
+  character(11) dplat
   character(80) string,data_file,ctl_file
   character(500) diag_rad
   character(10) suffix

@@ -8,10 +8,11 @@ subroutine create_ctl_time(ntype,ftype,n_chan,iyy,imm,idd,ihh,idhh,&
   integer,intent(in)                          :: ntype
   character(10),dimension(ntype),intent(in)   :: ftype
   integer,intent(in)                          :: n_chan,lunctl,iyy,imm,idd,ihh,idhh,incr
-  character(40),intent(in)                    :: ctl_file
+  character(80),intent(in)                    :: ctl_file
   real,intent(in)                             :: rmiss
-  character(20),intent(in)                    :: satname
-  character(10),intent(in)                    :: satype,dplat
+  character(26),intent(in)                    :: satname
+  character(10),intent(in)                    :: satype
+  character(11),intent(in) :: dplat
   integer,intent(in)                          :: nregion,little_endian
   character(40),dimension(nregion),intent(in) :: region
   real,dimension(nregion),intent(in)          :: rlonmin,rlonmax,rlatmin,rlatmax
@@ -24,7 +25,7 @@ subroutine create_ctl_time(ntype,ftype,n_chan,iyy,imm,idd,ihh,idhh,&
   character(3):: clatmin,clatmax
   character(4):: clonmin,clonmax
   character(13) stringd
-  character(40) grad_file
+  character(80) grad_file
   character(80) string
   character(80),dimension(nregion):: stringr
 
@@ -101,7 +102,7 @@ subroutine create_ctl_time(ntype,ftype,n_chan,iyy,imm,idd,ihh,idhh,&
 
 ! Write header information
   grad_file = trim(satname) // stringd // '.ieee_d'
-  write(lunctl,100) grad_file
+  write(lunctl,100) trim(grad_file)
   if ( little_endian == 1 ) then
      write(lunctl,112) 
   else
@@ -131,11 +132,11 @@ subroutine create_ctl_time(ntype,ftype,n_chan,iyy,imm,idd,ihh,idhh,&
   write(lunctl,170) ntime,ihh2,idd2,mon(imm2),iyy2,incr
   write(lunctl,180) ntype
 
-100 format('dset ^',a40)
+100 format('dset ^',a)
 110 format('options template big_endian sequential')
 112 format('options template little_endian sequential')
 120 format('undef ',f5.0)
-130 format('title ',a10,1x,a10,1x,i4)
+130 format('title ',a10,1x,a11,1x,i4)
 132 format('*XDEF is channel number')
 134 format('*  x= ',i4,', channel= ',i4,' , iuse= ',i2,' , error= ',f8.3,&
          ' , wlth= ',f9.2,' , freq= ',f9.2)

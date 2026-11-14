@@ -27,7 +27,7 @@ program bcoef
   character(20) str_nchanl
   character(60) sat_out_file
 
-  character(40) data_file
+  character(60) data_file
 
   character(len=10),allocatable,dimension(:)::times
   character(len=2), allocatable,dimension(:)::useflg
@@ -58,7 +58,7 @@ program bcoef
 ! Namelist with defaults
   integer               :: nchanl               = 19
   integer               :: ncycle               = 1
-  character(15)         :: satname              ='ssmis_f18'
+  character(22)         :: satname              ='ssmis_f18'
   namelist /input/ satname,nchanl,ncycle
 
   data luname,ldname,lpname,lsatchan / 5, 50, 51, 52 /

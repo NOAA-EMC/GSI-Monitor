@@ -10,10 +10,11 @@ program make_base
   parameter ( mregion=25, mfile=2000 )
   parameter ( rmiss = -999.0 )
 
-  character(20) satname
+  character(22) satname
   real,allocatable,dimension(:,:,:):: count, penalty
 
-  character(40) data_file, cycle_file, ctl_file, out_file
+  character(60) data_file
+  character(40) cycle_file, ctl_file, out_file
   character(40) channel_file
   integer lungrd, luncyc, j, k, ii, ierror, hr, status
   integer lunctl, lunout, lunchn, channels
@@ -293,7 +294,7 @@ program make_base
 !
    write(6,*) 'writing output to ', out_file
    open(lunout,file=out_file,form='formatted')
-   write(lunout,*) satname, date, n_chan, nregion
+   write(lunout,*) trim(satname), ' ', date, n_chan, nregion
 
    do k=1,nregion
       do j=1,n_chan

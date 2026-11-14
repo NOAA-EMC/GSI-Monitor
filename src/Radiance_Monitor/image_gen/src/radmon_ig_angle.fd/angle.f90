@@ -47,7 +47,7 @@ program angle
   character(60) sin_out_file, emiss_out_file, ordang4_out_file
   character(60) ordang3_out_file, ordang2_out_file , ordang1_out_file
 
-  character(40) data_file
+  character(60) data_file
   character(len=:),allocatable :: fmt_str(:)
 
   character(len=10),allocatable,dimension(:)::times
@@ -100,7 +100,7 @@ program angle
 !************************************************************************
    integer               :: nchanl               = 19
    integer               :: ncycle               = 1
-   character(15)         :: satname              = 'ssmis_f18'
+   character(22)         :: satname              = 'ssmis_f18'
    real                  :: scan_start           = 0.00
    real                  :: scan_stepsz          = 1.00
    integer               :: scan_nstep           = 90

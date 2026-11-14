@@ -7,11 +7,12 @@ subroutine create_ctl_angle(ntype,ftype,n_chan,iyy,imm,idd,ihh,incr,&
 
   integer, intent(in)                         :: ntype,n_chan,iyy,imm,idd,ihh,incr
   character(10),dimension(ntype),intent(in)   :: ftype
-  character(40),intent(in)                    :: ctl_file
+  character(80),intent(in)                    :: ctl_file
   integer, intent(in)                         :: lunctl, nregion,nstep,little_endian
   real, intent(in)                            :: rmiss
-  character(20),intent(in)                    :: satname
-  character(10),intent(in)                    :: satype,dplat
+  character(26),intent(in)                    :: satname
+  character(10),intent(in)                    :: satype
+  character(11),intent(in) :: dplat
   character(40),dimension(nregion),intent(in) :: region
   real,dimension(nregion), intent(in)         :: rlonmin,rlonmax,rlatmin,rlatmax
   integer,dimension(n_chan), intent(in)       :: nu_chan
@@ -24,7 +25,7 @@ subroutine create_ctl_angle(ntype,ftype,n_chan,iyy,imm,idd,ihh,incr,&
   character(3):: clatmin,clatmax
   character(4):: clonmin,clonmax
   character(13) stringd
-  character(40) grad_file
+  character(80) grad_file
   character(80) string
   character(80),dimension(nregion):: stringr
 
@@ -108,7 +109,7 @@ subroutine create_ctl_angle(ntype,ftype,n_chan,iyy,imm,idd,ihh,incr,&
 
 ! Write header information
   grad_file = trim(satname) // stringd // '.ieee_d'
-  write(lunctl,100) grad_file
+  write(lunctl,100) trim(grad_file)
   if (little_endian == 1 ) then
      write( lunctl,112 ) 
   else
@@ -138,11 +139,11 @@ subroutine create_ctl_angle(ntype,ftype,n_chan,iyy,imm,idd,ihh,incr,&
   write(lunctl,170) ntime,ihh2,idd2,mon(imm2),iyy2,incr
   write(lunctl,180) ntype
 
-100 format('dset ^',a40)
+100 format('dset ^',a)
 110 format('options template big_endian sequential')
 112 format('options template little_endian sequential')
 120 format('undef ',f5.0)
-130 format('title ',a10,1x,a10,1x,i4)
+130 format('title ',a10,1x,a11,1x,i4)
 132 format('*XDEF is scan position')
 134 format('*YDEF is channel number')
 136 format('*  y= ',i4,', channel= ',i4,' , iuse= ',i2,' , error= ',f8.3,&
