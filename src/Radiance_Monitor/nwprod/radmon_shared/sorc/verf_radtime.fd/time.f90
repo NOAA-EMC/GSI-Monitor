@@ -22,7 +22,6 @@ program time
   parameter (iglobal=1, iland=2, iwater=3, isnowice=4, imixed=5)
 
   character(10),dimension(ntype):: ftype
-  character(8) stid
   character(20) stringd,satsis
   character(22) satname
   character(10) dum,satype
