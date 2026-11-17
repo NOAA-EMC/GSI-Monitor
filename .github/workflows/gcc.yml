@@ -1,6 +1,8 @@
 name: GCC Linux Build
 on: [push, pull_request, workflow_dispatch]
 
+permissions:
+  contents: read
 
 # Use custom shell with -l so .bash_profile is sourced
 # without having to do it in manually every step
@@ -9,7 +11,7 @@ defaults:
     shell: bash -leo pipefail {0}
 
 env:
-  cache_key: gcc
+  cache_key: gcc-ubuntu-22.04
   CC: gcc-10
   FC: gfortran-10
   CXX: g++-10
@@ -22,7 +24,7 @@ env:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: checkout  # this is to get the ci/spack.yaml file
@@ -57,7 +59,7 @@ jobs:
 
   gsi-monitor:
     needs: setup
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
 
     steps:
       - name: checkout
