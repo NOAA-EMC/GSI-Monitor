@@ -1,6 +1,8 @@
 name: GCC Linux Build
 on: [push, pull_request, workflow_dispatch]
 
+permissions:
+  contents: read
 
 # Use custom shell with -l so .bash_profile is sourced
 # without having to do it in manually every step
