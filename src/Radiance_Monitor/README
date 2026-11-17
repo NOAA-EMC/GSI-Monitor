@@ -83,6 +83,14 @@ Alternately the transfer script, RunTransfer.sh, can be run from the command lin
 On all other machines you will have to manually move files from your $TANKDIR/imgn/$NET/$RUN/radmon
 directory to the server.
 
+Scan-info records start with a blank in column 1, followed by whitespace-separated
+sensor_platform, scan start, scan step, and number of steps.  Sensor/platform
+names may be up to 22 characters.  A nonblank in column 1 marks a comment.
+
+Run the radiance name regression checks with:
+
+  bash tests/test_radiance_names.sh
+
 
 
 If you encounter problems please send me email and I'll be glad to help:

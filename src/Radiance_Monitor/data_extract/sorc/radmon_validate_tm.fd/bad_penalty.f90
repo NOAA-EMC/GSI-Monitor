@@ -74,17 +74,17 @@ module bad_penalty
     subroutine write_bad_penalty( satname, channel, region, penalty, bound )
 
       !--- interface
-      character(20), intent( in )       :: satname
+      character(*), intent( in )       :: satname
       integer, intent( in )		:: channel
       integer, intent( in )		:: region
       real, intent( in )		:: penalty
       real, intent( in )                :: bound
       character(60)                     :: myformat
 
-      myformat = "(A20,A10,I5,A9,I1,A10,ES15.7E2,A8,ES15.7E2)"
+      myformat = "(A,A10,I5,A9,I1,A10,ES15.7E2,A8,ES15.7E2)"
 
       
-      write(funit,myformat) satname, ' channel= ',channel, ' region= ', region, ' penalty= ', penalty, ' bound= ', bound
+      write(funit,myformat) trim(satname), ' channel= ',channel, ' region= ', region, ' penalty= ', penalty, ' bound= ', bound
 
     end subroutine write_bad_penalty
 

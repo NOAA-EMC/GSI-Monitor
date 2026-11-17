@@ -71,7 +71,7 @@ module low_count
     subroutine write_low_count( satname, channel, region, num_obs, avg_cnt )
 
       !--- interface
-      character(20), intent( in )       :: satname
+      character(*), intent( in )       :: satname
       integer, intent( in )		:: channel
       integer, intent( in )             :: region
       real, intent( in )		:: num_obs
@@ -79,9 +79,9 @@ module low_count
       !--- 
       character(len=50)                 :: fmt
 
-      fmt = "(A16,A10,I5,A9,I1,A10,I7,A10,F9.2)"
+      fmt = "(A,A10,I5,A9,I1,A10,I7,A10,F9.2)"
 
-      write(funit, fmt) satname, ' channel= ', channel, &
+      write(funit, fmt) trim(satname), ' channel= ', channel, &
                         ' region= ', region, ' num_obs= ', &
                         INT(num_obs), ' avg_obs= ', avg_cnt
 
