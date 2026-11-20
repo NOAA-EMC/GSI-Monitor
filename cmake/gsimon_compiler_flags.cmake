@@ -8,6 +8,8 @@ endif()
 
 if(CMAKE_Fortran_COMPILER_ID MATCHES "GNU")
   include(gsimon_compiler_flags_GNU_Fortran)
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES "IntelLLVM")
+  include(gsimon_compiler_flags_IntelLLVM_Fortran)
 elseif(CMAKE_Fortran_COMPILER_ID MATCHES "Intel")
   include(gsimon_compiler_flags_Intel_Fortran)
 else()

@@ -8,7 +8,7 @@ readonly DIR_ROOT=$(cd "$(dirname "$(readlink -f -n "${BASH_SOURCE[0]}" )" )/.."
 # User Options
 BUILD_TYPE=${BUILD_TYPE:-"Release"}
 CMAKE_OPTS=${CMAKE_OPTS:-}
-COMPILER=${COMPILER:-"intel"}		# intel | gnu
+COMPILER=${COMPILER:-"intel"}		# intel | oneapi | gnu
 BUILD_DIR=${BUILD_DIR:-"${DIR_ROOT}/build"}
 INSTALL_PREFIX=${INSTALL_PREFIX:-"${DIR_ROOT}/install"}
 
@@ -19,11 +19,17 @@ source $DIR_ROOT/ush/detect_machine.sh
 echo "MACHINE_ID = $MACHINE_ID"
 
 # Load modules
+set +x
 source $DIR_ROOT/ush/module-setup.sh
-
 module use $DIR_ROOT/modulefiles
+
+# Use oneAPI by default for Nimbus, allow override with COMPILER_VARIANT
+if [[ ${MACHINE_ID} == "nimbus" && ${COMPILER} == "intel" ]]; then
+  export COMPILER="oneapi"
+fi
 module load $MACHINE_ID.$COMPILER
 module list
+set -x
 
 # Collect BUILD Options
 CMAKE_OPTS+=" -DBUILD_UTIL_ALLMON=ON"
