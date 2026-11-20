@@ -123,7 +123,12 @@ fi
 #
 #  NUM_CYCLES is the number of cycles to be used time series plots.
 #
-export NUM_CYCLES=${NUM_CYCLES:-121}
+if [[ ${RAD_AREA} = "rgn" ]]; then
+   default_cycles=480
+else
+   default_cycles=121
+fi
+export NUM_CYCLES=${NUM_CYCLES:-${default_cycles}}
 
 #
 #  RUN_TRANSFER allows for an immediate invocation of the Transfer.sh script

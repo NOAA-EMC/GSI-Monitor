@@ -24,76 +24,12 @@ function usage {
   echo " "
 }
 
-#------------------------------------------------------------------------------
-# set_hr_tm() assigns the rgnTM and rgnHH vars which are file name components
-#             in the rapid refresh scheme the nam uses.
-#------------------------------------------------------------------------------
-function set_hr_tm(){
-
-   case $hr in
-      00) rgnHH=t00z
-          rgnTM=tm00;;
-      01) rgnHH=t06z
-	  rgnTM=tm05;;
-      02) rgnHH=t06z
-	  rgnTM=tm04;;
-      03) rgnHH=t06z
-          rgnTM=tm03;;
-      04) rgnHH=t06z
-          rgnTM=tm02;;
-      05) rgnHH=t06z
-          rgnTM=tm01;;
-      06) rgnHH=t06z
-          rgnTM=tm00;;
-      07) rgnHH=t12z
-          rgnTM=tm05;;
-      08) rgnHH=t12z
-          rgnTM=tm04;;
-      09) rgnHH=t12z
-          rgnTM=tm03;;
-      10) rgnHH=t12z
-          rgnTM=tm02;;
-      11) rgnHH=t12z
-          rgnTM=tm01;;
-      12) rgnHH=t12z
-          rgnTM=tm00;;
-      13) rgnHH=t18z
-          rgnTM=tm05;;
-      14) rgnHH=t18z
-          rgnTM=tm04;;
-      15) rgnHH=t18z
-          rgnTM=tm03;;
-      16) rgnHH=t18z
-          rgnTM=tm02;;
-      17) rgnHH=t18z
-          rgnTM=tm01;;
-      18) rgnHH=t18z
-          rgnTM=tm00;;
-      19) rgnHH=t00z    # This is where the day changes.
-          rgnTM=tm05
-          use_next_day=1;;
-      20) rgnHH=t00z
-          rgnTM=tm04
-          use_next_day=1;;
-      21) rgnHH=t00z
-          rgnTM=tm03
-          use_next_day=1;;
-      22) rgnHH=t00z
-          rgnTM=tm02
-          use_next_day=1;;
-      23) rgnHH=t00z
-          rgnTM=tm01
-          use_next_day=1;;
-   esac
-}
-
 
 #--------------------------------------------------------------------
 #  ConMon_DE.sh begins here
 #--------------------------------------------------------------------
 
 echo "Begin ConMon_DE_rgn.sh"
-exit_value=0
 
 export AREA='rgn'
 nargs=$#
@@ -168,7 +104,6 @@ if [[ ! -d ${C_IMGNDIR} ]]; then
    mkdir -p ${C_IMGNDIR}
 fi
 
-
 #--------------------------------------------------------------------
 # Get date of cycle to process and/or previous cycle processed.
 #
@@ -182,15 +117,6 @@ fi
 export PDY=`echo ${pdate}|cut -c1-8`
 export CYC=`echo ${pdate}|cut -c9-10`
       
-hr=${CYC}
-
-rgnHH=''
-rgnTM=''
-use_next_day=0
-   
-set_hr_tm
-
-
 if [[ ${#cnvstat_location} -le 0 ]]; then
    export cnvstat_location=${COMROOT}/nam/${nam_ver}
 fi
@@ -203,26 +129,15 @@ export CONMON_WORK_DIR=${CONMON_WORK_DIR:-${C_STMP_USER}/${CONMON_SUFFIX}}/conmo
 
 
 #----------------------------------------------------------------------
-#  cnvstat file
-#
-#  If processing one of the last 5 cycles for the day, look for
-#  them in the next day's directory.  The $use_next_day variable, set
-#  in set_hr_tm() flags this condition.
+#  locate cnvstat file
 #----------------------------------------------------------------------
-cnvstat=""
-pdate06=""
-day=${PDY}
-
-if [[ $use_next_day == 1 ]]; then
-   pdate06=`${NDATE} +6 ${PDY}${CYC}`
-   day=`echo ${pdate06} | cut -c1-8`
-fi
-export cnvstat=${cnvstat_location}/${CONMON_SUFFIX}.${day}/${CONMON_SUFFIX}.${rgnHH}.cnvstat.${rgnTM}
+export cnvstat=${cnvstat_location}/satbias.${PDY}/${CONMON_SUFFIX}.prod.${pdate}_cnvstat
 
 if [[ -e ${cnvstat} ]]; then
    echo "cnvstat exists"
 else
-   echo "cnvstat is a no-go"
+   echo "data not available -- missing $cnvstat file"
+   exit 4
 fi
 
 #------------------------------------------------------------
@@ -269,10 +184,7 @@ if [[ -e ${cnvstat} ]]; then
   	      -N ${jobname} -l select=1:mem=5000M ${HOMEnam_conmon}/jobs/JNAM_CONMON
    fi
 
-else
-   echo "data not available -- missing $cnvstat file"
-   exit_value=7
 fi
 
 echo "End ConMon_DE_rgn.sh"
-exit ${exit_value}
+exit 0

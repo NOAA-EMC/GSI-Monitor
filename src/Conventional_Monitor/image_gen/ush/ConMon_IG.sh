@@ -15,7 +15,7 @@
 function usage {
   echo " "
   echo " "
-  echo "Usage:  ConMon_IG.sh suffix [-p|--pdate pdate -r|--run gdas|gfs -n|--ncyc]"
+  echo "Usage:  ConMon_IG.sh suffix [-p|--pdate pdate -r|--run gdas|gfs -n|--ncyc -a|--area]"
   echo " "
   echo "            Suffix is the indentifier for this data source."
   echo " "
@@ -30,6 +30,9 @@ function usage {
   echo " "
   echo "            -n | --ncyc is the number of cycles to be used in time series plots.  If"
   echo "              not specified the default value in parm/RadMon_user_settins will be used"
+  echo " "
+  echo "            -a | --area may be glb (global) or rgn (regional).  Default is 'glb'."
+  echo " "
 }
 
 
@@ -41,7 +44,7 @@ echo "Begin ConMon_IG.sh"
 
 
 nargs=$#
-if [[ $nargs -lt 1 || $nargs -gt 7 ]]; then
+if [[ $nargs -lt 1 || $nargs -gt 9 ]]; then
    usage
    exit 1
 fi
@@ -49,9 +52,8 @@ fi
 #-----------------------------------------------
 #  Process command line arguments
 #
-export RUN=gdas
-num_cycles=""
 PDATE=""
+AREA="glb"
 
 while [[ $# -ge 1 ]]
 do
@@ -64,11 +66,15 @@ do
          shift # past argument
       ;;
       -r|--run)
-         export RUN="$2"
+         RUN="$2"
          shift # past argument
       ;;
       -n|--ncyc)
-         num_cycles="$2"
+         NUM_CYCLES="$2"
+         shift # past argument
+      ;;
+      -a|--area)
+         AREA="$2"
          shift # past argument
       ;;
       *)
@@ -80,24 +86,11 @@ do
    shift
 done
 
-this_file=`basename $0`
-this_dir=`dirname $0`
-
-echo "CONMON_SUFFIX = $CONMON_SUFFIX"
-echo "PDATE         = $PDATE"
-echo "RUN           = $RUN"
-
-if [[ ${#num_cycles} -gt 0 ]]; then
-   export NUM_CYCLES=${num_cycles}
-fi
-
-
-export JOBNAME=${JOBNAME:-CM_IG_${CONMON_SUFFIX}}
-
 #--------------------------------------------------------------------
 # Run config files to load environment variables,
 # set default plot conditions
 #--------------------------------------------------------------------
+this_dir=`dirname $0`
 top_parm=${this_dir}/../../parm
 
 conmon_config=${conmon_config:-${top_parm}/ConMon_config}
@@ -111,13 +104,23 @@ fi
 
 module list
 
+export RUN="${RUN:-gdas}"
+export AREA="${AREA:-glb}"
+
+#--------------------------------------------------------------------
+# CYCLE_INTERVAL is 6 hrs for global (default) and 1 hr for regional
+#--------------------------------------------------------------------
+if [[ ${AREA} = 'rgn' ]]; then
+   CYCLE_INTERVAL=1
+fi
+export CYCLE_INTERVAL="${CYCLE_INTERVAL:-6}"
+
 #--------------------------------------------------------------------
 #  Create LOGdir as needed
 #--------------------------------------------------------------------
 if [[ ! -d ${C_LOGDIR} ]]; then
    mkdir -p $C_LOGDIR
 fi
-
 
 #--------------------------------------------------------------------
 # Determine cycle to plot.  Exit if cycle is > last available
@@ -138,26 +141,33 @@ fi
 echo "C_IG_SCRIPTS = ${C_IG_SCRIPTS}"
 echo "C_TANKDIR = ${C_TANKDIR}"
 
-last_cycle=`${MON_USH}/find_last_cycle.sh --net ${CONMON_SUFFIX} \
+if [[ ${AREA} = 'glb' ]]; then
+   last_cycle=`${MON_USH}/find_last_cycle.sh --net ${CONMON_SUFFIX} \
               --run ${RUN} --tank ${TANKDIR} --mon conmon`
+else
+   last_cycle=`${MON_USH}/find_last_cycle_rgnl.sh --net ${CONMON_SUFFIX} \
+              --tank ${C_TANKDIR} --mon conmon`
+fi
+
+echo "last_cycle = ${last_cycle}"
 
 if [[ ${PDATE} = "" ]]; then
 
    if [[ -e ${C_IMGNDIR}/last_plot_time ]]; then
       echo " USING last_plot_time"
       last_plot=`cat ${C_IMGNDIR}/last_plot_time`
-      export PDATE=`$NDATE +6 ${last_plot}`
+      export PDATE=`$NDATE +${CYCLE_INTERVAL} ${last_plot}`
    else
       export PDATE=$last_cycle
    fi
 fi
 
-
 #--------------------------------------------------------------------
 # Set the START_DATE for the plot
 #--------------------------------------------------------------------
+echo "NUM_CYCLES = $NUM_CYCLES"
 ncycles=`expr $NUM_CYCLES - 1`
-hrs=`expr $ncycles \\* -6`
+hrs=`expr ${ncycles} \\* -${CYCLE_INTERVAL}`
 
 export START_DATE=`$NDATE ${hrs} $PDATE`
 echo "START_DATE, last_cycle, PDATE = $START_DATE $last_cycle  $PDATE"
@@ -169,14 +179,23 @@ cyc=`echo ${PDATE}|cut -c9-10`
 #------------------------------------------------------------------
 #   Start image plotting jobs.
 #------------------------------------------------------------------
-if [[ $PDATE -le ${last_cycle} ]]; then
+export JOBNAME=${JOBNAME:-CM_IG_${CONMON_SUFFIX}}
+echo "C_TANKDIR = ${C_TANKDIR}"
+
+if [[ ${PDATE} -le ${last_cycle} ]]; then
 
    echo "ABLE to plot ${PDATE}, last processed date is ${last_cycle}"
 
    #--------------------------------------------------------------------
    #  Create workdir and cd to it
    #--------------------------------------------------------------------
-   export C_PLOT_WORKDIR=${C_PLOT_WORKDIR:-${MON_STMP}/${CONMON_SUFFIX}/${RUN}/conmon}
+   if [[ ${AREA} = 'glb' ]]; then
+      export C_PLOT_WORKDIR=${C_PLOT_WORKDIR:-${MON_STMP}/${CONMON_SUFFIX}/${RUN}/conmon}
+      sdirs="horz,hist,time,vert"
+   else
+      export C_PLOT_WORKDIR=${C_PLOT_WORKDIR:-${MON_STMP}/${CONMON_SUFFIX}/conmon}
+      sdirs="hist,time,vert"
+   fi
    rm -rf $C_PLOT_WORKDIR
    mkdir -p $C_PLOT_WORKDIR
    cd $C_PLOT_WORKDIR
@@ -198,6 +217,10 @@ if [[ $PDATE -le ${last_cycle} ]]; then
    #--------------------------------------------------------------------
    #  Mail warning reports 
    #--------------------------------------------------------------------
+   if [[ ${AREA} = 'rgn' ]]; then
+      DO_DATA_RPT=0
+   fi
+
    if [[ $DO_DATA_RPT = 1 ]]; then
      warn_file=${C_TANKDIR}/${RUN}.${pdy}/${cyc}/conmon/horz_hist/ges/err_rpt.ges.${PDATE}
      if [[ -e ${warn_file} ]]; then
@@ -206,7 +229,7 @@ if [[ $PDATE -le ${last_cycle} ]]; then
      fi
    fi
 
-   ${MON_USH}/rm_img_files.pl --dir ${C_IMGNDIR}/pngs --ncyc ${NUM_IMG_CYCLES} --sdirs=horz,hist,time,vert
+   ${MON_USH}/rm_img_files.pl --dir ${C_IMGNDIR}/pngs --ncyc ${NUM_IMG_CYCLES_TO_SAVE} --sdirs ${sdirs}
 
 else
    echo "UNABLE to plot ${PDATE}, last processed date is ${last_cycle}"

@@ -4,16 +4,17 @@
 #  usage
 #--------------------------------------------------------------------
 function usage {
-  echo "Usage:  ConMon_IG.sh suffix [-r|--run gdas|gfs]"
+  echo "Usage:  ConMon_IG.sh suffix [-r|--run gdas|gfs -a|--area glb|rgn]"
   echo "            Suffix is the indentifier for this data source."
   echo "            -r | --run   the gdas|gfs run to be processed"
   echo "              use only if data in TANKdir stores both runs, otherwise"
   echo "              gdas is assumed."
+  echo "            -a | --area  glb or rgn.  Default is glb"
   echo " "
 }
 
 nargs=$#
-if [[ $nargs -lt 1 || $nargs -gt 3 ]]; then
+if [[ $nargs -lt 1 || $nargs -gt 5 ]]; then
    usage
    exit 1
 fi
@@ -21,8 +22,6 @@ fi
 #-----------------------------------------------
 #  Process command line arguments
 #
-export RUN=gdas
-
 while [[ $# -ge 1 ]]
 do
    key="$1"
@@ -30,7 +29,11 @@ do
 
    case $key in
       -r|--run)
-         export RUN="$2"
+         run="$2"
+         shift # past argument
+      ;;
+      -a|--area)
+         area="$2"
          shift # past argument
       ;;
       *)
@@ -42,6 +45,10 @@ do
    shift
 done
 
+export AREA="${area:-glb}"
+if [[ ${AREA} = "glb" ]]; then
+   export RUN="${run:-gdas}"
+fi
 
 this_file=`basename $0`
 this_dir=`dirname $0`
@@ -54,7 +61,7 @@ if [[ -s ${CMON_CONFIG} ]]; then
    . ${CMON_CONFIG}
 else
    echo "ERROR:  Unable to source ${CMON_CONFIG}"
-   exit
+   exit 1
 fi
 
 
@@ -68,9 +75,15 @@ if [[ -e ${errfile} ]]; then
    rm ${errfile}
 fi
 
-export JOB_QUEUE=dev_transfer
-WEBDIR=${WEBDIR}/${CONMON_SUFFIX}/${RUN}
+WEBDIR=${WEBDIR}/${CONMON_SUFFIX}
+if [[ ${AREA} = "glb" ]]; then
+   WEBDIR=${WEBDIR}/${RUN}
+fi
 
+echo "WEBDIR: $WEBDIR"
+echo "/home/people/emc/www/htdocs/gmb/gdas/es_conv/rrfs/pngs"
+
+export JOB_QUEUE=dev_transfer
 export jobname=transfer_${CONMON_SUFFIX}_conmon
 
 #--------------------------------------------------------

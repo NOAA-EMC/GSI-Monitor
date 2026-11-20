@@ -315,7 +315,7 @@ fi
 #  This only applies to the summary plots; all others are replaced
 #  with every cycle.
 #--------------------------------------------------------------------
-${MON_USH}/rm_img_files.pl --dir ${TANKimg}/pngs/summary --ncyc 10
+${MON_USH}/rm_img_files.pl --dir ${TANKimg}/pngs/summary --ncyc 6
 
 
 #----------------------------------------------------------------------
