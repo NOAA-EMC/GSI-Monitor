@@ -19,17 +19,15 @@ source $DIR_ROOT/ush/detect_machine.sh
 echo "MACHINE_ID = $MACHINE_ID"
 
 # Load modules
-set +x
 source $DIR_ROOT/ush/module-setup.sh
 module use $DIR_ROOT/modulefiles
 
-# Use oneAPI by default for Nimbus, allow override with COMPILER_VARIANT
+# Use oneAPI instead of intel for Nimbus
 if [[ ${MACHINE_ID} == "nimbus" && ${COMPILER} == "intel" ]]; then
   export COMPILER="oneapi"
 fi
 module load $MACHINE_ID.$COMPILER
 module list
-set -x
 
 # Collect BUILD Options
 CMAKE_OPTS+=" -DBUILD_UTIL_ALLMON=ON"
